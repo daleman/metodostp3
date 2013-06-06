@@ -1,0 +1,448 @@
+#ifndef __MATRIZ_H
+#define __MATRIZ_H
+
+#include "master_header.h"
+
+template< typename T >
+class Matriz
+{
+	private:
+		T ** matriz;
+		uint n,m;
+		uint triangulada;
+
+	public:
+		Matriz(int _n, int _m) : n(_n),m(_m)
+		{
+			matriz = new T*[n];
+			for( uint i = 0; i < n; ++i)
+				matriz[i] = new T[m];
+			triangulada = 0;
+		}
+
+		Matriz( Matriz<T> &B )
+		{
+			n = B.n;
+			m = B.m;
+			triangulada = 0;
+			uint i,j;
+
+			matriz = new T*[n];
+
+			for( i=0 ; i<n ; ++i )
+				matriz[i] = new T[m];
+
+			for ( i=0 ; i<n ; ++i ) {
+				for ( j=0 ; j<m ; ++j ) {
+					matriz[i][j] = B[i][j];
+				}
+			}
+		}
+
+		~Matriz()
+		{
+			for(uint i = 0; i < n; ++i)
+				delete [] matriz[i];
+
+			delete [] matriz;
+		}
+
+		int cantFil() { return n; }
+		int cantCol() { return m; }
+
+		T* operator[](uint i)
+		{
+			if(i >= n) return NULL;
+			return matriz[i];
+		}
+
+		void cargarSuma( Matriz<T> &A, Matriz<T> &B)
+		{
+			assert( n==A.n && m==A.m && A.n==B.n && A.m==B.m );
+
+			uint i,j;
+			for ( i=0 ; i<n ; ++i ) {
+				for ( j=0 ; j<m ; ++j ) {
+					matriz[i][j] = A[i][j] + B[i][j];
+				}
+			}
+		}
+
+		void cargarMultiplicacion( Matriz<T> &A, Matriz<T> &B )
+		{
+			assert( n==A.n && A.m==B.n && B.m==m );
+
+			uint i,j,k;
+
+			for ( i=0 ; i<n ; ++i ) {
+				for ( j=0 ; j<m ; ++j ) {
+					double sum = 0;
+					for ( k=0 ; k<A.m ; ++k ) {
+						sum += (double) A[i][k] * (double) B[k][j];
+					}
+					matriz[i][j] = (T) sum;
+				}
+			}
+		}
+
+		void transponer( Matriz<T> &B )
+		{
+			assert( n==B.m && m==B.n );
+	
+			uint i,j;
+
+			for ( i=0 ; i<n ; ++i ) {
+				for ( j=0 ; j<m ; ++j ) {
+					matriz[i][j] = B[j][i];
+				}
+			}		
+		}
+
+		void imprimirMatriz()
+		{
+			uint i,j;
+
+			for ( i=0 ; i<n ; ++i ) {
+				for ( j=0 ; j<m ; ++j ) {
+					printf("%f\t", (double) matriz[i][j]);
+				}
+				printf("\n");
+			}
+			printf("\n");
+		}
+
+		void guardarArchivo(char * archivo)
+		{	//DEBUG - NO ME SAQUES
+
+			FILE *nuevo = fopen( archivo , "w" );
+	
+			int i;
+
+			fprintf( nuevo, "%d\n", n );
+
+			for ( i=0 ; i<n ; ++i ) {
+				fprintf( nuevo, "%f ", matriz[i][0] );
+			}
+
+			fprintf( nuevo, "\n" );
+
+			fclose( nuevo );
+		}
+
+
+		void invertir(){
+
+			uint i,j;
+			Matriz<double> res(n,1);
+			Matriz<double> temp(n,m);
+			for(i=0;i<m;i++){
+				Matriz<double> canonico(n,1);
+
+				for(j=0;j<n;j++){			
+					canonico[j][0] = (j==i)? 1:0;
+					res[j][0] = 0;
+				}
+
+				printf("\nel canonico es :\n");
+				canonico.imprimirMatriz();
+
+				Gauss(canonico,res);
+
+				printf("\nres es :\n");
+				res.imprimirMatriz();
+
+				for(j=0;j<n;j++){
+					temp[j][i] = res[j][0];
+				}
+			}
+			
+			for(i=0;i<n;i++){
+				for(j=0;j<m;j++){
+					matriz[i][j]= temp[i][j];
+				}
+			}
+			
+		}
+		
+		void triangular(){
+			uint i,k,j;
+			//asi funciona la interfaz de pivoteo
+			Matriz<double> TX(n,1);
+
+			for (i=0;i<n;i++){
+				//pivoteo agarra el minimo p tal que api!=0
+				pivoteoParcial(TX,i);
+				
+				for(j=i+1;j<n;j++){					
+					assert( matriz[i][i] !=0 );
+					T mji = matriz[j][i] / matriz[i][i];
+					
+					for (k=i+1;k<n;k++){
+						matriz[j][k] = matriz[j][k] - mji * matriz[i][k];						
+					}
+					matriz[j][i] = 0;
+				}
+			}	
+			triangulada = 1;
+		}
+
+		void resolverTriangulada(Matriz<T> &x ,Matriz<T> &res){
+			/* Dado el sistema A.res = x, donde A es ESTA MATRIZ TRIANGULADA
+			   res son las incognitas, y x es un vector<T>, encuentra
+			   las soluciones ( el vector RES solucion ) */
+
+			assert( triangulada == 1 );
+
+			uint j;
+
+			res[n-1][0]=x[n-1][0]/matriz[n-1][n-1];
+
+			int f = n-2;
+			
+			for(; f >= 0 ; f-- ){
+				res[f][0]= x[f][0];
+
+				for(j=f+1;j<n;j++){
+					assert( matriz[f][f] != 0 );
+					res[f][0]-=matriz[f][j]*res[j][0];
+				}
+				res[f][0] /= matriz[f][f];
+			}
+		}
+
+		void Gauss(  Matriz<T> &x ,Matriz<T> &res )
+		{      	/* Dado el sistema A.res = x, donde A es ESTA MATRIZ
+			   res son las incognitas, y x es un vector<T>, encuentra
+			   las soluciones ( el vector RES solucion ) */
+
+			assert( n==(x.n) && res.m==1 && res.m==x.m );
+			uint i,k,j;
+
+			Matriz<double> temp(n,m);
+			Matriz<double> TX(x.n,x.m);
+			Matriz<double> resD(res.n,res.m);
+	
+			for(i=0;i<x.n;i++){
+				for(j=0;j<x.m;j++){
+					TX[i][j]= (double) x[i][j];
+				}
+			}
+	
+			for(i=0;i<n;i++){
+				for(j=0;j<m;j++){
+					temp[i][j]= (double)matriz[i][j];
+				}
+			}
+
+			uint filas = n;
+			
+
+			for (i=0;i<n;i++){
+				//pivoteo agarra el minimo p tal que api!=0
+				temp.pivoteoParcial(TX,i);
+				
+				for(j=i+1;j<n;j++){					
+					assert( temp[i][i] !=0 );
+					T mji = temp[j][i] / temp[i][i];
+					
+					for (k=i+1;k<n;k++){
+						temp[j][k] = temp[j][k] - mji * temp[i][k];
+						
+					}
+					TX[j][0] = TX[j][0] - mji*TX[i][0];
+					temp[j][i] = 0;
+				}
+			}	
+
+			//HASTA ACA FUE GAUSS PARA TRIANGULAR
+			//AHORA A SUSTITUIR
+
+			resD[n-1][0]=TX[n-1][0]/temp[n-1][n-1];
+
+			int f = filas -2;
+			
+			for( f=filas-2; f >= 0 ; f-- ){
+				resD[f][0]= TX[f][0];
+				for(j=f+1;j<n;j++){
+					assert( temp[f][f] != 0 );
+					resD[f][0]-=temp[f][j]*resD[j][0];
+				}
+				resD[f][0]/= temp[f][f];
+			}
+			
+			for(i=0;i<res.n;i++){
+				for(j=0;j<res.m;j++){
+					res[i][j] = (T) resD[i][j];
+				}
+			}
+		}
+
+	void recorrerZigZag( Matriz<T> &mat)
+	{
+		for	
+	}
+
+
+	void factorizacionLU(  Matriz<T> &P, Matriz<T> &L, Matriz<T> &U )
+	{
+		uint i,k,j;
+				
+		for(int i=0;i<n;i++){
+			for(k=0;k<n;k++){
+				U[i][k] = matriz[i][k];
+				P[i][k] = (i==k) ? 1 : 0;
+			}
+		}		
+				
+		uint filas = n;
+		for (i=0;i<n;i++){
+			
+			U.pivoteoParcial(i,P,L);
+			L[i][i]=1;
+			for(j=i+1;j<n;j++){					
+				assert( U[i][i] !=0 );
+				double mji = U[j][i] / U[i][i];
+				for (k=i+1;k<n;k++){
+					U[j][k] = (double)U[j][k] - mji * (double)U[i][k];
+					
+				}					
+				U[j][i] = 0;
+				L[j][i] = (T) mji;
+			}
+		}	
+	}
+
+	void resolverLU(Matriz<T> &entrada, Matriz<T> &P, Matriz<T> &L, Matriz<T> &U)
+	{
+		// Tengo A x = b, como  P A = L U , tengo L U x = Pt b
+		// sea Y = U x , entonces L Y = Pt b, lo resuelvo con SustitucionAtras
+		// depues para obtener x tengo que U x = Y, lo resuelvo con forward substitution
+		
+		Matriz<double> Y(n,1);
+		Matriz<double> res(n,1);
+		Matriz<double> b2(entrada.cantFil(),entrada.cantCol());
+		/********* Transpongo P y lo multiplico por b *****/
+
+		b2.cargarMultiplicacion(P,entrada);
+		
+		
+		/*********Hago L Y = b2 *******************/
+		forwardSubstituion(L,b2,Y);
+		
+		/*********Hago U x = Y *******************/
+		backwardSubstitution(U,Y,res);
+		
+		for(int i=0;i<n;i++){
+			matriz[i][0] = res[i][0];
+		}
+	}
+
+	void resolverMatrizLU(Matriz<T> &entrada, Matriz<T> &P, Matriz<T> &L, Matriz<T> &U)
+	{
+		Matriz<T> res(n,1);
+		Matriz<T> columna(n,1);
+		for(int i=0;i<n;i++){
+			for(int j=0;j<n;j++){
+				columna[j][0] = entrada[j][i];
+			}
+			res.resolverLU(columna,P,L,U);
+			for(int j=0;j<n;j++){
+				matriz[j][i]= res[j][0];
+				}
+		}
+	}
+
+	void forwardSubstituion( Matriz<T> &L, Matriz<T> &B ,Matriz<T> &res )
+	{		
+		Matriz<double> resD(res.n,res.m);
+		//resD[0][0]=B[0][0];
+
+		for( int f=0; f < n ; f++ ){
+			resD[f][0]= B[f][0];
+			for(int j=0;j<f;j++){
+				assert( L[f][f] != 0 );
+				resD[f][0]-=L[f][j]*resD[j][0];
+			}
+			resD[f][0]/= L[f][f];
+		}
+
+		for(int i=0;i<res.n;i++){
+				res[i][0] = (T) resD[i][0];
+		}
+	}
+
+	void backwardSubstitution( Matriz<T> &U, Matriz<T> &B ,Matriz<T> &res )
+	{	
+		Matriz<double> resD(res.n,res.m);
+		resD[n-1][0]=B[n-1][0]/U[n-1][n-1];
+
+		int f = n -2;
+
+		for( f=n-2; f >= 0 ; f-- ){
+			resD[f][0]= B[f][0];
+			for(int j=f+1;j<n;j++){
+				assert( U[f][f] != 0 );
+				resD[f][0]-=U[f][j]*resD[j][0];
+			}
+			resD[f][0]/= U[f][f];
+		}
+
+		for(int i=0;i<res.n;i++){
+				res[i][0] = (T) resD[i][0];
+		}
+	}
+
+	void pivoteoParcial( int i,Matriz<T> &P,Matriz<T> &L)
+	{
+		uint k;
+		int max=i;
+
+		for (k=i;k<n;k++){
+			 max = (abs(matriz[k][i]) > abs(matriz[max][i])) ? k :max;
+		}
+
+		if( max != i ){
+
+			for (k=0;k<n;k++){
+				//cambio de filas
+				T temp=matriz[i][k]; 
+				matriz[i][k]= matriz[max][k];
+				matriz[max][k] = temp;
+				
+				temp=P[i][k]; 
+				P[i][k]= P[max][k];
+				P[max][k] = temp;
+				
+				temp=L[i][k]; 
+				L[i][k]= L[max][k];
+				L[max][k] = temp;
+			}		
+		}			
+	}
+
+	void pivoteoParcial( Matriz<T> &x,int i)
+	{
+		uint k;
+		int max=i;
+
+		for (k=i;k<n;k++){
+			 max = (abs(matriz[k][i]) > abs(matriz[max][i])) ? k :max;
+		}
+
+		if( max != i ){
+
+			for (k=0;k<n;k++){
+				//cambio de filas
+				T temp=matriz[i][k]; 
+				matriz[i][k]= matriz[max][k];
+				matriz[max][k] = temp;
+			}		
+			//cambio la fila  de b
+			T temp = x[max][0];
+			x[max][0]= x[i][0];
+			x[i][0] = temp;
+		}			
+	}
+};
+
+#endif

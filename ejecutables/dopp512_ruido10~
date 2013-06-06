@@ -1,0 +1,9 @@
+RUIDO 35
+
+ ./tp2.exe AUDIO ../sonidos/dopp1024.txt prube.txt prubeFiltrada.txt UMBRAL 20 0.4 35 32
+
+PSNR de la senal ruidosa:			6.071774
+PSNR de la senal filtrada:			7.257163
+cantidad de dB de rango dinamico ganados:	1.185389
+
+

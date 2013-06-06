@@ -1,0 +1,109 @@
+UMBRAL
+
+dopp 512
+
+son= 7 redu=0.7 ruido=30
+
+PSNR de la senal ruidosa:			7.421893
+PSNR de la senal filtrada:			8.858474
+cantidad de dB de rango dinamico ganados:	1.436581
+
+son= 5 redu=0.3 ruido=50
+
+PSNR de la senal ruidosa:			3.135657
+PSNR de la senal filtrada:			6.283528
+cantidad de dB de rango dinamico ganados:	3.147871
+
+son= 5 redu=0.5 ruido=40
+
+PSNR de la senal ruidosa:			5.183610
+PSNR de la senal filtrada:			7.528633
+cantidad de dB de rango dinamico ganados:	2.345023
+
+son= 7 redu=0.9 ruido=20
+
+PSNR de la senal ruidosa:			10.943071
+PSNR de la senal filtrada:			11.461292
+cantidad de dB de rango dinamico ganados:	0.518221
+
+
+son= 3 redu=0.7 ruido=10
+
+PSNR de la senal ruidosa:			16.980781
+PSNR de la senal filtrada:			17.313213
+cantidad de dB de rango dinamico ganados:	0.332432
+
+LPF
+
+son= 12 redu=0.7 ruido=10
+
+PSNR de la senal ruidosa:			17.200660
+PSNR de la senal filtrada:			17.823078
+cantidad de dB de rango dinamico ganados:	0.622417
+
+
+son= 12 redu=0.9 ruido=20
+
+PSNR de la senal ruidosa:			11.304389
+PSNR de la senal filtrada:			11.250229
+cantidad de dB de rango dinamico ganados:	-0.054160
+
+
+son= 7 redu=0.9 ruido=30
+
+PSNR de la senal ruidosa:			7.423113
+PSNR de la senal filtrada:			6.949326
+cantidad de dB de rango dinamico ganados:	-0.473787
+
+
+son= 2 redu=0.9 ruido=40
+
+PSNR de la senal ruidosa:			5.092616
+PSNR de la senal filtrada:			4.401171
+cantidad de dB de rango dinamico ganados:	-0.691445
+
+son= 8 redu=0.9 ruido=50
+
+PSNR de la senal ruidosa:			3.087191
+PSNR de la senal filtrada:			2.398437
+cantidad de dB de rango dinamico ganados:	-0.688753
+
+s64
+
+LPF
+
+son= 8 redu=0.1 ruido=50
+
+PSNR de la senal ruidosa:			4.969271
+PSNR de la senal filtrada:			7.757963
+cantidad de dB de rango dinamico ganados:	2.788692
+
+
+
+son= 12 redu=0.1 ruido=40
+
+PSNR de la senal ruidosa:			5.901349
+PSNR de la senal filtrada:			8.923626
+cantidad de dB de rango dinamico ganados:	3.022277
+
+
+son= 14 redu=0.1 ruido=30
+
+PSNR de la senal ruidosa:			7.822632
+PSNR de la senal filtrada:			10.893317
+cantidad de dB de rango dinamico ganados:	3.070685
+
+
+son= 15 redu=0.1 ruido=20
+
+PSNR de la senal ruidosa:			11.017630
+PSNR de la senal filtrada:			13.228468
+cantidad de dB de rango dinamico ganados:	2.210838
+
+
+son= 8 redu=0.5 ruido=10
+
+PSNR de la senal ruidosa:			16.933654
+PSNR de la senal filtrada:			18.647862
+cantidad de dB de rango dinamico ganados:	1.714208
+

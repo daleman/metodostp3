@@ -1,0 +1,35 @@
+\PARstart Gran parte del procesamiento de se\~nales se realiza en el
+dominio transformado. Las ventajas son varias y pueden resumirse
+a:
+
+\begin{itemize}
+	\item manipular el espectro de una se\~nal de forma directa
+	\item realizar convoluciones en tiempo lineal en lugar
+	de cuadr\'atico \footnote{Esta mejora es realmente notable
+	cuando se usa una transformada r\'apida.}
+\end{itemize}
+
+En este caso estudiamos el primer punto, la manupulaci\'on de las
+componentes arm\'onicas de una se\~nal discretizada. Usamos la DCT
+para obtener nuestra se\~nal en la base ortogonal compuesta por
+cosenos con distintas frecuencias. Estas frecuencias son divisiones
+enteras de la frecuencia de muestreo\cite{paper}.
+
+La transformada se obtiene realizando una simple multiplicaci\'on
+entre la matriz cambio de base y la se\~nal original.
+
+Para reducir el ruido de la se\~nal usamos dos filtros:
+\begin{itemize}
+	\item[LPF:] atenua frecuencias agudas
+	\item[multiband gate:] atenua frecuencias por debajo de un cierto
+	umbral
+\end{itemize}
+
+Para volver al dominio de las se\~nales aplicamos el cambio de
+base inverso\cite{paper}. En este caso usamos la tecnica de plantear y
+resolver el
+sistema lineal dado por la matriz cambio de base y las componentes
+arm\'onica de la se\~nal filtrada como se pide en \cite{enunciado}.
+
+Utilizamos ruido normal para obtener imagenes ruidosas y poder calcular
+el PSNR logrado.

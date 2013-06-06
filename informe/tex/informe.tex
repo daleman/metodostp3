@@ -1,0 +1,190 @@
+\documentclass[%
+	%draft, %submission,
+	compressed,
+	%final,
+	% %technote,
+	%internal,
+	%submitted,
+	%inpress,
+	%reprint,
+	%
+	titlepage,
+	%notitlepage,
+	%anonymous,
+	narroweqnarray,
+	inline,
+	twoside,
+        %invited,
+	]{ieee}
+
+\usepackage[latin1]{inputenc}			% idioma
+\usepackage[spanish]{babel}
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{verbatim}
+
+% -------- PARA FIGURAS
+\usepackage{graphicx}
+\usepackage{capt-of}
+% -------- FIN FIGURAS
+
+\usepackage{hyperref}				% urls
+
+% -------- PARA MOSTRAR EL CODIGO DE MANERA AMENA
+\usepackage{courier}
+\usepackage{listings}
+\lstset{ %
+	language=C++,                % choose the language of the code
+	basicstyle=\footnotesize\ttfamily,       % the size of the fonts that are used for the code
+	numbers=left,                   % where to put the line-numbers
+	numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+	stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
+	numbersep=5pt,                  % how far the line-numbers are from the code
+	backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+	showspaces=false,               % show spaces adding particular underscores
+	showstringspaces=false,         % underline spaces within strings
+	showtabs=false,                 % show tabs within strings adding particular underscores
+	frame=single,           % adds a frame around the code
+	tabsize=6,          % sets default tabsize to 2 spaces
+	captionpos=b,           % sets the caption-position to bottom
+	breaklines=true,        % sets automatic line breaking
+	breakatwhitespace=false,    % sets if automatic breaks should only happen at whitespace
+}
+% -------- FIN CODIGO
+
+%\hypersetup{citecolor=black}	% color citas
+
+
+%--------- PARA EL ENUNCIADO DE LA CATEDRA
+\parskip = 11pt
+
+%\addtolength{\hoffset}{-1cm}
+%\addtolength{\textwidth}{2cm}
+ \addtolength{\voffset}{-0.5cm}
+ \addtolength{\textheight}{1cm}
+
+
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\nat}{\mathbb{N}}
+\newcommand{\eme}{\mathcal{M}}
+\newcommand{\emeh}{\widehat{\mathcal{M}}}
+\newcommand{\ere}{\mathcal{R}}
+%----------- FIN PARA EL ENUNCIADO DE LA CATEDRA
+
+
+\hypersetup{			%sacar los colores horrendos de las ref
+	colorlinks=false,
+	pdfborder={0 0 0},
+}
+
+\begin{document}
+
+
+\title[Eliminaci\'on de ruido en im\'agenes y audios]{%
+	Eliminaci\'on de ruido en im\'agenes y audios\\
+{\small M\'etodos Num\'ericos, Departamento de Computaci\'on, Universidad de Buenos Aires}
+}
+
+\journal{M\'etodos Num\'ericos, Departamento de Computaci\'on, Universidad de Buenos Aires}
+\author[ALEMAN, G. DIEZ Y SCOCCOLA]{
+Guillermo Gallardo Diez\authorinfo{gagdiez.c@gmail.com},\and{}Damian Eliel Aleman\authorinfo{damianealeman@gmail.com},\and{}y Luis Scoccola\authorinfo{luis.scoccola@gmail.com}
+}
+
+
+\firstpage{1}
+
+\maketitle               
+\tableofcontents
+
+\newpage
+
+\begin{abstract} 
+	En el presente trabajo se estudian algunas ventajas de
+	procesar una se\~nal digital en el dominio transformado. En
+	particular, se usa la Transformada del Coseno Discreta (DCT).
+	
+	Se programaron filtros b\'asicos de eliminaci\'on
+	de ruido en imagenes y audios y
+	se midi\'o el rango din\'amico efectivo
+	({\em peak signal-to-noise ratio}) comparando el
+	de una se\~nal ruidosa y esa misma se\~nal filtrada.
+	Se comparan
+	los resultados de los distintos filtros de manera visual
+	y de manera objetiva usando el {\em peak signal-to-noise ratio}.
+\end{abstract}
+
+\begin{keywords}
+	DCT, filtro, ruido normal, PSNR, factorizaci\'on PLU
+\end{keywords}
+
+%----------------------------------------------------------------------
+\section{Introducc\'ion te\'orica}
+
+\input{introduccion_teorica.tex}
+ 
+%----------------------------------------------------------------------
+\section{Desarrollo}
+
+\input{desarrollo.tex}
+\input{testeo.tex}
+
+%----------------------------------------------------------------------
+\section{Resultados}
+
+\input{resultados.tex}
+
+%----------------------------------------------------------------------
+\section{Discusi\'on}
+
+\input{discusion.tex}
+
+%----------------------------------------------------------------------
+\section{Conclusiones}
+
+\input{conclusion.tex}
+
+%----------------------------------------------------------------------
+
+\begin{thebibliography}{1}
+
+\bibitem{enunciado}
+C\'atedra de M\'etodos num\'ericos,\\
+\newblock {\em Segundo Trabajo Pr\'actico},\\
+\newblock Primer cuatrimestre 2013
+
+\bibitem{paper}
+Syed Ali Khayam,\\
+\newblock {\em The Discrete Cosine Transform (DCT): Theory and Application},\\
+\newblock March 10th 2003
+
+\bibitem{stanford}
+Julius O. Smith III,\\
+\newblock {\em Spectral Audio Signal Processing},\\
+W3K Publishing, 2011
+
+\end{thebibliography}
+
+%----------------------------------------------------------------------
+
+\newpage
+
+\section{Ap\'endices}
+
+\subsection{Enunciado}
+\input{enunciado.tex}
+
+\newpage
+
+\subsection{C\'odigo relevante}
+\input{codigo.tex}
+
+\newpage
+
+\subsection{Tablas}
+\input{tablas.tex}
+
+%----------------------------------------------------------------------
+
+\end{document}
