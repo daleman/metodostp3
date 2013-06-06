@@ -163,7 +163,7 @@ class Matriz
 			}
 			
 		}
-		
+		/*
 		void triangular(){
 			uint i,k,j;
 			//asi funciona la interfaz de pivoteo
@@ -190,7 +190,7 @@ class Matriz
 			/* Dado el sistema A.res = x, donde A es ESTA MATRIZ TRIANGULADA
 			   res son las incognitas, y x es un vector<T>, encuentra
 			   las soluciones ( el vector RES solucion ) */
-
+		/*
 			assert( triangulada == 1 );
 
 			uint j;
@@ -209,12 +209,13 @@ class Matriz
 				res[f][0] /= matriz[f][f];
 			}
 		}
-
+		*/
+		
 		void Gauss(  Matriz<T> &x ,Matriz<T> &res )
 		{      	/* Dado el sistema A.res = x, donde A es ESTA MATRIZ
 			   res son las incognitas, y x es un vector<T>, encuentra
 			   las soluciones ( el vector RES solucion ) */
-
+		
 			assert( n==(x.n) && res.m==1 && res.m==x.m );
 			uint i,k,j;
 
@@ -276,6 +277,154 @@ class Matriz
 				}
 			}
 		}
+
+		
+
+void Householder ( )
+{	// la matriz de entrada es la que llama a la funcion, se llama matriz
+	int dimension = n; 
+	double q;
+	double alfa;
+	double rsq;
+	double suma;
+	double suma2;
+	double prod;
+	Matriz<T> v(dimension,1);
+	Matriz<T> u(dimension,1);
+	Matriz<T> z(dimension,1);
+	Matriz<T> y(dimension,1);
+	
+	for (int k = 0; k < n-2 ; k++)	// reveer los indices hasta donde van
+	{
+		q = 0;
+		alfa = 0;
+		rsq = 0;
+		suma = 0;
+		suma2 = 0;
+		prod = 0;
+		for (int j = k+1; j < n ; j++)
+		{
+			q += ((matriz[j][k])*(matriz[j][k]));
+		}
+		// ahora q es la sumatoria 
+		if (matriz[k+1][k] == 0){
+			alfa = - sqrt(q);
+		}else{
+			alfa = - sqrt(q) * matriz[k+1][k] / abs(matriz[k+1][k]);
+		}
+		
+		rsq = alfa*alfa - alfa * matriz[k+1][k];
+		v[k][0] = 0;
+		v[k+1][0] = matriz[k+1][k] - alfa;
+		for (int j = k+2; j < n; j++)
+		{
+			v[j][0] = matriz[j][k];
+		}
+		
+		for (int j = k+1; j < n ; j++)
+		{	
+			
+			for (int i = k+1; i < n ; i++)
+			{
+				suma += matriz[j][i] * v[i][0];
+			}
+			u[j][0] = 1/rsq * suma; 
+		}
+		/*
+		
+		for (int j = 0; j < n ; j++)
+		{	
+			suma = 0;
+			suma2 = 0;
+			for (int i = k+1; i < n ; i++)
+			{
+				suma += matriz[j][i] * v[i][0];
+				suma2 += matriz[i][j] * v[i][0];
+			}
+			u[j][0] = 1/rsq * suma;
+			y[j][0] = 1/rsq * suma;
+		
+		}
+		*/
+		
+		for (int i = k+1; i < n ; i++)
+		{
+			prod += v[i][0] * u[i][0];
+		}
+		
+		for (int j = k; j < n ; j++)
+		{
+			z[j][0] = u[j][0] - prod / (2*rsq) * v[j][0];
+		}
+		
+		for (int l = k+1; l < n ; l++)
+		{
+			for (int j = l+1; j <n ; j++)
+			{
+				matriz[j][l] = matriz[j][l] - v[l][0] * z[j][0] - v[j][0] * z[l][0];
+				matriz[l][j] = matriz[j][l];
+			}
+			
+			matriz[l][l] = matriz[l][l] - 2 * v[l][0] * z[l][0];
+			
+		}
+		
+		
+		
+		
+		/*
+		for (int j = 0; j < n ; j++)
+		{
+			z[j][0] = u[j][0] - prod / rsq * v[j][0];
+		}
+		*/
+		/*
+		for (l = k+1; l < n-1 ; l++)
+		{
+			for (j = l; j <n-1 ; j++)
+			{
+				matriz[j][l] = matriz[j][l] - v[l][0] * z[j][0] - v[j][0] * z[l][0];
+				matriz[l][j] = matriz[j][l];
+			}
+			
+			matriz[l][l] = matriz[l][l] - 2 * v[l][0] * z[l][0];
+			
+		}
+		*/
+	/*
+		for (int l = k+1; l < n ; l++)
+		{
+			for (int j = 0; j < k ; j++)
+			{
+				matriz[j][l] = matriz[j][l] - z[j][0] * v[l][0];
+				matriz[l][j] = matriz[l][j] - y[j][0] * v[l][0];
+			}
+			
+			for (int j = k; j < n ; j++)
+			{
+				matriz[j][l] = matriz[j][l] - z[j][0] * v[l][0] - y[l][0] * v[j][0] ;
+			}
+			
+		//	matriz[l][l] = matriz[l][l] - 2 * v[l][0] * z[l][0];
+			
+		}
+		*/
+		
+	matriz[n-1][n-1] = matriz[n-1][n-1] - 2 * v[n-1][0] * z[n-1][0];
+	
+	for (int j = k+2; j < n ; j++)
+	{
+		matriz[k][j] = 0;
+		matriz[j][k] = 0;
+	}
+	
+	matriz[k+1][k] = matriz[k+1][k] - v[k+1][0] * z[k][0]; 
+	matriz[k][k+1] = matriz[k+1][k];
+	
+	
+	this->imprimirMatriz();
+	}
+}
 
 
 void recorreMatriz( Matriz<T> &salida )
