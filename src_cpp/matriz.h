@@ -3,6 +3,7 @@
 
 #include "master_header.h"
 
+
 template< typename T >
 class Matriz
 {
@@ -64,6 +65,18 @@ class Matriz
 			for ( i=0 ; i<n ; ++i ) {
 				for ( j=0 ; j<m ; ++j ) {
 					matriz[i][j] = A[i][j] + B[i][j];
+				}
+			}
+		}
+		
+		void cargarResta( Matriz<T> &A, Matriz<T> &B)
+		{
+			assert( n==A.n && m==A.m && A.n==B.n && A.m==B.m );
+
+			uint i,j;
+			for ( i=0 ; i<n ; ++i ) {
+				for ( j=0 ; j<m ; ++j ) {
+					matriz[i][j] = A[i][j] - B[i][j];
 				}
 			}
 		}
@@ -426,6 +439,139 @@ void Householder ( )
 	}
 }
 
+void submatriz(int desde1, int hasta1, int desde2, int hasta2, Matriz<T> &salida)
+{
+	for (int i = desde1-1; i < hasta1 ; i++)		//hago desde-1 para que se corresponda con los indices de la bibliografia
+	{
+		for (int j = desde2-1; j < hasta2; j++)
+		{
+			salida[i-(desde1-1)][j-(desde2-1)] = matriz [i][j];
+		} 
+	}
+	
+	
+}
+
+
+void HouseholderVector(Matriz &salida , double &b)
+{
+	//assert( m==1 && salida.cantCol()==1 && n==salida.cantFil() );
+	double beta;
+	double mu;
+	double norma = this->norma();
+	Matriz submatriz1(n-1,1);
+	Matriz submatriz2(n-1,1);
+	Matriz sigmaM(1,1);
+	double sigma = (sigmaM.transponer(cargarMultiplicacion(submatriz(2,n, submatriz1)),submatriz(2,n, submatriz2))[0][0]);	// submatriz tiene los indices como en la bibliografia, de 1 a n
+	salida[0][0] = 1;
+	for (int i = 1; i < n; i++)
+	{
+		salida[i][0] = matriz[i][0];
+	}
+	
+	if ( sigma == 0 )
+	{
+		beta = 0;
+	}else{
+		mu = sqrt( matriz[0][0]*matriz[0][0] + sigma);
+		if ( matriz[0][0] <= 0 )
+		{
+			salida[0][0] = matriz[0][0] - mu;
+		}else{
+			salida[0][0] = -sigma / (matriz[0][0] + mu);
+		}
+		
+		beta = 2 * salida[0][0] * salida[0][0] / (sigma + salida[0][0] * salida[0][0]);
+		for (int i = 0; i < n; i++)
+		{
+			salida[i][0] = salida[i][0]/salida[0][0];		//salida [0][0] deberia ser 1 despues de esto
+		}		
+	}
+}
+
+
+void householderQR ( Matriz &Q, Matriz &R, Matriz &P)
+{
+	R.copiar(*this);
+	Matriz R2(n,m);
+	Matriz Q2(n,m);
+	Matriz mult(n,m);
+	Matriz mult2(n,m);
+	Q.identidad();
+	double beta;
+	Matriz v(n,1);
+	int min = (n-1<m) ? (n-1) : m;
+	for (int j = 0; j < min ; j++)
+	{
+		Matriz v(n-j+1,1);
+		Matriz submatriz(n-j,1);
+		(R.submatriz(j,n,j,j,submatriz)).HouseholderVector(v,beta);
+		Matriz v2(n,1);
+		for (int i = 0; i < n ; i++)
+		{
+			v2[i][0] =  (i<j-1) ? 0 : v[i-(j-1)][1];
+		}
+		Matriz ident(n,n);
+		//P.cargarResta( ident.identidad(),mult2.multiplicarEscalar(beta, mult.cargarMultiplicacion(v2,v2.transponer())) );
+		Matriz v3(n,m);
+		P.cargarResta(ident.identidad(),(mult.cargarMultiplicacion(v2,v3.transponer(v2))).multiplicarEscalar(beta));
+		R2.cargarMultiplicacion(P,R);
+		R.copiar(R2);
+		Q2.cargarMultiplicacion(Q,P);
+		Q.copiar(Q2);
+		
+	}
+	
+	
+}
+
+
+void multiplicarEscalar ( double &beta)
+{
+	for (int i = 0; i < n ; i++)
+	{
+		for (int j = 0; j < m ; j++)
+		{
+			matriz[i][j] = matriz[i][j] * beta;
+		}
+		
+	}
+}
+
+void copiar (Matriz &entrada)
+{
+	for (int i = 0; i < n ; i++)
+	{
+		for (int j = 0; j < m ; j++)
+		{
+			matriz[i][j] = entrada[i][j];
+		}
+		
+	}
+}
+
+void identidad()
+{
+	for (int i = 0; i < n ; i++)
+	{
+		for (int j = 0; j < m ; j++)
+		{
+			matriz[i][j] = (i==j) ? 1 : 0;
+		}
+		
+	}
+	
+}
+
+double norma()
+{
+	double res;
+	for (int i = 0; i < n; i++)
+	{
+		res = matriz[i][0] * matriz[i][0];
+	}
+	return sqrt(res);
+}
 
 void recorreMatriz( Matriz<T> &salida )
 {
