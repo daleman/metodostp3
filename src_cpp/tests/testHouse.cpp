@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-
+#include "../master_header.h"
 #include "../matriz.h"
 
 
@@ -55,6 +53,7 @@ int main()
 		}
 	}
 	*/
+
 	hola.imprimirMatriz();
 	printf("hago la tridiagonal");
 	hola.Householder();

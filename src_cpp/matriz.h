@@ -200,7 +200,7 @@ class Matriz
 		}
 
 		void resolverTriangulada(Matriz<T> &x ,Matriz<T> &res){
-			/* Dado el sistema A.res = x, donde A es ESTA MATRIZ TRIANGULADA
+			 Dado el sistema A.res = x, donde A es ESTA MATRIZ TRIANGULADA
 			   res son las incognitas, y x es un vector<T>, encuentra
 			   las soluciones ( el vector RES solucion ) */
 		/*
