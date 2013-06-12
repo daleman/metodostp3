@@ -9,25 +9,25 @@ int main()
 	Matriz<double> R(4, 4);
 	Matriz<double> P(4, 4);
 
-	hola[0][0] = 4;
-	hola[0][1] = 1;
-	hola[0][2] = -2;
-	hola[0][3] = 2;
+	hola[0][0] = 1;
+	hola[0][1] = 2;
+	hola[0][2] = 3;
+	hola[0][3] = 4;
 	
-	hola[1][0] = 1;
-	hola[1][1] = 2;
-	hola[1][2] = 0;
-	hola[1][3] = 1;
+	hola[1][0] = 2;
+	hola[1][1] = 3;
+	hola[1][2] = 4;
+	hola[1][3] = 5;
 	
-	hola[2][0] = -2;
-	hola[2][1] = 0;
-	hola[2][2] = 3;
-	hola[2][3] = -2;
+	hola[2][0] = 3;
+	hola[2][1] = 4;
+	hola[2][2] = 5;
+	hola[2][3] = 6;
 	
-	hola[3][0] = 2;
-	hola[3][1] = 1;
-	hola[3][2] = -2;
-	hola[3][3] = -1;
+	hola[3][0] = 4;
+	hola[3][1] = 5;
+	hola[3][2] = 6;
+	hola[3][3] = 7;
 
 	hola.imprimirMatriz();
 	printf("hago la tridiagonal\n");

@@ -3,6 +3,7 @@
 
 #include "master_header.h"
 
+#define COMPARAR_DOUBLE(a, b) (abs( (a) - (b) ) < 0.0000001)
 
 template< typename T >
 class Matriz
@@ -300,7 +301,6 @@ void Householder ( )
 	double alfa;
 	double rsq;
 	double suma;
-	double suma2;
 	double prod;
 	Matriz<T> v(dimension,1);
 	Matriz<T> u(dimension,1);
@@ -312,20 +312,20 @@ void Householder ( )
 		q = 0;
 		alfa = 0;
 		rsq = 0;
-		suma2 = 0;
-		prod = 0;
 		for (int j = k+1; j < n ; j++)
 		{
 			q += ((matriz[j][k])*(matriz[j][k]));
 		}
 		// ahora q es la sumatoria 
-		if (matriz[k+1][k] == 0){
+		if ( COMPARAR_DOUBLE( matriz[k+1][k], 0) ){
 			alfa = - sqrt(q);
 		}else{
 			alfa = - sqrt(q) * matriz[k+1][k] / abs(matriz[k+1][k]);
 		}
 		
 		rsq = alfa*alfa - alfa * matriz[k+1][k];
+
+
 		v[k][0] = 0;
 		v[k+1][0] = matriz[k+1][k] - alfa;
 		for (int j = k+2; j < n; j++)
@@ -343,6 +343,7 @@ void Householder ( )
 			u[j][0] = 1/rsq * suma; 
 		}
 	
+		prod = 0;
 		for (int i = k+1; i < n ; i++)
 		{
 			prod += v[i][0] * u[i][0];
@@ -375,9 +376,6 @@ void Householder ( )
 		
 		matriz[k+1][k] = matriz[k+1][k] - v[k+1][0] * z[k][0]; 
 		matriz[k][k+1] = matriz[k+1][k];
-		
-		
-		this->imprimirMatriz();
 	}
 }
 
