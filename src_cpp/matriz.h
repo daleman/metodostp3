@@ -312,7 +312,6 @@ void Householder ( )
 		q = 0;
 		alfa = 0;
 		rsq = 0;
-		suma = 0;
 		suma2 = 0;
 		prod = 0;
 		for (int j = k+1; j < n ; j++)
@@ -334,32 +333,16 @@ void Householder ( )
 			v[j][0] = matriz[j][k];
 		}
 		
-		for (int j = k+1; j < n ; j++)
+		for (int j = k; j < n ; j++)
 		{	
-			
+			suma=0;
 			for (int i = k+1; i < n ; i++)
 			{
 				suma += matriz[j][i] * v[i][0];
 			}
 			u[j][0] = 1/rsq * suma; 
 		}
-		/*
-		
-		for (int j = 0; j < n ; j++)
-		{	
-			suma = 0;
-			suma2 = 0;
-			for (int i = k+1; i < n ; i++)
-			{
-				suma += matriz[j][i] * v[i][0];
-				suma2 += matriz[i][j] * v[i][0];
-			}
-			u[j][0] = 1/rsq * suma;
-			y[j][0] = 1/rsq * suma;
-		
-		}
-		*/
-		
+	
 		for (int i = k+1; i < n ; i++)
 		{
 			prod += v[i][0] * u[i][0];
@@ -370,7 +353,7 @@ void Householder ( )
 			z[j][0] = u[j][0] - prod / (2*rsq) * v[j][0];
 		}
 		
-		for (int l = k+1; l < n ; l++)
+		for (int l = k+1; l < n-1 ; l++)
 		{
 			for (int j = l+1; j <n ; j++)
 			{
@@ -381,61 +364,20 @@ void Householder ( )
 			matriz[l][l] = matriz[l][l] - 2 * v[l][0] * z[l][0];
 			
 		}
+	
+		matriz[n-1][n-1] = matriz[n-1][n-1] - 2 * v[n-1][0] * z[n-1][0];
 		
-		
-		
-		
-		/*
-		for (int j = 0; j < n ; j++)
+		for (int j = k+2; j < n ; j++)
 		{
-			z[j][0] = u[j][0] - prod / rsq * v[j][0];
+			matriz[k][j] = 0;
+			matriz[j][k] = 0;
 		}
-		*/
-		/*
-		for (l = k+1; l < n-1 ; l++)
-		{
-			for (j = l; j <n-1 ; j++)
-			{
-				matriz[j][l] = matriz[j][l] - v[l][0] * z[j][0] - v[j][0] * z[l][0];
-				matriz[l][j] = matriz[j][l];
-			}
-			
-			matriz[l][l] = matriz[l][l] - 2 * v[l][0] * z[l][0];
-			
-		}
-		*/
-	/*
-		for (int l = k+1; l < n ; l++)
-		{
-			for (int j = 0; j < k ; j++)
-			{
-				matriz[j][l] = matriz[j][l] - z[j][0] * v[l][0];
-				matriz[l][j] = matriz[l][j] - y[j][0] * v[l][0];
-			}
-			
-			for (int j = k; j < n ; j++)
-			{
-				matriz[j][l] = matriz[j][l] - z[j][0] * v[l][0] - y[l][0] * v[j][0] ;
-			}
-			
-		//	matriz[l][l] = matriz[l][l] - 2 * v[l][0] * z[l][0];
-			
-		}
-		*/
 		
-	matriz[n-1][n-1] = matriz[n-1][n-1] - 2 * v[n-1][0] * z[n-1][0];
-	
-	for (int j = k+2; j < n ; j++)
-	{
-		matriz[k][j] = 0;
-		matriz[j][k] = 0;
-	}
-	
-	matriz[k+1][k] = matriz[k+1][k] - v[k+1][0] * z[k][0]; 
-	matriz[k][k+1] = matriz[k+1][k];
-	
-	
-	this->imprimirMatriz();
+		matriz[k+1][k] = matriz[k+1][k] - v[k+1][0] * z[k][0]; 
+		matriz[k][k+1] = matriz[k+1][k];
+		
+		
+		this->imprimirMatriz();
 	}
 }
 
