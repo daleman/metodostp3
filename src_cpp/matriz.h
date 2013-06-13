@@ -256,9 +256,11 @@ class Matriz
 			submatriz(2,n,1,1,submatriz2);
 			tsubmatriz1.transponer(submatriz1);
 			sigmaM.cargarMultiplicacion(tsubmatriz1,submatriz2);
+			printf("aca esta sigma m      ");
+			sigmaM.imprimirMatriz();
 			// TRANSPONER SIGMA M?
 			double sigma = (sigmaM[0][0]);	// submatriz tiene los indices como en la bibliografia, de 1 a n
-			
+			printf("sigma es %f\n",sigma);
 			salida[0][0] = 1;
 			for (int i = 1; i < n; i++)
 			{
@@ -270,18 +272,22 @@ class Matriz
 				beta = 0;
 			}else{
 				mu = sqrt( matriz[0][0]*matriz[0][0] + sigma);
+				printf("mu es %f\n",mu);
 				if ( matriz[0][0] <= 0 )
 				{
 					salida[0][0] = matriz[0][0] - mu;
 				}else{
-					salida[0][0] = -sigma / (matriz[0][0] + mu);
+					printf("obviamente paso por aca");
+					salida[0][0] = (-1*sigma) / (matriz[0][0] + mu);
+					printf ("-%f / (%f + %f) = %f \n",sigma,matriz[0][0],mu,salida[0][0]);
 				}
 				
-				beta = 2 * salida[0][0] * salida[0][0] / (sigma + salida[0][0] * salida[0][0]);
-				for (int i = 0; i < n; i++)
+				beta = 2.0 * salida[0][0] * salida[0][0] / (sigma + salida[0][0] * salida[0][0]);
+				for (int i = 1; i < n; i++)
 				{
 					salida[i][0] = salida[i][0]/salida[0][0];		//salida [0][0] deberia ser 1 despues de esto
-				}		
+				}
+				salida[0][0]=1;		
 			}
 		}
 

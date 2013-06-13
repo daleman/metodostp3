@@ -5,8 +5,11 @@
 int main()
 {
 	Matriz<double> hola(4, 4);
+	Matriz<double> mult(4, 4);
 	Matriz<double> sub(4,1);
 	Matriz<double> salida(4,1);
+	Matriz<double> salidat(1,4);
+	
 	double beta;
 	Matriz<double> Q(4, 4);
 	Matriz<double> R(4, 4);
@@ -34,7 +37,7 @@ int main()
 
 	hola.imprimirMatriz();
 	printf("hago la tridiagonal\n");
-	hola.Householder();
+	//hola.Householder();
 
 	__BITACORA
 	hola.imprimirMatriz();
@@ -45,6 +48,12 @@ int main()
 	sub.imprimirMatriz();
 	sub.HouseholderVector(salida,beta);
 	salida.imprimirMatriz();
+	printf("beta es %f\n",beta);
+	salidat.transponer(salida);
+	mult.cargarMultiplicacion(salida,salidat);
+	mult.imprimirMatriz();
+	mult.multiplicarEscalar(beta);
+	mult.imprimirMatriz();
 //	//hola.imprimirMatriz();
 //	printf("esto es Q");
 //	Q.imprimirMatriz();
