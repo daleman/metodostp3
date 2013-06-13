@@ -5,6 +5,9 @@
 int main()
 {
 	Matriz<double> hola(4, 4);
+	Matriz<double> sub(4,1);
+	Matriz<double> salida(4,1);
+	double beta;
 	Matriz<double> Q(4, 4);
 	Matriz<double> R(4, 4);
 	Matriz<double> P(4, 4);
@@ -37,7 +40,11 @@ int main()
 	hola.imprimirMatriz();
 //
 //	printf("ya hice la tridiagonal, ahora hago householder");
-//	hola.householderQR( Q, R, P);
+	//hola.householderQR( Q, R, P);
+	hola.submatriz(1,4,1,1,sub);
+	sub.imprimirMatriz();
+	sub.HouseholderVector(salida,beta);
+	salida.imprimirMatriz();
 //	//hola.imprimirMatriz();
 //	printf("esto es Q");
 //	Q.imprimirMatriz();

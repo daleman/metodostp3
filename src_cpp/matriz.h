@@ -241,16 +241,24 @@ class Matriz
 		}
 
 
-		void HouseholderVector(Matriz &salida , double &b)
+		void HouseholderVector(Matriz <T> &salida , double &b)
 		{
 			//assert( m==1 && salida.cantCol()==1 && n==salida.cantFil() );
 			double beta;
 			double mu;
 			double norma = this->norma();
-			Matriz submatriz1(n-1,1);
-			Matriz submatriz2(n-1,1);
-			Matriz sigmaM(1,1);
-			double sigma = (sigmaM.transponer(cargarMultiplicacion(submatriz(2,n, submatriz1)),submatriz(2,n, submatriz2))[0][0]);	// submatriz tiene los indices como en la bibliografia, de 1 a n
+			Matriz <T> submatriz1(n-1,1);
+			Matriz <T> submatriz2(n-1,1);
+			Matriz <T> tsubmatriz1(1,n-1);
+			
+			Matriz <T> sigmaM(1,1);
+			submatriz(2,n,1,1,submatriz1);
+			submatriz(2,n,1,1,submatriz2);
+			tsubmatriz1.transponer(submatriz1);
+			sigmaM.cargarMultiplicacion(tsubmatriz1,submatriz2);
+			// TRANSPONER SIGMA M?
+			double sigma = (sigmaM[0][0]);	// submatriz tiene los indices como en la bibliografia, de 1 a n
+			
 			salida[0][0] = 1;
 			for (int i = 1; i < n; i++)
 			{
@@ -293,7 +301,9 @@ class Matriz
 			{
 				Matriz v(n-j+1,1);
 				Matriz submatriz(n-j,1);
-				(R.submatriz(j,n,j,j,submatriz)).HouseholderVector(v,beta);
+				R.submatriz(j,n,j,j,submatriz);
+				R.HouseholderVector(v,beta);
+				
 				Matriz v2(n,1);
 				for (int i = 0; i < n ; i++)
 				{
@@ -302,7 +312,11 @@ class Matriz
 				Matriz ident(n,n);
 				//P.cargarResta( ident.identidad(),mult2.multiplicarEscalar(beta, mult.cargarMultiplicacion(v2,v2.transponer())) );
 				Matriz v3(n,m);
-				P.cargarResta(ident.identidad(),(mult.cargarMultiplicacion(v2,v3.transponer(v2))).multiplicarEscalar(beta));
+				v3.transponer(v2);
+				mult.cargarMultiplicacion(v2,v3);
+				mult.multiplicarEscalar(beta);
+				ident.identidad();
+				P.cargarResta(ident,mult);
 				R2.cargarMultiplicacion(P,R);
 				R.copiar(R2);
 				Q2.cargarMultiplicacion(Q,P);
