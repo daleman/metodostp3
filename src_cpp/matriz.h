@@ -215,8 +215,145 @@ class Matriz
 			for (int i = desde1-1; i < hasta1 ; i++)		//hago desde-1 para que se corresponda con los indices de la bibliografia
 				for (int j = desde2-1; j < hasta2; j++)
 					salida[i-(desde1-1)][j-(desde2-1)] = matriz [i][j];
+		}
+
+		void QR( std::vector<double> As, std::vector<double> Bs, double tol, int maxIter )
+		{
+			double shift = 0;
+
+			std::queue<double> autoval;
+
+			QR_rec( As, Bs, tol, maxIter, autoval );
+		}
+
+		void QR_rec( std::vector<double> As, std::vector<std::vector> Bs, double tol, int &maxIter, std::queue<double> &autoval, double shift )
+		{
+			int n = std::vector.leght;
+
+			std::vector<double> Cs(n);	// cosenos
+			std::vector<double> Ds(n);
+			std::vector<double> Qs(n);
+			std::vector<double> Rs(n);
+			std::vector<double> Ss(n);	// senos
+			std::vector<double> Xs(n);
+			std::vector<double> Ys(n);
+			std::vector<double> Zs(n);
+
+			while ( maxIter > 0 ) {
+				if ( abs(b[n-1]) <= TOL ) {
+					// el ultimo b es suficientemente chico, tengo un autoval
+					autoval.push( As[n-1]+shift );
+					n = n-1;
+				}
+				
+				if ( abs( Bs[1] ) <= TOL ) {
+					// el primer b es suficientemetne chico, tengo un autoval
+					autoval.push( As[0]+shift );
+					n = n-1;
+					a[0] = As[1];
+					for ( int j=1 ; j<n ; ++j ) {
+						a[j] = As[j+1];
+						b[j] = Bs[j+1];
+					}
+				}
+
+				if ( n==0 ) {
+					return;
+				}
+
+				if ( n==1 ) {
+					autoval.push( As[0] + shift );
+					return;
+				}
+	
+				for ( int j=2 ; j < n-1 ; ++j ) {
+					if ( abs(b[j]) <= tol ) {
+
+						//construimos los As y Bs
+						std::vector<double> As1;
+						std::vector<double> Bs1;
+						std::vector<double> As2;
+						std::vector<double> Bs2;
+
+						for ( int k=0 ; k<n ; ++k ) {
+							
+							if ( k<j-1 ) {
+								As1[k] = As[k];
+								Bs1[k] = Bs[k];
+							} else {
+								As2[k] = As[k];
+								Bs2[k] = Bs[k];
+							}
+						}
 			
-			
+						QR_rec( As1, Bs1, maxIter, autoval, shift );
+						QR_rec( As2, Bs2, maxIter, autoval, shift );
+
+						return;
+					}
+				}
+
+				double b = -(a[n-2] + As[n-1]);
+				double c = As[n-1]*a[n-2] - Bs[n-1]*b[n-1];
+				double d = sqrt(b*b - 4*c);
+
+				double mu1, mu2;
+				if ( !COMPARAR_DOUBE(b,0) && b>0 ) {
+					mu1 = -2*c / (b+d);
+					mu2 = -(b+d)/2;
+				} else {
+					mu1 = (d-b)/2;
+					mu2 = 2*c / (d-b);
+				}
+
+				if ( n==2 ) {
+					autoval.push( mu1 + shift );
+					autoval.push( mu2 + shift );
+					return;
+				}
+
+				double sigma;
+				sigma = (abs(mu1-As[n-1]) < abs(mu2-As[n-1])) ? mu1 : mu2;
+
+				shift += sigma;
+
+				for ( int j=0 ; j<n ; ++j )
+					Ds[j] = As[j] - sigma;
+
+				Xs[0] = Ds[0];
+				Ys[0] = Bs[1];
+	
+				for ( int j=1 ; j<n ; ++j ) {
+					Zs[j-1] = sqrt( Xs[j-1]*Xs[j-1] + Bs[j]*Bs[j]);
+					
+					Cs[j] = Xs[j-1] / Zs[j-1];
+
+					Ss[j] = Bs[j] / Zs[j-1];
+
+					Qs[j-1] = Cs[j] * Ys[j-1] + Ss[j] * Ds[j];
+					Xs[j] = -Ss[j] * Ys[j-1] + Cs[j] * Ds[j];
+
+					if ( j != n ) {
+						Rs[j-1] = Ss[j] * Bs[j+1];
+						Ys[j] = Cs[j] * Bs[j+1];
+					}
+				}
+
+				Zs[n-1] = Xs[n-1];
+
+				As[0] = Ss[1] * Qs[0] + Cs[1] * Zs[0];
+
+				Bs[1] = Ss[1] * Zs[1];
+	
+				for ( int j=1 ; j<n-1 ; ++j ) {
+					As[j] = Ss[j+1] * Qs[j] + Cs[j] * Cs[j+1] * Zs[j];
+					Bs[j+1] = Ss[j+1] * Zs[j+1];
+				}
+
+				As[n-1] = Cs[n-1] * Zs[n-1];
+
+				maxIter--;
+			}
 		}
 
 
