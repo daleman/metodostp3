@@ -213,12 +213,8 @@ class Matriz
 		void submatriz(int desde1, int hasta1, int desde2, int hasta2, Matriz<T> &salida)
 		{
 			for (int i = desde1-1; i < hasta1 ; i++)		//hago desde-1 para que se corresponda con los indices de la bibliografia
-			{
 				for (int j = desde2-1; j < hasta2; j++)
-				{
 					salida[i-(desde1-1)][j-(desde2-1)] = matriz [i][j];
-				} 
-			}
 			
 			
 		}
@@ -233,7 +229,8 @@ class Matriz
 			Matriz submatriz1(n-1,1);
 			Matriz submatriz2(n-1,1);
 			Matriz sigmaM(1,1);
-			double sigma = (sigmaM.transponer(cargarMultiplicacion(submatriz(2,n, submatriz1)),submatriz(2,n, submatriz2))[0][0]);	// submatriz tiene los indices como en la bibliografia, de 1 a n
+			// submatriz tiene los indices como en la bibliografia, de 1 a n
+			double sigma = (sigmaM.transponer(cargarMultiplicacion(submatriz(2,n, submatriz1)),submatriz(2,n, submatriz2))[0][0]);
 			salida[0][0] = 1;
 			for (int i = 1; i < n; i++)
 			{
@@ -315,7 +312,7 @@ class Matriz
 		{
 			for (int i = 0; i < n ; i++)
 				for (int j = 0; j < m ; j++)
-					matriz[i][j] = (i==j) ? 1 : 0;
+					matriz[i][j] = (i==j) ? 1.f : 0.f;
 		}
 
 		double norma()
