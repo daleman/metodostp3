@@ -5,8 +5,7 @@ using namespace std;
 
 int main()
 {
-	Matriz<double> hola(3, 3);
-
+	Matriz<double> hola(4, 4);
 
 //	Matriz<double> mult(4, 4);
 //	Matriz<double> sub(4,1);
@@ -18,21 +17,17 @@ int main()
 //	Matriz<double> R(4, 4);
 //	Matriz<double> P(4, 4);
 
-	hola[0][0] = 3.f;
-	hola[0][1] = 1.f;
-	hola[0][2] = 0.f;
-	
-	hola[1][0] = 1.f;
-	hola[1][1] = 3.f;
-	hola[1][2] = 1.f;
-	
-	hola[2][0] = 0.f;
-	hola[2][1] = 1.f;
-	hola[2][2] = 3.f;
+	double mat[4][4] = {{1,2,3,4},{2,3,4,5},{3,4,5,6},{4,5,6,7}};
+
+	for ( int i=0 ; i<4 ; ++i ) {
+		for ( int j=0 ; j<4 ; ++j ) {
+			hola[i][j] = mat[i][j];
+		}
+	}
 
 	hola.imprimirMatriz();
 	printf("hago la tridiagonal\n");
-//	hola.Householder();
+	hola.Householder();
 
 
 	hola.imprimirMatriz();
@@ -44,22 +39,14 @@ int main()
 	vector<double> As;
 	vector<double> Bs;
 
-	As.push_back( hola[0][0] );
-	Bs.push_back( 0.f );
-
-	for ( int i=1 ; i<3 ; ++i ) {
-		As.push_back(hola[i][i]);
-		Bs.push_back(hola[i][i-1]);
-	}
+	hola.dameDiagonales(As, Bs);
 
 	vector<double> autoval;
+	int maxIter = 100;
 
-	int maxIter = 1000000000;
+	hola.QR( As, Bs, 0.0001f, maxIter , autoval );
 
-
-	hola.QR( As, Bs, 0.01f, maxIter , autoval );
-
-	for (int i=0 ; i<3 ; ++i ) {
+	for (int i=0 ; i<autoval.size() ; ++i ) {
 		printf( "%f\n", autoval[i] );
 	}
 

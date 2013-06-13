@@ -1,6 +1,5 @@
 #ifndef __MATRIZ_H
-#define __MATRIZ_H
-
+#define __MATRIZ_H 
 #include "master_header.h"
 
 #define COMPARAR_DOUBLE(a, b) (abs( (a) - (b) ) < 0.000000001)
@@ -41,7 +40,6 @@ class Matriz
 		}
 
 
-1;3R
 		~Matriz()
 		{
 			for(uint i = 0; i < n; ++i)
@@ -219,6 +217,18 @@ class Matriz
 					salida[i-(desde1-1)][j-(desde2-1)] = matriz [i][j];
 		}
 
+		void dameDiagonales( std::vector<double> &As, std::vector<double> &Bs )
+		{
+			As.push_back( matriz[0][0] );
+			Bs.push_back( 0.f );
+
+			for ( int i=1 ; i<n ; ++i ) {
+				As.push_back(matriz[i][i]);
+				Bs.push_back(matriz[i][i-1]);
+			}
+		}
+
+
 		void QR( std::vector<double> &As, std::vector<double> &Bs, double tol, int maxIter, std::vector<double> &autoval )
 		{
 			double shift = 0.f;
@@ -257,7 +267,8 @@ class Matriz
 						Bs[j] = Bs[j+1];
 					}
 				}
-
+				
+				// casos base
 				if ( n==0 ) {
 					return;
 				}
@@ -267,10 +278,13 @@ class Matriz
 					return;
 				}
 	
+
 				for ( int j=2 ; j < n-1 ; ++j ) {
 					if ( abs(As[j]) <= tol ) {
+						//si tengo un numero pequeno parto la matrz
+						//para seguir teniendo una convergencia rapida
 
-						//construimos los As y Bs
+						//construimos los As y Bs para el llamado recursivo
 						std::vector<double> As1;
 						std::vector<double> Bs1;
 						std::vector<double> As2;
@@ -444,10 +458,7 @@ class Matriz
 				R.copiar(R2);
 				Q2.cargarMultiplicacion(Q,P);
 				Q.copiar(Q2);
-				
 			}
-			
-			
 		}
 
 
@@ -481,6 +492,100 @@ class Matriz
 			return sqrt(res);
 		}
 
+
+		void factorizacionLU(  Matriz<T> &P, Matriz<T> &L, Matriz<T> &U )
+		{
+			uint i,k,j;
+					
+			for(int i=0;i<n;i++){
+				for(k=0;k<n;k++){
+					U[i][k] = matriz[i][k];
+					P[i][k] = (i==k) ? 1 : 0;
+				}
+			}		
+					
+			uint filas = n;
+			for (i=0;i<n;i++){
+				
+				U.pivoteoParcial(i,P,L);
+				L[i][i]=1;
+				for(j=i+1;j<n;j++){					
+					assert( U[i][i] !=0 );
+					double mji = U[j][i] / U[i][i];
+					for (k=i+1;k<n;k++){
+						U[j][k] = (double)U[j][k] - mji * (double)U[i][k];
+						
+					}					
+					U[j][i] = 0;
+					L[j][i] = (T) mji;
+				}
+			}	
+		}
+
+		void resolverLU(Matriz<T> &entrada, Matriz<T> &P, Matriz<T> &L, Matriz<T> &U)
+		{
+			// Tengo A x = b, como  P A = L U , tengo L U x = Pt b
+			// sea Y = U x , entonces L Y = Pt b, lo resuelvo con SustitucionAtras
+			// depues para obtener x tengo que U x = Y, lo resuelvo con forward substitution
+			
+			Matriz<double> Y(n,1);
+			Matriz<double> res(n,1);
+			Matriz<double> b2(entrada.cantFil(),entrada.cantCol());
+			/********* Transpongo P y lo multiplico por b *****/
+
+			b2.cargarMultiplicacion(P,entrada);
+			
+			
+			/*********Hago L Y = b2 *******************/
+			forwardSubstituion(L,b2,Y);
+			
+			/*********Hago U x = Y *******************/
+			backwardSubstitution(U,Y,res);
+			
+			for(int i=0;i<n;i++){
+				matriz[i][0] = res[i][0];
+			}
+		}
+
+		void forwardSubstituion( Matriz<T> &L, Matriz<T> &B ,Matriz<T> &res )
+		{		
+			Matriz<double> resD(res.n,res.m);
+			//resD[0][0]=B[0][0];
+
+			for( int f=0; f < n ; f++ ){
+				resD[f][0]= B[f][0];
+				for(int j=0;j<f;j++){
+					assert( L[f][f] != 0 );
+					resD[f][0]-=L[f][j]*resD[j][0];
+				}
+				resD[f][0]/= L[f][f];
+			}
+
+			for(int i=0;i<res.n;i++){
+					res[i][0] = (T) resD[i][0];
+			}
+		}
+
+		void backwardSubstitution( Matriz<T> &U, Matriz<T> &B ,Matriz<T> &res )
+		{	
+			Matriz<double> resD(res.n,res.m);
+			resD[n-1][0]=B[n-1][0]/U[n-1][n-1];
+
+			int f = n -2;
+
+			for( f=n-2; f >= 0 ; f-- ){
+				resD[f][0]= B[f][0];
+				for(int j=f+1;j<n;j++){
+					assert( U[f][f] != 0 );
+					resD[f][0]-=U[f][j]*resD[j][0];
+				}
+				resD[f][0]/= U[f][f];
+			}
+
+			for(int i=0;i<res.n;i++){
+					res[i][0] = (T) resD[i][0];
+			}
+		}
 };
 
 #endif
