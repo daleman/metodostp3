@@ -226,9 +226,9 @@ class Matriz
 			QR_rec( As, Bs, tol, maxIter, autoval );
 		}
 
-		void QR_rec( std::vector<double> As, std::vector<std::vector> Bs, double tol, int &maxIter, std::queue<double> &autoval, double shift )
+		void QR_rec( std::vector<double> As, std::vector<double> Bs, double tol, int &maxIter, std::queue<double> &autoval, double shift )
 		{
-			int n = std::vector.leght;
+			int n = As.size();
 
 			std::vector<double> Cs(n);	// cosenos
 			std::vector<double> Ds(n);
@@ -240,20 +240,20 @@ class Matriz
 			std::vector<double> Zs(n);
 
 			while ( maxIter > 0 ) {
-				if ( abs(b[n-1]) <= TOL ) {
+				if ( abs(Bs[n-1]) <= tol ) {
 					// el ultimo b es suficientemente chico, tengo un autoval
 					autoval.push( As[n-1]+shift );
 					n = n-1;
 				}
 				
-				if ( abs( Bs[1] ) <= TOL ) {
+				if ( abs( Bs[1] ) <= tol ) {
 					// el primer b es suficientemetne chico, tengo un autoval
 					autoval.push( As[0]+shift );
 					n = n-1;
-					a[0] = As[1];
+					As[0] = As[1];
 					for ( int j=1 ; j<n ; ++j ) {
-						a[j] = As[j+1];
-						b[j] = Bs[j+1];
+						As[j] = As[j+1];
+						Bs[j] = Bs[j+1];
 					}
 				}
 
@@ -267,7 +267,7 @@ class Matriz
 				}
 	
 				for ( int j=2 ; j < n-1 ; ++j ) {
-					if ( abs(b[j]) <= tol ) {
+					if ( abs(As[j]) <= tol ) {
 
 						//construimos los As y Bs
 						std::vector<double> As1;
@@ -293,12 +293,12 @@ class Matriz
 					}
 				}
 
-				double b = -(a[n-2] + As[n-1]);
-				double c = As[n-1]*a[n-2] - Bs[n-1]*b[n-1];
+				double b = -(As[n-2] + As[n-1]);
+				double c = As[n-1]*As[n-2] - Bs[n-1]*Bs[n-1];
 				double d = sqrt(b*b - 4*c);
 
 				double mu1, mu2;
-				if ( !COMPARAR_DOUBE(b,0) && b>0 ) {
+				if ( !COMPARAR_DOUBLE(b,0) && b>0 ) {
 					mu1 = -2*c / (b+d);
 					mu2 = -(b+d)/2;
 				} else {
