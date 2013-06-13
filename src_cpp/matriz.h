@@ -4,6 +4,7 @@
 #include "master_header.h"
 
 #define COMPARAR_DOUBLE(a, b) (abs( (a) - (b) ) < 0.0000001)
+#define SIGNO_DOUBLE( a ) ((abs( (a) ) > 0.0000001) ? (((a) > 0) ? 1.f : -1.f) : 1.f)
 
 template< typename T >
 class Matriz
@@ -34,11 +35,9 @@ class Matriz
 			for( i=0 ; i<n ; ++i )
 				matriz[i] = new T[m];
 
-			for ( i=0 ; i<n ; ++i ) {
-				for ( j=0 ; j<m ; ++j ) {
+			for ( i=0 ; i<n ; ++i )
+				for ( j=0 ; j<m ; ++j )
 					matriz[i][j] = B[i][j];
-				}
-			}
 		}
 
 		~Matriz()
@@ -63,11 +62,9 @@ class Matriz
 			assert( n==A.n && m==A.m && A.n==B.n && A.m==B.m );
 
 			uint i,j;
-			for ( i=0 ; i<n ; ++i ) {
-				for ( j=0 ; j<m ; ++j ) {
+			for ( i=0 ; i<n ; ++i )
+				for ( j=0 ; j<m ; ++j )
 					matriz[i][j] = A[i][j] + B[i][j];
-				}
-			}
 		}
 		
 		void cargarResta( Matriz<T> &A, Matriz<T> &B)
@@ -75,11 +72,9 @@ class Matriz
 			assert( n==A.n && m==A.m && A.n==B.n && A.m==B.m );
 
 			uint i,j;
-			for ( i=0 ; i<n ; ++i ) {
-				for ( j=0 ; j<m ; ++j ) {
+			for ( i=0 ; i<n ; ++i )
+				for ( j=0 ; j<m ; ++j )
 					matriz[i][j] = A[i][j] - B[i][j];
-				}
-			}
 		}
 
 		void cargarMultiplicacion( Matriz<T> &A, Matriz<T> &B )
@@ -91,9 +86,9 @@ class Matriz
 			for ( i=0 ; i<n ; ++i ) {
 				for ( j=0 ; j<m ; ++j ) {
 					double sum = 0;
-					for ( k=0 ; k<A.m ; ++k ) {
+					for ( k=0 ; k<A.m ; ++k )
 						sum += (double) A[i][k] * (double) B[k][j];
-					}
+
 					matriz[i][j] = (T) sum;
 				}
 			}
@@ -105,11 +100,9 @@ class Matriz
 	
 			uint i,j;
 
-			for ( i=0 ; i<n ; ++i ) {
-				for ( j=0 ; j<m ; ++j ) {
+			for ( i=0 ; i<n ; ++i )
+				for ( j=0 ; j<m ; ++j )
 					matriz[i][j] = B[j][i];
-				}
-			}		
 		}
 
 		void imprimirMatriz()
@@ -117,11 +110,12 @@ class Matriz
 			uint i,j;
 
 			for ( i=0 ; i<n ; ++i ) {
-				for ( j=0 ; j<m ; ++j ) {
+				for ( j=0 ; j<m ; ++j )
 					printf("%f\t", (double) matriz[i][j]);
-				}
+
 				printf("\n");
 			}
+
 			printf("\n");
 		}
 
@@ -134,9 +128,8 @@ class Matriz
 
 			fprintf( nuevo, "%d\n", n );
 
-			for ( i=0 ; i<n ; ++i ) {
+			for ( i=0 ; i<n ; ++i )
 				fprintf( nuevo, "%f ", matriz[i][0] );
-			}
 
 			fprintf( nuevo, "\n" );
 
@@ -166,42 +159,32 @@ class Matriz
 					q += ((matriz[j][k])*(matriz[j][k]));
 				}
 				// ahora q es la sumatoria 
-				if ( COMPARAR_DOUBLE( matriz[k+1][k], 0) ){
-					alfa = - sqrt(q);
-				}else{
-					alfa = - sqrt(q) * matriz[k+1][k] / abs(matriz[k+1][k]);
-				}
+				alfa = - sqrt(q) * SIGNO_DOUBLE(matriz[k+1][k]);
 				
 				rsq = alfa*alfa - alfa * matriz[k+1][k];
 
 
 				v[k][0] = 0;
 				v[k+1][0] = matriz[k+1][k] - alfa;
+
 				for (int j = k+2; j < n; j++)
-				{
 					v[j][0] = matriz[j][k];
-				}
 				
 				for (int j = k; j < n ; j++)
 				{	
 					suma=0;
 					for (int i = k+1; i < n ; i++)
-					{
 						suma += matriz[j][i] * v[i][0];
-					}
+
 					u[j][0] = 1/rsq * suma; 
 				}
 			
 				prod = 0;
 				for (int i = k+1; i < n ; i++)
-				{
 					prod += v[i][0] * u[i][0];
-				}
 				
 				for (int j = k; j < n ; j++)
-				{
 					z[j][0] = u[j][0] - prod / (2*rsq) * v[j][0];
-				}
 				
 				for (int l = k+1; l < n-1 ; l++)
 				{
@@ -230,12 +213,8 @@ class Matriz
 		void submatriz(int desde1, int hasta1, int desde2, int hasta2, Matriz<T> &salida)
 		{
 			for (int i = desde1-1; i < hasta1 ; i++)		//hago desde-1 para que se corresponda con los indices de la bibliografia
-			{
 				for (int j = desde2-1; j < hasta2; j++)
-				{
 					salida[i-(desde1-1)][j-(desde2-1)] = matriz [i][j];
-				} 
-			}
 			
 			
 		}
@@ -337,47 +316,30 @@ class Matriz
 		void multiplicarEscalar ( double &beta)
 		{
 			for (int i = 0; i < n ; i++)
-			{
 				for (int j = 0; j < m ; j++)
-				{
 					matriz[i][j] = matriz[i][j] * beta;
-				}
-				
-			}
 		}
 
 		void copiar (Matriz &entrada)
 		{
 			for (int i = 0; i < n ; i++)
-			{
 				for (int j = 0; j < m ; j++)
-				{
 					matriz[i][j] = entrada[i][j];
-				}
-				
-			}
 		}
 
 		void identidad()
 		{
 			for (int i = 0; i < n ; i++)
-			{
 				for (int j = 0; j < m ; j++)
-				{
-					matriz[i][j] = (i==j) ? 1 : 0;
-				}
-				
-			}
-			
+					matriz[i][j] = (i==j) ? 1.f : 0.f;
 		}
 
 		double norma()
 		{
 			double res;
 			for (int i = 0; i < n; i++)
-			{
 				res = matriz[i][0] * matriz[i][0];
-			}
+
 			return sqrt(res);
 		}
 
