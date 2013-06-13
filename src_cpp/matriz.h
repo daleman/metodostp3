@@ -3,8 +3,8 @@
 
 #include "master_header.h"
 
-#define COMPARAR_DOUBLE(a, b) (abs( (a) - (b) ) < 0.0000001)
-#define SIGNO_DOUBLE( a ) ((abs( (a) ) > 0.0000001) ? (((a) > 0) ? 1.f : -1.f) : 1.f)
+#define COMPARAR_DOUBLE(a, b) (abs( (a) - (b) ) < 0.000000001)
+#define SIGNO_DOUBLE( a ) ((abs( (a) ) > 0.000000001) ? (((a) > 0) ? 1.f : -1.f) : 1.f)
 
 template< typename T >
 class Matriz
@@ -40,6 +40,8 @@ class Matriz
 					matriz[i][j] = B[i][j];
 		}
 
+
+1;3R
 		~Matriz()
 		{
 			for(uint i = 0; i < n; ++i)
@@ -217,16 +219,14 @@ class Matriz
 					salida[i-(desde1-1)][j-(desde2-1)] = matriz [i][j];
 		}
 
-		void QR( std::vector<double> As, std::vector<double> Bs, double tol, int maxIter )
+		void QR( std::vector<double> &As, std::vector<double> &Bs, double tol, int maxIter, std::vector<double> &autoval )
 		{
-			double shift = 0;
+			double shift = 0.f;
 
-			std::queue<double> autoval;
-
-			QR_rec( As, Bs, tol, maxIter, autoval );
+			QR_rec( As, Bs, tol, maxIter, autoval, shift );
 		}
 
-		void QR_rec( std::vector<double> As, std::vector<double> Bs, double tol, int &maxIter, std::queue<double> &autoval, double shift )
+		void QR_rec( std::vector<double> &As, std::vector<double> &Bs, double tol, int &maxIter, std::vector<double> &autoval, double shift )
 		{
 			int n = As.size();
 
@@ -240,15 +240,16 @@ class Matriz
 			std::vector<double> Zs(n);
 
 			while ( maxIter > 0 ) {
+
 				if ( abs(Bs[n-1]) <= tol ) {
 					// el ultimo b es suficientemente chico, tengo un autoval
-					autoval.push( As[n-1]+shift );
+					autoval.push_back( As[n-1]+shift );
 					n = n-1;
 				}
 				
 				if ( abs( Bs[1] ) <= tol ) {
 					// el primer b es suficientemetne chico, tengo un autoval
-					autoval.push( As[0]+shift );
+					autoval.push_back( As[0]+shift );
 					n = n-1;
 					As[0] = As[1];
 					for ( int j=1 ; j<n ; ++j ) {
@@ -262,7 +263,7 @@ class Matriz
 				}
 
 				if ( n==1 ) {
-					autoval.push( As[0] + shift );
+					autoval.push_back( As[0] + shift );
 					return;
 				}
 	
@@ -286,8 +287,8 @@ class Matriz
 							}
 						}
 			
-						QR_rec( As1, Bs1, maxIter, autoval, shift );
-						QR_rec( As2, Bs2, maxIter, autoval, shift );
+						QR_rec( As1, Bs1, tol, maxIter, autoval, shift );
+						QR_rec( As2, Bs2, tol, maxIter, autoval, shift );
 
 						return;
 					}
@@ -307,8 +308,8 @@ class Matriz
 				}
 
 				if ( n==2 ) {
-					autoval.push( mu1 + shift );
-					autoval.push( mu2 + shift );
+					autoval.push_back( mu1 + shift );
+					autoval.push_back( mu2 + shift );
 					return;
 				}
 
