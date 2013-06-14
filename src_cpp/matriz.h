@@ -501,6 +501,23 @@ class Matriz
 			return res;
 		}
 
+		
+		int menorP()
+		{
+			int p = 0;
+			double res = matriz[0][0];
+			for (int i = 0; i < n; i++){
+				if ( abs(res) < abs(matriz[i][0]) )
+				{
+						res = matriz[i][0];
+						p = i;
+				}
+				
+				
+			}
+			return p;
+		}
+
 				
 		void potenciaInversa( Matriz <T> &x, double tol, int maxIter, double &autovalor, Matriz<T> &autovector)
 		{
