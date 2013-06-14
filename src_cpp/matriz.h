@@ -165,76 +165,72 @@ class Matriz
 
 		void Householder ( )
 		{	// la matriz de entrada es la que llama a la funcion, se llama matriz
-			double q;
-			double alfa;
-			double rsq;
-			double suma;
-			double prod;
-			Matriz<double> v(n,1);
-			Matriz<double> u(n,1);
-			Matriz<double> z(n,1);
-			Matriz<double> y(n,1);
+			std::vector<double> v(n);
+			std::vector<double> u(n);
+			std::vector<double> z(n);
+			std::vector<double> y(n);
 			
 			for (int k = 0; k < n-2 ; k++)	// reveer los indices hasta donde van
 			{
-				q = 0.f;
-				alfa = 0.f;
-				rsq = 0.f;
+				
+				double q = 0.f;
 				for (int j = k+1; j < n ; j++)
-				{
-					q += ((matriz[j][k])*(matriz[j][k]));
-				}
+					q += ( (matriz[j][k])*(matriz[j][k]) );
+
 				// ahora q es la sumatoria 
+
+				double alfa;
 				if ( COMPARAR_DOUBLE(matriz[k+1][k], 0.f) )
 					alfa = - sqrt(q);
 				else
 					alfa = - sqrt(q) * matriz[k+1][k]/fabs(matriz[k+1][k]);
 				
-				rsq = alfa*alfa - alfa * matriz[k+1][k];
+				double rsq = alfa*alfa - alfa * matriz[k+1][k];
 
 
-				v[k][0] = 0.f;
-				v[k+1][0] = matriz[k+1][k] - alfa;
+				v[k] = 0.f;
+				v[k+1] = matriz[k+1][k] - alfa;
 
-				for (int j = k+2; j < n; j++)
-					v[j][0] = matriz[j][k];
+				for (int j = k+2; j<n; j++)
+					v[j] = matriz[j][k];
 				
-				for (int j = k; j < n ; j++)
+				double suma;
+				for (int j=k; j<n ; j++)
 				{	
 					suma=0.f;
-					for (int i = k+1; i < n ; i++)
-						suma += matriz[j][i] * v[i][0];
+					for (int i = k+1; i<n ; i++)
+						suma += matriz[j][i] * v[i];
 
-					u[j][0] = (1.f/rsq) * suma; 
+					u[j] = (1.f/rsq) * suma; 
 				}
 			
-				prod = 0.f;
-				for (int i = k+1; i < n ; i++)
-					prod += v[i][0] * u[i][0];
+				double prod = 0.f;
+				for (int i=k+1; i<n ; i++)
+					prod += v[i] * u[i];
 				
-				for (int j = k; j < n ; j++)
-					z[j][0] = u[j][0] - (prod/(2.f*rsq)) * v[j][0];
+				for (int j=k; j<n ; j++)
+					z[j] = u[j] - (prod/(2.f*rsq)) * v[j];
 				
-				for (int l = k+1; l < n-1 ; l++)
+				for (int l=k+1; l<n-1 ; l++)
 				{
-					for (int j = l+1; j <n ; j++)
+					for (int j=l+1; j<n ; j++)
 					{
-						matriz[j][l] = matriz[j][l] - v[l][0] * z[j][0] - v[j][0] * z[l][0];
+						matriz[j][l] = matriz[j][l] - v[l] * z[j] - v[j] * z[l];
 						matriz[l][j] = matriz[j][l];
 					}
 					
-					matriz[l][l] = matriz[l][l] - 2.f * v[l][0] * z[l][0];
+					matriz[l][l] = matriz[l][l] - 2.f * v[l] * z[l];
 				}
 			
-				matriz[n-1][n-1] = matriz[n-1][n-1] - 2.f * v[n-1][0] * z[n-1][0];
+				matriz[n-1][n-1] = matriz[n-1][n-1] - 2.f * v[n-1] * z[n-1];
 				
-				for (int j = k+2; j < n ; j++)
+				for (int j=k+2; j<n ; j++)
 				{
 					matriz[k][j] = 0.f;
 					matriz[j][k] = 0.f;
 				}
 				
-				matriz[k+1][k] = matriz[k+1][k] - v[k+1][0] * z[k][0]; 
+				matriz[k+1][k] = matriz[k+1][k] - v[k+1] * z[k]; 
 				matriz[k][k+1] = matriz[k+1][k];
 			}
 		}
