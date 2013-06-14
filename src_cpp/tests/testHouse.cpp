@@ -6,6 +6,7 @@ using namespace std;
 int main()
 {
 	Matriz<double> hola(4, 4);
+	Matriz<double> chau(4, 4);
 
 //	Matriz<double> mult(4, 4);
 //	Matriz<double> sub(4,1);
@@ -25,7 +26,6 @@ int main()
 		}
 	}
 
-	Matriz<double> chau(4, 4);
 
 	chau.cargarTranspuestaPorMat( hola );
 

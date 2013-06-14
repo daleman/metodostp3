@@ -12,6 +12,8 @@ int main( int argc, char** argv )
 
 	XtX.cargarTranspuestaPorMat( *(rec.imagenes) );
 
+	XtX.contieneNaN();
+
 	XtX.Householder();
 
 	XtX.contieneNaN();

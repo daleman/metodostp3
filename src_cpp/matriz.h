@@ -2,8 +2,8 @@
 #define __MATRIZ_H 
 #include "master_header.h"
 
-#define COMPARAR_DOUBLE(a, b) (fabs( (a) - (b) ) < 0.000001)
-#define SIGNO_DOUBLE( a ) ((fabs( (a) ) > 0.000001) ? (((a) > 0) ? 1.f : -1.f) : 1.f)
+#define COMPARAR_DOUBLE(a, b) (fabs( (a) - (b) ) < 0.0001)
+#define SIGNO_DOUBLE( a ) ((fabs( (a) ) > 0.0001) ? (((a) > 0) ? 1.f : -1.f) : 1.f)
 
 template< typename T >
 class Matriz
@@ -143,7 +143,9 @@ class Matriz
 					if (matriz[i][j] != matriz[i][j]) {
 						printf("CONTIENE NAAN!!!\n");
 						fflush(stdout);
+						return;
 					}
+			printf("No contiene NaN, ta todo bien por ahora\n");
 		}
 
 		void guardarArchivo(char * archivo)
@@ -186,7 +188,6 @@ class Matriz
 					alfa = - sqrt(q) * matriz[k+1][k]/fabs(matriz[k+1][k]);
 				
 				double rsq = alfa*alfa - alfa * matriz[k+1][k];
-
 
 				v[k] = 0.f;
 				v[k+1] = matriz[k+1][k] - alfa;
@@ -250,8 +251,6 @@ class Matriz
 			for ( int i=1 ; i<n ; ++i ) {
 				As.push_back(matriz[i][i]);
 				Bs.push_back(matriz[i][i-1]);
-
-				printf("%f\t%f\n", matriz[i][i], matriz[i][i-1]);
 			}
 		}
 
@@ -272,9 +271,9 @@ class Matriz
 		{
 			int n = As.size();
 
-#if DEBUG
-			printf("llamado con diag de tamano: %d\n", n);
-#endif
+//#if DEBUG
+//			printf("llamado con diag de tamano: %d\n", n);
+//#endif
 
 			std::vector<double> Cs(n);	// cosenos
 			std::vector<double> Ds(n);
@@ -347,10 +346,10 @@ class Matriz
 				double c = As[n-1]*As[n-2] - Bs[n-1]*Bs[n-1];
 				double d = sqrt(b*b - 4.f*c);
 
-#if DEBUG
-				printf("b %f\tc %f\td %f\n", b, c, d);
-				fflush(stdout);
-#endif
+//#if DEBUG
+//				printf("b %f\tc %f\td %f\n", b, c, d);
+//				fflush(stdout);
+//#endif
 
 				double mu1, mu2;
 				if ( !COMPARAR_DOUBLE(b,0.f) && b>0.f ) {
