@@ -10,13 +10,13 @@ class Reconocedor
 		
 		Reconocedor( char *puntoDat );
 		~Reconocedor();
+		Matriz<double> *imagenes;
 
 		//reconocer( char *archivo );
 
 	private :
 		
 		int cantidad;
-		Matriz<double> *imagenes;
 		int *labels;
 		// supongo que mas cosas
 };

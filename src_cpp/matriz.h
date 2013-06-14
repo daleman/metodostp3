@@ -9,11 +9,12 @@ template< typename T >
 class Matriz
 {
 	private:
-		T ** matriz;
 		uint n,m;
 		uint triangulada;
 
 	public:
+		T ** matriz;
+
 		Matriz(int _n, int _m) : n(_n),m(_m)
 		{
 			matriz = new T*[n];
@@ -88,6 +89,20 @@ class Matriz
 					double sum = 0;
 					for ( k=0 ; k<A.m ; ++k )
 						sum += (double) A[i][k] * (double) B[k][j];
+
+					matriz[i][j] = (T) sum;
+				}
+			}
+		}
+
+		void cargarMatPorTranspuesta( Matriz<T> &A )
+		{
+			uint i,j,k;
+			for ( i=0 ; i<n ; ++i ) {
+				for ( j=0 ; j<m ; ++j ) {
+					double sum = 0;
+					for ( k=0 ; k<A.m ; ++k )
+						sum += (double) A[i][k] * (double) A[j][k];
 
 					matriz[i][j] = (T) sum;
 				}
