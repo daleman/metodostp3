@@ -2,8 +2,8 @@
 #define __MATRIZ_H 
 #include "master_header.h"
 
-#define COMPARAR_DOUBLE(a, b) (abs( (a) - (b) ) < 0.000000001)
-#define SIGNO_DOUBLE( a ) ((abs( (a) ) > 0.000000001) ? (((a) > 0) ? 1.f : -1.f) : 1.f)
+#define COMPARAR_DOUBLE(a, b) (fabs( (a) - (b) ) < 0.000001)
+#define SIGNO_DOUBLE( a ) ((fabs( (a) ) > 0.000001) ? (((a) > 0) ? 1.f : -1.f) : 1.f)
 
 template< typename T >
 class Matriz
@@ -134,6 +134,18 @@ class Matriz
 			printf("\n");
 		}
 
+		void contieneNaN()
+		{
+			uint i,j;
+
+			for ( i=0 ; i<n ; ++i )
+				for ( j=0 ; j<m ; ++j )
+					if (matriz[i][j] != matriz[i][j]) {
+						printf("CONTIENE NAAN!!!\n");
+						fflush(stdout);
+					}
+		}
+
 		void guardarArchivo(char * archivo)
 		{	//DEBUG - NO ME SAQUES
 
@@ -153,33 +165,35 @@ class Matriz
 
 		void Householder ( )
 		{	// la matriz de entrada es la que llama a la funcion, se llama matriz
-			int dimension = n; 
 			double q;
 			double alfa;
 			double rsq;
 			double suma;
 			double prod;
-			Matriz<T> v(dimension,1);
-			Matriz<T> u(dimension,1);
-			Matriz<T> z(dimension,1);
-			Matriz<T> y(dimension,1);
+			Matriz<double> v(n,1);
+			Matriz<double> u(n,1);
+			Matriz<double> z(n,1);
+			Matriz<double> y(n,1);
 			
 			for (int k = 0; k < n-2 ; k++)	// reveer los indices hasta donde van
 			{
-				q = 0;
-				alfa = 0;
-				rsq = 0;
+				q = 0.f;
+				alfa = 0.f;
+				rsq = 0.f;
 				for (int j = k+1; j < n ; j++)
 				{
 					q += ((matriz[j][k])*(matriz[j][k]));
 				}
 				// ahora q es la sumatoria 
-				alfa = - sqrt(q) * SIGNO_DOUBLE(matriz[k+1][k]);
+				if ( COMPARAR_DOUBLE(matriz[k+1][k], 0.f) )
+					alfa = - sqrt(q);
+				else
+					alfa = - sqrt(q) * matriz[k+1][k]/fabs(matriz[k+1][k]);
 				
 				rsq = alfa*alfa - alfa * matriz[k+1][k];
 
 
-				v[k][0] = 0;
+				v[k][0] = 0.f;
 				v[k+1][0] = matriz[k+1][k] - alfa;
 
 				for (int j = k+2; j < n; j++)
@@ -187,19 +201,19 @@ class Matriz
 				
 				for (int j = k; j < n ; j++)
 				{	
-					suma=0;
+					suma=0.f;
 					for (int i = k+1; i < n ; i++)
 						suma += matriz[j][i] * v[i][0];
 
-					u[j][0] = 1/rsq * suma; 
+					u[j][0] = (1.f/rsq) * suma; 
 				}
 			
-				prod = 0;
+				prod = 0.f;
 				for (int i = k+1; i < n ; i++)
 					prod += v[i][0] * u[i][0];
 				
 				for (int j = k; j < n ; j++)
-					z[j][0] = u[j][0] - prod / (2*rsq) * v[j][0];
+					z[j][0] = u[j][0] - (prod/(2.f*rsq)) * v[j][0];
 				
 				for (int l = k+1; l < n-1 ; l++)
 				{
@@ -209,15 +223,15 @@ class Matriz
 						matriz[l][j] = matriz[j][l];
 					}
 					
-					matriz[l][l] = matriz[l][l] - 2 * v[l][0] * z[l][0];
+					matriz[l][l] = matriz[l][l] - 2.f * v[l][0] * z[l][0];
 				}
 			
-				matriz[n-1][n-1] = matriz[n-1][n-1] - 2 * v[n-1][0] * z[n-1][0];
+				matriz[n-1][n-1] = matriz[n-1][n-1] - 2.f * v[n-1][0] * z[n-1][0];
 				
 				for (int j = k+2; j < n ; j++)
 				{
-					matriz[k][j] = 0;
-					matriz[j][k] = 0;
+					matriz[k][j] = 0.f;
+					matriz[j][k] = 0.f;
 				}
 				
 				matriz[k+1][k] = matriz[k+1][k] - v[k+1][0] * z[k][0]; 
@@ -240,6 +254,8 @@ class Matriz
 			for ( int i=1 ; i<n ; ++i ) {
 				As.push_back(matriz[i][i]);
 				Bs.push_back(matriz[i][i-1]);
+
+				printf("%f\t%f\n", matriz[i][i], matriz[i][i-1]);
 			}
 		}
 
@@ -275,11 +291,22 @@ class Matriz
 
 			while ( maxIter > 0 ) {
 				
-#if DEBUG
-				printf("shift \t%f\n", shift);
-				fflush(stdout);
-#endif
-
+				if ( fabs(Bs[n-1]) <= tol ) {
+					// el ultimo b es suficientemente chico, tengo un autoval
+					autoval.push_back( As[n-1]+shift );
+					n--;
+				}
+				
+				if ( fabs(Bs[1]) <= tol ) {
+					// el primer b es suficientemetne chico, tengo un autoval
+					autoval.push_back( As[0]+shift );
+					n--;
+					As[0] = As[1];
+					for ( int j=1 ; j<n ; ++j ) {
+						As[j] = As[j+1];
+						Bs[j] = Bs[j+1];
+					}
+				}
 				//casos Base
 				if ( n==0 ) return;
 
@@ -288,25 +315,11 @@ class Matriz
 					return;
 				}
 	
-				if ( abs(Bs[n-1]) <= tol ) {
-					// el ultimo b es suficientemente chico, tengo un autoval
-					autoval.push_back( As[n-1]+shift );
-					n = n-1;
-				}
-				
-				if ( abs( Bs[1] ) <= tol ) {
-					// el primer b es suficientemetne chico, tengo un autoval
-					autoval.push_back( As[0]+shift );
-					n = n-1;
-					As[0] = As[1];
-					for ( int j=1 ; j<n ; ++j ) {
-						As[j] = As[j+1];
-						Bs[j] = Bs[j+1];
-					}
-				}
-
 				for ( int j=2 ; j < n-1 ; ++j ) {
-					if ( abs(As[j]) <= tol ) {
+					if ( fabs(Bs[j]) <= tol ) {
+
+						printf("entre fabs b es: %f\n", fabs(Bs[j]));
+
 						//si tengo un numero pequeno parto la matrz
 						//para seguir teniendo una convergencia rapida
 
@@ -336,15 +349,20 @@ class Matriz
 
 				double b = -(As[n-2] + As[n-1]);
 				double c = As[n-1]*As[n-2] - Bs[n-1]*Bs[n-1];
-				double d = sqrt(b*b - 4*c);
+				double d = sqrt(b*b - 4.f*c);
+
+#if DEBUG
+				printf("b %f\tc %f\td %f\n", b, c, d);
+				fflush(stdout);
+#endif
 
 				double mu1, mu2;
-				if ( !COMPARAR_DOUBLE(b,0) && b>0 ) {
-					mu1 = -2*c / (b+d);
-					mu2 = -(b+d)/2;
+				if ( !COMPARAR_DOUBLE(b,0.f) && b>0.f ) {
+					mu1 = -2.f*c / (b+d);
+					mu2 = -(b+d)/2.f;
 				} else {
-					mu1 = (d-b)/2;
-					mu2 = 2*c / (d-b);
+					mu1 = (d-b)/2.f;
+					mu2 = 2.f*c / (d-b);
 				}
 
 				if ( n==2 ) {
@@ -354,9 +372,8 @@ class Matriz
 				}
 
 				double sigma;
-				sigma = (abs(mu1-As[n-1]) < abs(mu2-As[n-1])) ? mu1 : mu2;
+				sigma = (fabs(mu1-As[n-1]) < fabs(mu2-As[n-1])) ? mu1 : mu2;
 
-				__BITACORA
 #if DEBUG
 				printf("sigma\t%f, mu1\t%f, mu2\t%f\n", sigma, mu1, mu2 );
 				fflush(stdout);
@@ -401,6 +418,8 @@ class Matriz
 
 				maxIter--;
 			}
+
+			printf("Paso el max de iteraciones y QR no converge\n");
 		}
 
 
@@ -528,7 +547,7 @@ class Matriz
 		{
 			double res = matriz[0][0];
 			for (int i = 0; i < n; i++){
-				res = (abs(res) > abs(matriz[i][0]) ) ? res : matriz[i][0];
+				res = (fabs(res) > fabs(matriz[i][0]) ) ? res : matriz[i][0];
 			}
 			return res;
 		}
@@ -539,7 +558,7 @@ class Matriz
 			int p = 0;
 			double res = matriz[0][0];
 			for (int i = 0; i < n; i++){
-				if ( abs(res) < abs(matriz[i][0]) )
+				if ( fabs(res) < fabs(matriz[i][0]) )
 				{
 						res = matriz[i][0];
 						p = i;

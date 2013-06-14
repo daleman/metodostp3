@@ -25,12 +25,16 @@ int main()
 		}
 	}
 
-	hola.imprimirMatriz();
+	Matriz<double> chau(4, 4);
+
+	chau.cargarTranspuestaPorMat( hola );
+
+	chau.imprimirMatriz();
 	printf("hago la tridiagonal\n");
-	hola.Householder();
+	chau.Householder();
 
 
-	hola.imprimirMatriz();
+	chau.imprimirMatriz();
 
 
 
@@ -39,7 +43,7 @@ int main()
 	vector<double> autoval;
 	int maxIter = 100;
 
-	hola.QR( 0.0001f, maxIter , autoval );
+	chau.QR( 0.0001f, maxIter , autoval );
 
 	for (int i=0 ; i<autoval.size() ; ++i ) {
 		printf( "%f\n", autoval[i] );

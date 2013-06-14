@@ -14,13 +14,15 @@ int main( int argc, char** argv )
 
 	XtX.Householder();
 
+	XtX.contieneNaN();
+
 	vector<double> autoval;
-	int maxIter = 10000;
+	int maxIter = 50;
 
-	XtX.QR( 0.0001f, maxIter , autoval );
+	XtX.QR( 0.01f, maxIter , autoval );
 
-//	for (uint i=0 ; i<autoval.size() ; ++i )
-//		printf( "%f\n", autoval[i] );
+	for (uint i=0 ; i<autoval.size() ; ++i )
+		printf( "%f\n", autoval[i] );
 
 	return 0;
 }
