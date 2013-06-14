@@ -501,42 +501,44 @@ class Matriz
 			return res;
 		}
 
-		
 				
 		void potenciaInversa( Matriz <T> &x, double tol, int maxIter, double &autovalor, Matriz<T> &autovector)
 		{
 
-		assert( x.cantFil() == n && x.cantCol()==1 )
+		assert( x.cantFil() == n && x.cantCol()==1 );
 		Matriz<T> xt(1,n);
+		Matriz<T> resta(n,1);
 		Matriz<T> mult(1,1);
 		Matriz<T> xtA(1,n);
 		Matriz<T> xtAx(1,1);
-		Matriz<T> res(n,m);
+		Matriz<T> y(n,1);
 		Matriz<T> P(n,n);	// asumo que P, L y U son cuadradas
 		Matriz<T> L(n,n);
 		Matriz<T> U(n,n);
 		Matriz<T> B(n,n);
+		Matriz<T> qident(n,n);
 		mult.cargarMultiplicacion(xt,x);
 		double m = mult[0][0];
 		int k = 0;
-		qident.identidad();
-		qident.multiplicarEscalar(q);
 		this->factorizacionLU(P,L,U);
 
 		xtA.cargarMultiplicacion(xt,this);
 		xtAx.cargarMultiplicacion(xtA,x);
 		double q = xtAx[0][0] / m;
+		qident.identidad();
+		qident.multiplicarEscalar(q);
+		
 
 		int p = x.menorP();
 		x.MultiplicarEscalar(1/p);
 			while ( k< n){
-				B.cargarResta(A,qident);
-				res.resolverLU(B,x,y);		// resuelvo el sistema de ecuaciones
+				B.cargarResta(this,qident);
+				y.resolverLU(B,P,L,U);		// resuelvo el sistema de ecuaciones
 				double mu =  y[p][0];
 				p = y.menorP();
 				y.multiplicarEscalar(1/mu);
 				resta.cargarResta(x,y);
-				for (i = 0; i < n; i++)
+				for (int i = 0; i < n; i++)
 				{
 					x[i][0] = y[i][0];
 				}
