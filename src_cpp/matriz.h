@@ -492,6 +492,16 @@ class Matriz
 			return sqrt(res);
 		}
 
+		double normaInf()
+		{
+			double res = matriz[0][0];
+			for (int i = 0; i < n; i++){
+				res = (abs(res) > abs(matriz[i][0]) ) ? res : matriz[i][0];
+			}
+			return res;
+		}
+
+		
 				
 		void potenciaInversa( Matriz <T> &x, double tol, int maxIter, double &autovalor, Matriz<T> &autovector)
 		{
@@ -543,6 +553,7 @@ class Matriz
 			printf("se llego a la maxima cant de iteraciones");
 			return;
 		}
+		
 
 		void factorizacionLU(  Matriz<T> &P, Matriz<T> &L, Matriz<T> &U )
 		{
