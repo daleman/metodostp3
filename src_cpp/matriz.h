@@ -507,6 +507,87 @@ class Matriz
 			return sqrt(res);
 		}
 
+		double normaInf()
+		{
+			double res = matriz[0][0];
+			for (int i = 0; i < n; i++){
+				res = (abs(res) > abs(matriz[i][0]) ) ? res : matriz[i][0];
+			}
+			return res;
+		}
+
+		
+		int menorP()
+		{
+			int p = 0;
+			double res = matriz[0][0];
+			for (int i = 0; i < n; i++){
+				if ( abs(res) < abs(matriz[i][0]) )
+				{
+						res = matriz[i][0];
+						p = i;
+				}
+				
+				
+			}
+			return p;
+		}
+
+				
+		void potenciaInversa( Matriz <T> &x, double tol, int maxIter, double &autovalor, Matriz<T> &autovector)
+		{
+
+		assert( x.cantFil() == n && x.cantCol()==1 );
+		Matriz<T> xt(1,n);
+		Matriz<T> resta(n,1);
+		Matriz<T> mult(1,1);
+		Matriz<T> xtA(1,n);
+		Matriz<T> xtAx(1,1);
+		Matriz<T> y(n,1);
+		Matriz<T> P(n,n);	// asumo que P, L y U son cuadradas
+		Matriz<T> L(n,n);
+		Matriz<T> U(n,n);
+		Matriz<T> B(n,n);
+		Matriz<T> qident(n,n);
+		mult.cargarMultiplicacion(xt,x);
+		double m = mult[0][0];
+		int k = 0;
+		this->factorizacionLU(P,L,U);
+
+		xtA.cargarMultiplicacion(xt,this);
+		xtAx.cargarMultiplicacion(xtA,x);
+		double q = xtAx[0][0] / m;
+		qident.identidad();
+		qident.multiplicarEscalar(q);
+		
+
+		int p = x.menorP();
+		x.MultiplicarEscalar(1/p);
+			while ( k< n){
+				B.cargarResta(this,qident);
+				y.resolverLU(B,P,L,U);		// resuelvo el sistema de ecuaciones
+				double mu =  y[p][0];
+				p = y.menorP();
+				y.multiplicarEscalar(1/mu);
+				resta.cargarResta(x,y);
+				for (int i = 0; i < n; i++)
+				{
+					x[i][0] = y[i][0];
+				}
+				double err = normaInf(resta);
+				if (err < tol)
+				{
+					mu = 1/ mu + q;
+					autovalor = mu;
+					autovector.copiar(x);
+					return;
+				}
+				k++;
+			}
+			printf("se llego a la maxima cant de iteraciones");
+			return;
+		}
+		
 
 		void factorizacionLU(  Matriz<T> &P, Matriz<T> &L, Matriz<T> &U )
 		{
