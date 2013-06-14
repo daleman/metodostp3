@@ -17,7 +17,7 @@ typedef unsigned int uint;
 typedef unsigned char uchar;
 
 
-#define DEBUG 0
+#define DEBUG 1
 #define __BITACORA \
 		printf("bitacora:\tLINEA %d\tARCHIVO %s\n", __LINE__, __FILE__);\
 		fflush(stdout);

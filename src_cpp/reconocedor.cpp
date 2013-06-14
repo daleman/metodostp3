@@ -18,7 +18,7 @@ Reconocedor::Reconocedor( char *puntoDat )
 
 	for ( int i=0 ; i<cantidad ; ++i ) {
 		fscanf( data, "%d ", &numerito );
-			labels[i] = numerito;
+		labels[i] = numerito;
 	}
 
 	for ( int i=0 ; i<cantidad ; ++i ) {
@@ -37,27 +37,23 @@ Reconocedor::Reconocedor( char *puntoDat )
 	// arreglo limpio
 	memset( promedio, 0, sizeof(double)*TAMANO_IMAGEN );
 
-	for ( int i=0 ; i<cantidad ; ++i ) {
-		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
+	for ( int i=0 ; i<cantidad ; ++i )
+		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j )
 			promedio[j] += (*imagenes)[i][j];
-		}
-	}
 
 	double cant = (double) TAMANO_IMAGEN;
 
-	for ( int i=0 ; i<TAMANO_IMAGEN ; ++i ) {
+	for ( int i=0 ; i<TAMANO_IMAGEN ; ++i )
 		promedio[i] /= cant;
-	}
 
 	double denominador = sqrt( cant - 1.f );
 
 	// calculo matriz X
 
-	for ( int i=0 ; i<cantidad ; ++i ) {
-		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
+	for ( int i=0 ; i<cantidad ; ++i )
+		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j )
 			(*imagenes)[i][j] = ((*imagenes)[i][j] - promedio[j]) / denominador;
-		}
-	}
+
 }
 
 Reconocedor::~Reconocedor()

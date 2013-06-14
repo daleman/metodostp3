@@ -8,11 +8,19 @@ int main( int argc, char** argv )
 {
 	Reconocedor rec( argv[1] );
 
-	Matriz<double> XtX( (rec.imagenes)->cantCol, (rec.imagenes)->cantCol );
+	Matriz<double> XtX( (rec.imagenes)->cantCol(), (rec.imagenes)->cantCol() );
 
-	XtX.cargarMatPorTranspuesta( *(rec.imagenes) );
+	XtX.cargarTranspuestaPorMat( *(rec.imagenes) );
 
 	XtX.Householder();
+
+	vector<double> autoval;
+	int maxIter = 10000;
+
+	XtX.QR( 0.0001f, maxIter , autoval );
+
+//	for (uint i=0 ; i<autoval.size() ; ++i )
+//		printf( "%f\n", autoval[i] );
 
 	return 0;
 }

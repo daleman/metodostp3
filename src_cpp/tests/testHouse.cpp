@@ -36,15 +36,10 @@ int main()
 
 	printf("ya hice la tridiagonal, ahora hago householder\n");
 
-	vector<double> As;
-	vector<double> Bs;
-
-	hola.dameDiagonales(As, Bs);
-
 	vector<double> autoval;
 	int maxIter = 100;
 
-	hola.QR( As, Bs, 0.0001f, maxIter , autoval );
+	hola.QR( 0.0001f, maxIter , autoval );
 
 	for (int i=0 ; i<autoval.size() ; ++i ) {
 		printf( "%f\n", autoval[i] );

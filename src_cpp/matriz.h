@@ -95,14 +95,14 @@ class Matriz
 			}
 		}
 
-		void cargarMatPorTranspuesta( Matriz<T> &A )
+		void cargarTranspuestaPorMat(Matriz<T> &A )
 		{
 			uint i,j,k;
-			for ( i=0 ; i<n ; ++i ) {
-				for ( j=0 ; j<m ; ++j ) {
+			for ( i=0 ; i<A.m ; ++i ) {
+				for ( j=0 ; j<A.m ; ++j ) {
 					double sum = 0;
-					for ( k=0 ; k<A.m ; ++k )
-						sum += (double) A[i][k] * (double) A[j][k];
+					for ( k=0 ; k<A.n ; ++k )
+						sum += (double) A[k][i] * (double) A[k][j];
 
 					matriz[i][j] = (T) sum;
 				}
@@ -244,8 +244,13 @@ class Matriz
 		}
 
 
-		void QR( std::vector<double> &As, std::vector<double> &Bs, double tol, int maxIter, std::vector<double> &autoval )
+		void QR( double tol, int maxIter, std::vector<double> &autoval )
 		{
+			std::vector<double> As;
+			std::vector<double> Bs;
+
+			dameDiagonales(As,Bs);
+
 			double shift = 0.f;
 
 			QR_rec( As, Bs, tol, maxIter, autoval, shift );
@@ -254,6 +259,10 @@ class Matriz
 		void QR_rec( std::vector<double> &As, std::vector<double> &Bs, double tol, int &maxIter, std::vector<double> &autoval, double shift )
 		{
 			int n = As.size();
+
+#if DEBUG
+			printf("llamado con diag de tamano: %d\n", n);
+#endif
 
 			std::vector<double> Cs(n);	// cosenos
 			std::vector<double> Ds(n);
@@ -265,7 +274,20 @@ class Matriz
 			std::vector<double> Zs(n);
 
 			while ( maxIter > 0 ) {
+				
+#if DEBUG
+				printf("shift \t%f\n", shift);
+				fflush(stdout);
+#endif
 
+				//casos Base
+				if ( n==0 ) return;
+
+				if ( n==1 ) {
+					autoval.push_back( As[0] + shift );
+					return;
+				}
+	
 				if ( abs(Bs[n-1]) <= tol ) {
 					// el ultimo b es suficientemente chico, tengo un autoval
 					autoval.push_back( As[n-1]+shift );
@@ -282,17 +304,6 @@ class Matriz
 						Bs[j] = Bs[j+1];
 					}
 				}
-				
-				// casos base
-				if ( n==0 ) {
-					return;
-				}
-
-				if ( n==1 ) {
-					autoval.push_back( As[0] + shift );
-					return;
-				}
-	
 
 				for ( int j=2 ; j < n-1 ; ++j ) {
 					if ( abs(As[j]) <= tol ) {
@@ -308,11 +319,11 @@ class Matriz
 						for ( int k=0 ; k<n ; ++k ) {
 							
 							if ( k<j-1 ) {
-								As1[k] = As[k];
-								Bs1[k] = Bs[k];
+								As1.push_back(As[k]);
+								Bs1.push_back(Bs[k]);
 							} else {
-								As2[k] = As[k];
-								Bs2[k] = Bs[k];
+								As2.push_back(As[k]);
+								Bs2.push_back(Bs[k]);
 							}
 						}
 			
@@ -344,6 +355,12 @@ class Matriz
 
 				double sigma;
 				sigma = (abs(mu1-As[n-1]) < abs(mu2-As[n-1])) ? mu1 : mu2;
+
+				__BITACORA
+#if DEBUG
+				printf("sigma\t%f, mu1\t%f, mu2\t%f\n", sigma, mu1, mu2 );
+				fflush(stdout);
+#endif
 
 				shift += sigma;
 
@@ -536,33 +553,34 @@ class Matriz
 				
 		void potenciaInversa( Matriz <T> &x, double tol, int maxIter, double &autovalor, Matriz<T> &autovector)
 		{
+			assert( x.cantFil() == n && x.cantCol()==1 );
 
-		assert( x.cantFil() == n && x.cantCol()==1 );
-		Matriz<T> xt(1,n);
-		Matriz<T> resta(n,1);
-		Matriz<T> mult(1,1);
-		Matriz<T> xtA(1,n);
-		Matriz<T> xtAx(1,1);
-		Matriz<T> y(n,1);
-		Matriz<T> P(n,n);	// asumo que P, L y U son cuadradas
-		Matriz<T> L(n,n);
-		Matriz<T> U(n,n);
-		Matriz<T> B(n,n);
-		Matriz<T> qident(n,n);
-		mult.cargarMultiplicacion(xt,x);
-		double m = mult[0][0];
-		int k = 0;
-		this->factorizacionLU(P,L,U);
+			Matriz<double> xt(1,n);
+			Matriz<double> resta(n,1);
+			Matriz<double> mult(1,1);
+			Matriz<double> xtA(1,n);
+			Matriz<double> xtAx(1,1);
+			Matriz<double> y(n,1);
+			Matriz<double> P(n,n);	// asumo que P, L y U son cuadradas
+			Matriz<double> L(n,n);
+			Matriz<double> U(n,n);
+			Matriz<double> B(n,n);
+			Matriz<double> qident(n,n);
 
-		xtA.cargarMultiplicacion(xt,this);
-		xtAx.cargarMultiplicacion(xtA,x);
-		double q = xtAx[0][0] / m;
-		qident.identidad();
-		qident.multiplicarEscalar(q);
-		
+			mult.cargarMultiplicacion(xt,x);
+			double m = mult[0][0];
+			int k = 0;
+			this->factorizacionLU(P,L,U);
 
-		int p = x.menorP();
-		x.MultiplicarEscalar(1/p);
+			xtA.cargarMultiplicacion(xt,this);
+			xtAx.cargarMultiplicacion(xtA,x);
+			double q = xtAx[0][0] / m;
+			qident.identidad();
+			qident.multiplicarEscalar(q);
+			
+
+			int p = x.menorP();
+			x.MultiplicarEscalar(1/p);
 			while ( k< n){
 				B.cargarResta(this,qident);
 				y.resolverLU(B,P,L,U);		// resuelvo el sistema de ecuaciones
