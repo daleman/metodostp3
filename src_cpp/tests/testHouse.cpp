@@ -1,5 +1,7 @@
 #include "../master_header.h"
 #include "../matriz.h"
+#define TOL 0.1
+#define maxIter 2000000
 
 using namespace std;
 
@@ -7,7 +9,9 @@ int main()
 {
 	Matriz<double> hola(4, 4);
 	Matriz<double> chau(4, 4);
-
+	Matriz<double> x(4, 1);
+	Matriz<double> autovector(4, 1);
+	
 //	Matriz<double> mult(4, 4);
 //	Matriz<double> sub(4,1);
 //	Matriz<double> salida(4,1);
@@ -25,7 +29,9 @@ int main()
 			hola[i][j] = mat[i][j];
 		}
 	}
-
+	for ( int i=0 ; i<4 ; ++i ) {
+		x[i][0] = 0;
+	}
 
 	chau.cargarTranspuestaPorMat( hola );
 
@@ -41,15 +47,19 @@ int main()
 	printf("ya hice la tridiagonal, ahora hago householder\n");
 
 	vector<double> autoval;
-	int maxIter = 100;
+	//int maxIter = 100;
 
 	chau.QR( 0.0001f, maxIter , autoval );
 
 	for (int i=0 ; i<autoval.size() ; ++i ) {
-		printf( "%f\n", autoval[i] );
+		printf( "\n El autovalor es: %f\n", autoval[i] );
+		double autov = autoval[i];
+		chau.potenciaInversa(x,TOL, maxIter,autov,autovector);
+		printf( "\n Su autovector asocioado es:");
+		autovector.imprimirMatriz();
 	}
 
-
+	
 //
 //	//hola.householderQR( Q, R, P);
 //	hola.submatriz(1,4,1,1,sub);

@@ -522,7 +522,7 @@ class Matriz
 		}
 
 
-		void multiplicarEscalar ( double &beta)
+		void multiplicarEscalar ( double beta)
 		{
 			for (int i = 0; i < n ; i++)
 				for (int j = 0; j < m ; j++)
@@ -600,7 +600,7 @@ class Matriz
 			int k = 0;
 			this->factorizacionLU(P,L,U);
 
-			xtA.cargarMultiplicacion(xt,this);
+			xtA.cargarMultiplicacion(xt,*this);
 			xtAx.cargarMultiplicacion(xtA,x);
 			double q = xtAx[0][0] / m;
 			qident.identidad();
@@ -609,9 +609,9 @@ class Matriz
 
 			int p = x.menorP();
 			double xp = x[p][0];
-			x.MultiplicarEscalar(1.f/xp);
+			x.multiplicarEscalar(1.f/xp);
 			while (k<n){
-				B.cargarResta(this,qident);
+				B.cargarResta(*this,qident);
 				y.resolverLU(B,P,L,U);		// resuelvo el sistema de ecuaciones
 				double mu =  y[p][0];
 				p = y.menorP();
@@ -621,7 +621,7 @@ class Matriz
 				{
 					x[i][0] = y[i][0];
 				}
-				double err = normaInf(resta);
+				double err = resta.normaInf();
 				if (err < tol)
 				{
 					mu = 1.f / mu + q;
@@ -729,6 +729,34 @@ class Matriz
 					res[i][0] = (T) resD[i][0];
 			}
 		}
+		
+		void pivoteoParcial( int i,Matriz<T> &P,Matriz<T> &L)
+        {
+                uint k;
+                int max=i;
+
+                for (k=i;k<n;k++){
+                         max = (abs(matriz[k][i]) > abs(matriz[max][i])) ? k :max;
+                }
+
+                if( max != i ){
+
+                        for (k=0;k<n;k++){
+                                //cambio de filas
+                                T temp=matriz[i][k]; 
+                                matriz[i][k]= matriz[max][k];
+                                matriz[max][k] = temp;
+                                
+                                temp=P[i][k]; 
+                                P[i][k]= P[max][k];
+                                P[max][k] = temp;
+                                
+                                temp=L[i][k]; 
+                                L[i][k]= L[max][k];
+                                L[max][k] = temp;
+                        }               
+                }                       
+        }
 };
 
 #endif
