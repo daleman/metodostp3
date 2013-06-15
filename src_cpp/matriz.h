@@ -517,8 +517,9 @@ class Matriz
 			
 
 			int p = x.menorP();
-			x.MultiplicarEscalar(1/p);
-			while ( k< n){
+			double xp = x[p][0];
+			x.MultiplicarEscalar(1.f/xp);
+			while (k<n){
 				B.cargarResta(this,qident);
 				y.resolverLU(B,P,L,U);		// resuelvo el sistema de ecuaciones
 				double mu =  y[p][0];
@@ -532,7 +533,7 @@ class Matriz
 				double err = normaInf(resta);
 				if (err < tol)
 				{
-					mu = 1/ mu + q;
+					mu = 1.f / mu + q;
 					autovalor = mu;
 					autovector.copiar(x);
 					return;
