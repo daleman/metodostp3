@@ -1,6 +1,7 @@
 #include "../master_header.h"
 #include "../matriz.h"
-#define TOL 20.f
+
+#define TOL 0.001 
 #define maxIter 80
 
 using namespace std;
@@ -35,20 +36,18 @@ for ( int i=0 ; i<4 ; ++i ) { for ( int j=0 ; j<4 ; ++j ) {
 	chau.QR( 0.0001f, maxIter , autoval );
 
 	Matriz<double> x(4, 1);
-	x[0][0] = 2.35;
-	x[1][0] = 4;
-	x[2][0] = 2.35;
-	x[3][0] = 1;
-
-	Matriz<double> autovector(4, 1);
+	x[0][0] = 1;
+	x[1][0] = 0;
+	x[2][0] = 0;
+	x[3][0] = 0;
 
 	for (int i=0 ; i<autoval.size() ; ++i ) {
-		double autov = autoval[i];
-		original.potenciaInversa(x,TOL, maxIter,autov);
-		printf( "\n El autovalor es: %f\n", autoval[i] );
+		double autovalorActual = autoval[i];
+		original.potenciaInversa(x,TOL, maxIter,autovalorActual);
+		printf( "\n El autovalor es: %f\n", autovalorActual );
 		
 		printf( "\n Su autovector asocioado es:\n");
-		autovector.imprimirMatriz();
+		x.imprimirMatriz();
 	}
 
 	

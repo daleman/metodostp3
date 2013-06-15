@@ -486,11 +486,11 @@ class Matriz
 		{
 			int p = 0;
 			double res = matriz[0][0];
-			for (int i = 0; i < n; i++){
+			for (int i = 0; i<n; i++){
 				if ( fabs(res) < fabs(matriz[i][0]) )
 				{
-						res = matriz[i][0];
-						p = i;
+					res = matriz[i][0];
+					p = i;
 				}
 			}
 			return p;
@@ -509,16 +509,15 @@ class Matriz
 			Matriz<double> U(n,n);
 			
 			Matriz<double> B(n,n);
-
-			B.copiar(matriz);
-
 			Matriz<double> qident(n,n);
 			qident.identidad( autovalor );
 
-			B.restarle(qident);
+			B.cargarResta(*this,qident);
 			B.factorizacionLU(P,L,U);
 
-			int p;
+			int p = x.menorP();
+			double xp = x[p][0];
+			x.multiplicarEscalar(1.f/xp);
 
 			int k = 0;
 			while ( k<maxIter ){
@@ -529,12 +528,12 @@ class Matriz
 				double mu = y[p][0];
 
 				p = y.menorP();
-				
 				double yp = y[p][0];
 				y.multiplicarEscalar(1.f/yp);
+
 				resta.cargarResta(x,y);
 
-				double err = fabs( resta.normaInf() );
+				double err = resta.normaInf();
 				x.copiar( y );
 
 				if ( err < tol ) {
@@ -542,6 +541,7 @@ class Matriz
 					autovalor = mu;
 					return;
 				}
+
 				k++;
 			}
 			printf("se llego a la maxima cant de iteraciones\n");
