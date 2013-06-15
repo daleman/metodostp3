@@ -185,11 +185,7 @@ class Matriz
 				if( COMPARAR_DOUBLE(q, 0.f) ) continue;
 				// ahora q es la sumatoria 
 
-				double alfa;
-				if ( COMPARAR_DOUBLE(matriz[k+1][k], 0.f) )
-					alfa = - sqrt(q);
-				else
-					alfa = - sqrt(q) * matriz[k+1][k]/fabs(matriz[k+1][k]);
+				double alfa = - sqrt(q) * SIGNO_DOUBLE(matriz[k+1][k]);
 				
 				double rsq = alfa*alfa - alfa * matriz[k+1][k];
 
@@ -295,6 +291,10 @@ class Matriz
 				
 				if (tam==0) return;
 
+
+				// busco la seguidilla mas larga de ceros
+				// en la subdiagonal empezando desde el final
+
 				while ( fabs(Bs[tam-1])<=tol && tam>0 ) {
 					// el ultimo b es suficientemente chico, tengo un autoval
 					autoval.push_back( As[tam-1]+shift );
@@ -303,6 +303,9 @@ class Matriz
 
 				if (tam==0) return;
 				
+				// busco la seguidilla mas larga de ceros
+				// en la subdiagonal empezando desde el principio 
+
 				int inicio = 1;
 				while ( fabs(Bs[inicio]) <= tol && inicio<tam) {
 					// el primer b es suficientemetne chico, tengo un autoval
@@ -310,6 +313,8 @@ class Matriz
 					inicio++;
 				}
 				if (inicio==tam) return;
+
+				//////// reacomodo
 				inicio--;
 				if ( inicio>0 ) {
 					for ( int j=0; j<tam-inicio ; ++j ) {
@@ -318,7 +323,9 @@ class Matriz
 					}
 				}
 				tam -= inicio;
-				//casos Base
+
+
+				////////// casos Base
 				if ( tam==0 ) return;
 
 				if ( tam==1 ) {
@@ -326,6 +333,7 @@ class Matriz
 					return;
 				}
 	
+				//////// posible llamado recursivo
 				for ( int j=2 ; j<tam-1 ; ++j ) {
 					if ( fabs(Bs[j]) <= tol ) {
 
@@ -356,14 +364,11 @@ class Matriz
 					}
 				}
 
+
+				///////// iteracion QR
 				double b = -(As[tam-2] + As[tam-1]);
 				double c = As[tam-1]*As[tam-2] - Bs[tam-1]*Bs[tam-1];
 				double d = sqrt(b*b - 4.f*c);
-
-//#if DEBUG
-//				printf("b %f\tc %f\td %f\n", b, c, d);
-//				fflush(stdout);
-//#endif
 
 				double mu1, mu2;
 				if ( !COMPARAR_DOUBLE(b,0.f) && b>0.f ) {
@@ -382,11 +387,6 @@ class Matriz
 
 				double sigma;
 				sigma = (fabs(mu1-As[tam-1]) < fabs(mu2-As[tam-1])) ? mu1 : mu2;
-
-//#if DEBUG
-//				printf("sigma\t%f, mu1\t%f, mu2\t%f\n", sigma, mu1, mu2 );
-//				fflush(stdout);
-//#endif
 
 				shift += sigma;
 
@@ -430,97 +430,6 @@ class Matriz
 
 			printf("Paso el max de iteraciones y QR no converge\n");
 		}
-
-
-		void HouseholderVector(Matriz <T> &salida , double &b)
-		{
-			//assert( m==1 && salida.cantCol()==1 && n==salida.cantFil() );
-			double beta;
-			double mu;
-			double norma = this->norma();
-			Matriz <T> submatriz1(n-1,1);
-			Matriz <T> submatriz2(n-1,1);
-			Matriz <T> tsubmatriz1(1,n-1);
-			
-			Matriz <T> sigmaM(1,1);
-			submatriz(2,n,1,1,submatriz1);
-			submatriz(2,n,1,1,submatriz2);
-			tsubmatriz1.transponer(submatriz1);
-			sigmaM.cargarMultiplicacion(tsubmatriz1,submatriz2);
-			printf("aca esta sigma m      ");
-			sigmaM.imprimirMatriz();
-			// TRANSPONER SIGMA M?
-			double sigma = (sigmaM[0][0]);	// submatriz tiene los indices como en la bibliografia, de 1 a n
-			printf("sigma es %f\n",sigma);
-			salida[0][0] = 1;
-			for (int i = 1; i < n; i++)
-			{
-				salida[i][0] = matriz[i][0];
-			}
-			
-			if ( sigma == 0 )
-			{
-				beta = 0;
-			}else{
-				mu = sqrt( matriz[0][0]*matriz[0][0] + sigma);
-				printf("mu es %f\n",mu);
-				if ( matriz[0][0] <= 0 )
-				{
-					salida[0][0] = matriz[0][0] - mu;
-				}else{
-					printf("obviamente paso por aca");
-					salida[0][0] = (-1*sigma) / (matriz[0][0] + mu);
-					printf ("-%f / (%f + %f) = %f \n",sigma,matriz[0][0],mu,salida[0][0]);
-				}
-				
-				beta = 2.0 * salida[0][0] * salida[0][0] / (sigma + salida[0][0] * salida[0][0]);
-				for (int i = 1; i < n; i++)
-				{
-					salida[i][0] = salida[i][0]/salida[0][0];		//salida [0][0] deberia ser 1 despues de esto
-				}
-				salida[0][0]=1;		
-			}
-		}
-
-
-		void householderQR ( Matriz &Q, Matriz &R, Matriz &P)
-		{
-			R.copiar(*this);
-			Matriz R2(n,m);
-			Matriz Q2(n,m);
-			Matriz mult(n,m);
-			Matriz mult2(n,m);
-			Q.identidad();
-			double beta;
-			Matriz v(n,1);
-			int min = (n-1<m) ? (n-1) : m;
-			for (int j = 0; j < min ; j++)
-			{
-				Matriz v(n-j+1,1);
-				Matriz submatriz(n-j,1);
-				R.submatriz(j,n,j,j,submatriz);
-				R.HouseholderVector(v,beta);
-				
-				Matriz v2(n,1);
-				for (int i = 0; i < n ; i++)
-				{
-					v2[i][0] =  (i<j-1) ? 0 : v[i-(j-1)][1];
-				}
-				Matriz ident(n,n);
-				//P.cargarResta( ident.identidad(),mult2.multiplicarEscalar(beta, mult.cargarMultiplicacion(v2,v2.transponer())) );
-				Matriz v3(n,m);
-				v3.transponer(v2);
-				mult.cargarMultiplicacion(v2,v3);
-				mult.multiplicarEscalar(beta);
-				ident.identidad();
-				P.cargarResta(ident,mult);
-				R2.cargarMultiplicacion(P,R);
-				R.copiar(R2);
-				Q2.cargarMultiplicacion(Q,P);
-				Q.copiar(Q2);
-			}
-		}
-
 
 		void multiplicarEscalar ( double &beta)
 		{
