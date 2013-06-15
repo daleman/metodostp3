@@ -100,7 +100,7 @@ class Matriz
 			uint i,j,k;
 			for ( i=0 ; i<A.m ; ++i ) {
 				for ( j=0 ; j<A.m ; ++j ) {
-					double sum = 0;
+					double sum = 0.f;
 					for ( k=0 ; k<A.n ; ++k )
 						sum += (double) A[k][i] * (double) A[k][j];
 
@@ -165,20 +165,24 @@ class Matriz
 			fclose( nuevo );
 		}
 
-		void Householder ( )
+		void Householder ()
 		{	// la matriz de entrada es la que llama a la funcion, se llama matriz
-			std::vector<double> v(n);
-			std::vector<double> u(n);
-			std::vector<double> z(n);
-			std::vector<double> y(n);
+			std::vector<double> v(n, 0.f);
+			std::vector<double> u(n, 0.f);
+			std::vector<double> z(n, 0.f);
+			std::vector<double> y(n, 0.f);
 			
 			for (int k = 0; k < n-2 ; k++)	// reveer los indices hasta donde van
 			{
-				
 				double q = 0.f;
-				for (int j = k+1; j < n ; j++)
+				for (int j=k+1; j<n ; j++) {
 					q += ( (matriz[j][k])*(matriz[j][k]) );
+				}
 
+				// si la columna son todos ceros,
+				// no hay nada que hacer
+
+				if( COMPARAR_DOUBLE(q, 0.f) ) continue;
 				// ahora q es la sumatoria 
 
 				double alfa;
@@ -186,8 +190,13 @@ class Matriz
 					alfa = - sqrt(q);
 				else
 					alfa = - sqrt(q) * matriz[k+1][k]/fabs(matriz[k+1][k]);
+
+				if( alfa != alfa ) printf("ALFAAAAAA\n");
 				
 				double rsq = alfa*alfa - alfa * matriz[k+1][k];
+
+				if( rsq!= rsq) printf("RASQQQQQQQQQ\n");
+				if( COMPARAR_DOUBLE(rsq, 0.f) ) printf("RASQQQQQQQQQ es CERO\n");
 
 				v[k] = 0.f;
 				v[k+1] = matriz[k+1][k] - alfa;
@@ -203,12 +212,14 @@ class Matriz
 						suma += matriz[j][i] * v[i];
 
 					u[j] = (1.f/rsq) * suma; 
+					if( suma!= suma) printf("SUMAAAAAA\n");
 				}
 			
 				double prod = 0.f;
 				for (int i=k+1; i<n ; i++)
 					prod += v[i] * u[i];
 				
+				if( prod!= prod) printf("PROOOOOD\n");
 				for (int j=k; j<n ; j++)
 					z[j] = u[j] - (prod/(2.f*rsq)) * v[j];
 				
@@ -248,9 +259,12 @@ class Matriz
 			As.push_back( matriz[0][0] );
 			Bs.push_back( 0.f );
 
+//			printf("%f\n",matriz[0][0] );
+
 			for ( int i=1 ; i<n ; ++i ) {
 				As.push_back(matriz[i][i]);
 				Bs.push_back(matriz[i][i-1]);
+//				printf("%f\t%f\n",matriz[i][i], matriz[i][i-1]);
 			}
 		}
 
@@ -269,51 +283,60 @@ class Matriz
 
 		void QR_rec( std::vector<double> &As, std::vector<double> &Bs, double tol, int &maxIter, std::vector<double> &autoval, double shift )
 		{
-			int n = As.size();
+			int tam = As.size();
 
 //#if DEBUG
 //			printf("llamado con diag de tamano: %d\n", n);
 //#endif
 
-			std::vector<double> Cs(n);	// cosenos
-			std::vector<double> Ds(n);
-			std::vector<double> Qs(n);
-			std::vector<double> Rs(n);
-			std::vector<double> Ss(n);	// senos
-			std::vector<double> Xs(n);
-			std::vector<double> Ys(n);
-			std::vector<double> Zs(n);
+			std::vector<double> Cs(tam);	// cosetamos
+			std::vector<double> Ds(tam);
+			std::vector<double> Qs(tam);
+			std::vector<double> Rs(tam);
+			std::vector<double> Ss(tam);	// senos
+			std::vector<double> Xs(tam);
+			std::vector<double> Ys(tam);
+			std::vector<double> Zs(tam);
 
 			while ( maxIter > 0 ) {
+				__BITACORA
 				
-				if ( fabs(Bs[n-1]) <= tol ) {
+				while ( fabs(Bs[tam-1]) <= tol && tam>0 ) {
 					// el ultimo b es suficientemente chico, tengo un autoval
-					autoval.push_back( As[n-1]+shift );
-					n--;
+					autoval.push_back( As[tam-1]+shift );
+					tam--;
 				}
+
+				if (tam==0) return;
 				
-				if ( fabs(Bs[1]) <= tol ) {
+				int inicio = 1;
+				while ( fabs(Bs[inicio]) <= tol && tam>0) {
 					// el primer b es suficientemetne chico, tengo un autoval
-					autoval.push_back( As[0]+shift );
-					n--;
-					As[0] = As[1];
-					for ( int j=1 ; j<n ; ++j ) {
+					autoval.push_back( As[inicio-1]+shift );
+					tam--;
+					inicio++;
+				}
+				inicio--;
+				if (tam==0) return;
+				if ( inicio>0 ) {
+					As[0] = As[inicio];
+					for ( int j=inicio ; j<tam ; ++j ) {
 						As[j] = As[j+1];
 						Bs[j] = Bs[j+1];
 					}
 				}
 				//casos Base
-				if ( n==0 ) return;
+				if ( tam==0 ) return;
 
-				if ( n==1 ) {
+				if ( tam==1 ) {
 					autoval.push_back( As[0] + shift );
 					return;
 				}
 	
-				for ( int j=2 ; j < n-1 ; ++j ) {
+				for ( int j=2 ; j<tam-1 ; ++j ) {
 					if ( fabs(Bs[j]) <= tol ) {
 
-						printf("entre fabs b es: %f\n", fabs(Bs[j]));
+						printf("entre fabs b es: %f y j es: %d\n", fabs(Bs[j]), j );
 
 						//si tengo un numero pequeno parto la matrz
 						//para seguir teniendo una convergencia rapida
@@ -324,7 +347,7 @@ class Matriz
 						std::vector<double> As2;
 						std::vector<double> Bs2;
 
-						for ( int k=0 ; k<n ; ++k ) {
+						for ( int k=0 ; k<tam ; ++k ) {
 							
 							if ( k<j-1 ) {
 								As1.push_back(As[k]);
@@ -342,8 +365,8 @@ class Matriz
 					}
 				}
 
-				double b = -(As[n-2] + As[n-1]);
-				double c = As[n-1]*As[n-2] - Bs[n-1]*Bs[n-1];
+				double b = -(As[tam-2] + As[tam-1]);
+				double c = As[tam-1]*As[tam-2] - Bs[tam-1]*Bs[tam-1];
 				double d = sqrt(b*b - 4.f*c);
 
 //#if DEBUG
@@ -360,29 +383,29 @@ class Matriz
 					mu2 = 2.f*c / (d-b);
 				}
 
-				if ( n==2 ) {
+				if ( tam==2 ) {
 					autoval.push_back( mu1 + shift );
 					autoval.push_back( mu2 + shift );
 					return;
 				}
 
 				double sigma;
-				sigma = (fabs(mu1-As[n-1]) < fabs(mu2-As[n-1])) ? mu1 : mu2;
+				sigma = (fabs(mu1-As[tam-1]) < fabs(mu2-As[tam-1])) ? mu1 : mu2;
 
-#if DEBUG
-				printf("sigma\t%f, mu1\t%f, mu2\t%f\n", sigma, mu1, mu2 );
-				fflush(stdout);
-#endif
+//#if DEBUG
+//				printf("sigma\t%f, mu1\t%f, mu2\t%f\n", sigma, mu1, mu2 );
+//				fflush(stdout);
+//#endif
 
 				shift += sigma;
 
-				for ( int j=0 ; j<n ; ++j )
+				for ( int j=0 ; j<tam ; ++j )
 					Ds[j] = As[j] - sigma;
 
 				Xs[0] = Ds[0];
 				Ys[0] = Bs[1];
 	
-				for ( int j=1 ; j<n ; ++j ) {
+				for ( int j=1 ; j<tam ; ++j ) {
 					Zs[j-1] = sqrt( Xs[j-1]*Xs[j-1] + Bs[j]*Bs[j]);
 					
 					Cs[j] = Xs[j-1] / Zs[j-1];
@@ -392,24 +415,24 @@ class Matriz
 					Qs[j-1] = Cs[j] * Ys[j-1] + Ss[j] * Ds[j];
 					Xs[j] = -Ss[j] * Ys[j-1] + Cs[j] * Ds[j];
 
-					if ( j != n ) {
+					if ( j != tam ) {
 						Rs[j-1] = Ss[j] * Bs[j+1];
 						Ys[j] = Cs[j] * Bs[j+1];
 					}
 				}
 
-				Zs[n-1] = Xs[n-1];
+				Zs[tam-1] = Xs[tam-1];
 
 				As[0] = Ss[1] * Qs[0] + Cs[1] * Zs[0];
 
 				Bs[1] = Ss[1] * Zs[1];
 	
-				for ( int j=1 ; j<n-1 ; ++j ) {
+				for ( int j=1 ; j<tam-1 ; ++j ) {
 					As[j] = Ss[j+1] * Qs[j] + Cs[j] * Cs[j+1] * Zs[j];
 					Bs[j+1] = Ss[j+1] * Zs[j+1];
 				}
 
-				As[n-1] = Cs[n-1] * Zs[n-1];
+				As[tam-1] = Cs[tam-1] * Zs[tam-1];
 
 				maxIter--;
 			}
