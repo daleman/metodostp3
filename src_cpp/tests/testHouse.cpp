@@ -1,5 +1,6 @@
 #include "../master_header.h"
 #include "../matriz.h"
+
 #define TOL 0.0001
 #define maxIter 200
 
@@ -47,46 +48,22 @@ int main()
 	chau.imprimirMatriz();
 
 
-
 	printf("ya hice la tridiagonal, ahora hago householder\n");
 
 	vector<double> autoval;
-	//int maxIter = 100;
 
 	chau.QR( 0.0000001f, 10000 , autoval );
 
 	for (int i=0 ; i<autoval.size() ; ++i ) {
-		double autov = autoval[i];
-		sa.potenciaInversa(autov,x,0.000000001, 20000,autov,autovector);
-		printf( "\n El autovalor es: %f\n", autoval[i] );
+		double autovalActual = autoval[i];
+
+		sa.potenciaInversa(autovalActual,x,0.000000001, 20000);
+		printf( "\n El autovalor es: %f\n", autovalActual );
 		
-		
-		printf( "\n Su autovector asocioado es:");
-		autovector.imprimirMatriz();
+		printf( "\n Su autovector asocioado es:\n");
+		x.imprimirMatriz();
 	}
 
-	
-//
-//	//hola.householderQR( Q, R, P);
-//	hola.submatriz(1,4,1,1,sub);
-//	sub.imprimirMatriz();
-//	sub.HouseholderVector(salida,beta);
-//	salida.imprimirMatriz();
-//	printf("beta es %f\n",beta);
-//	salidat.transponer(salida);
-//	mult.cargarMultiplicacion(salida,salidat);
-//	mult.imprimirMatriz();
-//	mult.multiplicarEscalar(beta);
-//	mult.imprimirMatriz();
-//	//hola.imprimirMatriz();
-//	printf("esto es Q");
-//	Q.imprimirMatriz();
-//	printf("esto es R");
-//	R.imprimirMatriz();
-//	printf("esto es P");
-//	P.imprimirMatriz();
-//	
-//	
 	
 	return 0;
 	

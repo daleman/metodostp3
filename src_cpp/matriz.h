@@ -497,7 +497,7 @@ class Matriz
 		}
 
 				
-		void potenciaInversa(double guess, Matriz <T> &x, double tol, int maxIter, double &autovalor, Matriz<T> &autovector)
+		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter )
 		{
 			assert( x.cantFil() == n && x.cantCol()==1 );
 
@@ -513,43 +513,41 @@ class Matriz
 			Matriz<double> B(n,n);
 			Matriz<double> qident(n,n);
 
-			//mult.cargarMultiplicacion(xt,x);
-			double m = mult[0][0];
-			int k = 0;
-			
 
-			//xtA.cargarMultiplicacion(xt,*this);
-			//xtAx.cargarMultiplicacion(xtA,x);
-			double q = guess;//xtAx[0][0] / m;
-			qident.identidad(q);
-			//qident.multiplicarEscalar(q);
-			
+			qident.identidad( guess );
+
+//			x.imprimirMatriz();
 
 			int p = x.menorP();
 			double xp = x[p][0];
 			x.multiplicarEscalar(1.f/xp);
+
 			B.cargarResta(*this,qident);
 			B.factorizacionLU(P,L,U);
+
+			int k = 0;
 			while (k<n){
-				
-				y.resolverLU(x,P,L,U);		// resuelvo el sistema de ecuaciones
+
+//				x.imprimirMatriz();
+				// resuelvo el sistema de ecuaciones
+				y.resolverLU(x,P,L,U);
+//				y.imprimirMatriz();
 				double mu =  y[p][0];
 				p = y.menorP();
+
 				y.multiplicarEscalar(1.f/mu);
 				resta.cargarResta(x,y);
-				for (int i = 0; i < n; i++)
-				{
-					x[i][0] = y[i][0];
-				}
+
+				x.copiar( y );
 				double err = resta.normaInf();
-				printf("EL ERROR ES %f",err);
+
 				if ( fabs(err)<fabs(tol) )
 				{
-					mu = 1.f / mu + q;
-					autovalor = mu;
-					autovector.copiar(x);
+					mu = 1.f / mu + guess;
+					guess = mu;
 					return;
 				}
+
 				k++;
 			}
 			printf("se llego a la maxima cant de iteraciones");
@@ -569,7 +567,6 @@ class Matriz
 				}
 			}		
 					
-			uint filas = n;
 			for (i=0;i<n;i++){
 				
 				U.pivoteoParcial(i,P,L);
