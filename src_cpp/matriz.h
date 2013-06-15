@@ -190,13 +190,8 @@ class Matriz
 					alfa = - sqrt(q);
 				else
 					alfa = - sqrt(q) * matriz[k+1][k]/fabs(matriz[k+1][k]);
-
-				if( alfa != alfa ) printf("ALFAAAAAA\n");
 				
 				double rsq = alfa*alfa - alfa * matriz[k+1][k];
-
-				if( rsq!= rsq) printf("RASQQQQQQQQQ\n");
-				if( COMPARAR_DOUBLE(rsq, 0.f) ) printf("RASQQQQQQQQQ es CERO\n");
 
 				v[k] = 0.f;
 				v[k+1] = matriz[k+1][k] - alfa;
@@ -212,14 +207,12 @@ class Matriz
 						suma += matriz[j][i] * v[i];
 
 					u[j] = (1.f/rsq) * suma; 
-					if( suma!= suma) printf("SUMAAAAAA\n");
 				}
 			
 				double prod = 0.f;
 				for (int i=k+1; i<n ; i++)
 					prod += v[i] * u[i];
 				
-				if( prod!= prod) printf("PROOOOOD\n");
 				for (int j=k; j<n ; j++)
 					z[j] = u[j] - (prod/(2.f*rsq)) * v[j];
 				
@@ -289,19 +282,22 @@ class Matriz
 //			printf("llamado con diag de tamano: %d\n", n);
 //#endif
 
-			std::vector<double> Cs(tam);	// cosetamos
-			std::vector<double> Ds(tam);
-			std::vector<double> Qs(tam);
-			std::vector<double> Rs(tam);
-			std::vector<double> Ss(tam);	// senos
-			std::vector<double> Xs(tam);
-			std::vector<double> Ys(tam);
-			std::vector<double> Zs(tam);
+			std::vector<double> Cs(tam, 0.f);	// cosetamos
+			std::vector<double> Ds(tam, 0.f);
+			std::vector<double> Qs(tam, 0.f);
+			std::vector<double> Rs(tam, 0.f);
+			std::vector<double> Ss(tam, 0.f);	// senos
+			std::vector<double> Xs(tam, 0.f);
+			std::vector<double> Ys(tam, 0.f);
+			std::vector<double> Zs(tam, 0.f);
 
 			while ( maxIter > 0 ) {
 				__BITACORA
 				
-				while ( fabs(Bs[tam-1]) <= tol && tam>0 ) {
+				if (tam==0) return;
+
+				while ( fabs(Bs[tam-1])<=tol && tam>0 ) {
+					__BITACORA
 					// el ultimo b es suficientemente chico, tengo un autoval
 					autoval.push_back( As[tam-1]+shift );
 					tam--;
@@ -310,21 +306,21 @@ class Matriz
 				if (tam==0) return;
 				
 				int inicio = 1;
-				while ( fabs(Bs[inicio]) <= tol && tam>0) {
+				while ( fabs(Bs[inicio]) <= tol && inicio<tam) {
+					__BITACORA
 					// el primer b es suficientemetne chico, tengo un autoval
 					autoval.push_back( As[inicio-1]+shift );
-					tam--;
 					inicio++;
 				}
+				if (inicio==tam) return;
 				inicio--;
-				if (tam==0) return;
 				if ( inicio>0 ) {
-					As[0] = As[inicio];
-					for ( int j=inicio ; j<tam ; ++j ) {
-						As[j] = As[j+1];
-						Bs[j] = Bs[j+1];
+					for ( int j=0; j<tam-inicio ; ++j ) {
+						As[j] = As[j+inicio];
+						Bs[j] = Bs[j+inicio];
 					}
 				}
+				tam -= inicio;
 				//casos Base
 				if ( tam==0 ) return;
 

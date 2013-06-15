@@ -6,6 +6,7 @@
 #include <math.h>
 #include <assert.h>
 #include <string.h>
+#include <algorithm>
 #include <vector>
 #include <queue>
 #include <string>

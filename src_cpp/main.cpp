@@ -21,7 +21,9 @@ int main( int argc, char** argv )
 	vector<double> autoval;
 	int maxIter = 50;
 
-	XtX.QR( 0.01f, maxIter , autoval );
+	XtX.QR( 0.0001f, maxIter , autoval );
+
+	sort(autoval.begin(),autoval.end() );
 
 	for (uint i=0 ; i<autoval.size() ; ++i )
 		printf( "%f\n", autoval[i] );
