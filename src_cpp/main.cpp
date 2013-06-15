@@ -19,7 +19,7 @@ int main( int argc, char** argv )
 	XtX.contieneNaN();
 
 	vector<double> autoval;
-	int maxIter = 50;
+	int maxIter = 500000;
 
 	XtX.QR( 0.0001f, maxIter , autoval );
 

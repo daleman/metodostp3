@@ -292,12 +292,10 @@ class Matriz
 			std::vector<double> Zs(tam, 0.f);
 
 			while ( maxIter > 0 ) {
-				__BITACORA
 				
 				if (tam==0) return;
 
 				while ( fabs(Bs[tam-1])<=tol && tam>0 ) {
-					__BITACORA
 					// el ultimo b es suficientemente chico, tengo un autoval
 					autoval.push_back( As[tam-1]+shift );
 					tam--;
@@ -307,7 +305,6 @@ class Matriz
 				
 				int inicio = 1;
 				while ( fabs(Bs[inicio]) <= tol && inicio<tam) {
-					__BITACORA
 					// el primer b es suficientemetne chico, tengo un autoval
 					autoval.push_back( As[inicio-1]+shift );
 					inicio++;
@@ -331,8 +328,6 @@ class Matriz
 	
 				for ( int j=2 ; j<tam-1 ; ++j ) {
 					if ( fabs(Bs[j]) <= tol ) {
-
-						printf("entre fabs b es: %f y j es: %d\n", fabs(Bs[j]), j );
 
 						//si tengo un numero pequeno parto la matrz
 						//para seguir teniendo una convergencia rapida
