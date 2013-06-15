@@ -481,8 +481,6 @@ class Matriz
 						res = matriz[i][0];
 						p = i;
 				}
-				
-				
 			}
 			return p;
 		}
