@@ -522,8 +522,6 @@ class Matriz
 				y.resolverLU(B,P,L,U);		// resuelvo el sistema de ecuaciones
 				double mu =  y[p][0];
 				p = y.menorP();
-				double mu =  y[p][0];
-				p = y.menorP();
 				y.multiplicarEscalar(1/mu);
 				resta.cargarResta(x,y);
 				for (int i = 0; i < n; i++)
@@ -640,30 +638,30 @@ class Matriz
 		}
 		
 		void pivoteoParcial( int i,Matriz<T> &P,Matriz<T> &L)
-        {
-                uint k;
-                int max=i;
+        	{
+			uint k;
+			int max=i;
 
-                for (k=i;k<n;k++){
-                         max = (abs(matriz[k][i]) > abs(matriz[max][i])) ? k :max;
-                }
+			for (k=i;k<n;k++){
+				 max = (abs(matriz[k][i]) > abs(matriz[max][i])) ? k :max;
+			}
 
-                if( max != i ){
+			if( max != i ){
 
-                        for (k=0;k<n;k++){
-                                //cambio de filas
-                                T temp=matriz[i][k]; 
-                                matriz[i][k]= matriz[max][k];
-                                matriz[max][k] = temp;
-                                
-                                temp=P[i][k]; 
-                                P[i][k]= P[max][k];
-                                P[max][k] = temp;
-                                
-                                temp=L[i][k]; 
-                                L[i][k]= L[max][k];
-                                L[max][k] = temp;
-                        }               
+				for (k=0;k<n;k++){
+					//cambio de filas
+					T temp=matriz[i][k]; 
+					matriz[i][k]= matriz[max][k];
+					matriz[max][k] = temp;
+					
+					temp=P[i][k]; 
+					P[i][k]= P[max][k];
+					P[max][k] = temp;
+					
+					temp=L[i][k]; 
+					L[i][k]= L[max][k];
+					L[max][k] = temp;
+				}               
                 }                       
         }
 };
