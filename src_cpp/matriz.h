@@ -431,7 +431,7 @@ class Matriz
 			printf("Paso el max de iteraciones y QR no converge\n");
 		}
 
-		void multiplicarEscalar ( double &beta)
+		void multiplicarEscalar ( double beta)
 		{
 			for (int i = 0; i < n ; i++)
 				for (int j = 0; j < m ; j++)
@@ -505,9 +505,9 @@ class Matriz
 			mult.cargarMultiplicacion(xt,x);
 			double m = mult[0][0];
 			int k = 0;
-			this->factorizacionLU(P,L,U);
+			
 
-			xtA.cargarMultiplicacion(xt,this);
+			xtA.cargarMultiplicacion(xt,*this);
 			xtAx.cargarMultiplicacion(xtA,x);
 			double q = xtAx[0][0] / m;
 			qident.identidad();
@@ -516,20 +516,22 @@ class Matriz
 
 			int p = x.menorP();
 			double xp = x[p][0];
-			x.MultiplicarEscalar(1.f/xp);
+			x.multiplicarEscalar(1.f/xp);
+			B.cargarResta(*this,qident);
+			B.factorizacionLU(P,L,U);
 			while (k<n){
-				B.cargarResta(this,qident);
-				y.resolverLU(B,P,L,U);		// resuelvo el sistema de ecuaciones
+				
+				y.resolverLU(x,P,L,U);		// resuelvo el sistema de ecuaciones
 				double mu =  y[p][0];
 				p = y.menorP();
-				y.multiplicarEscalar(1/mu);
+				y.multiplicarEscalar(1.f/mu);
 				resta.cargarResta(x,y);
 				for (int i = 0; i < n; i++)
 				{
 					x[i][0] = y[i][0];
 				}
 				double err = resta.normaInf();
-				if (err < tol)
+				if ( COMPARAR_DOUBLE(err,tol) )
 				{
 					mu = 1.f / mu + q;
 					autovalor = mu;
