@@ -9,34 +9,16 @@ int main()
 {
 	Matriz<double> hola(4, 4);
 	Matriz<double> chau(4, 4);
-	Matriz<double> x(4, 1);
-	Matriz<double> autovector(4, 1);
-	
-//	Matriz<double> mult(4, 4);
-//	Matriz<double> sub(4,1);
-//	Matriz<double> salida(4,1);
-//	Matriz<double> salidat(1,4);
-//	
-//	double beta;
-//	Matriz<double> Q(4, 4);
-//	Matriz<double> R(4, 4);
-//	Matriz<double> P(4, 4);
 
 	double mat[4][4] = {{1,2,3,4},{2,3,4,5},{3,4,5,6},{4,5,6,7}};
-
-	for ( int i=0 ; i<4 ; ++i ) {
-		for ( int j=0 ; j<4 ; ++j ) {
+for ( int i=0 ; i<4 ; ++i ) { for ( int j=0 ; j<4 ; ++j ) {
 			hola[i][j] = mat[i][j];
 		}
 	}
-	
-		x[0][0] = 2.35;
-		x[1][0] = 4;
-		x[2][0] = 2.35;
-		x[3][0] = 1;
-	
+
 
 	chau.cargarTranspuestaPorMat( hola );
+	Matriz<double> original(chau);
 
 	chau.imprimirMatriz();
 	printf("hago la tridiagonal\n");
@@ -46,21 +28,26 @@ int main()
 	chau.imprimirMatriz();
 
 
-
 	printf("ya hice la tridiagonal, ahora hago householder\n");
 
 	vector<double> autoval;
-	//int maxIter = 100;
 
 	chau.QR( 0.0001f, maxIter , autoval );
 
+	Matriz<double> x(4, 1);
+	x[0][0] = 2.35;
+	x[1][0] = 4;
+	x[2][0] = 2.35;
+	x[3][0] = 1;
+
+	Matriz<double> autovector(4, 1);
+
 	for (int i=0 ; i<autoval.size() ; ++i ) {
 		double autov = autoval[i];
-		chau.potenciaInversa(x,TOL, maxIter,autov,autovector);
+		original.potenciaInversa(x,TOL, maxIter,autov);
 		printf( "\n El autovalor es: %f\n", autoval[i] );
 		
-		
-		printf( "\n Su autovector asocioado es:");
+		printf( "\n Su autovector asocioado es:\n");
 		autovector.imprimirMatriz();
 	}
 

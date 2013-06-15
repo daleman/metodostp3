@@ -77,6 +77,17 @@ class Matriz
 				for ( j=0 ; j<m ; ++j )
 					matriz[i][j] = A[i][j] - B[i][j];
 		}
+	
+		void restarle( Matriz<T> &A )
+		{
+			assert( n==A.n && m==A.m );
+
+			uint i,j;
+			for ( i=0 ; i<n ; ++i )
+				for ( j=0 ; j<m ; ++j )
+					matriz[i][j] -= A[i][j];
+		}
+
 
 		void cargarMultiplicacion( Matriz<T> &A, Matriz<T> &B )
 		{
@@ -438,18 +449,18 @@ class Matriz
 					matriz[i][j] = matriz[i][j] * beta;
 		}
 
-		void copiar (Matriz &entrada)
+		void copiar (Matriz<T> &entrada)
 		{
 			for (int i = 0; i < n ; i++)
 				for (int j = 0; j < m ; j++)
 					matriz[i][j] = entrada[i][j];
 		}
 
-		void identidad()
+		void identidad( double factor )
 		{
 			for (int i = 0; i < n ; i++)
 				for (int j = 0; j < m ; j++)
-					matriz[i][j] = (i==j) ? 1.f : 0.f;
+					matriz[i][j] = (i==j) ? factor : 0.f;
 		}
 
 		double norma()
@@ -486,61 +497,54 @@ class Matriz
 		}
 
 				
-		void potenciaInversa( Matriz <T> &x, double tol, int maxIter, double &autovalor, Matriz<T> &autovector)
+		void potenciaInversa( Matriz <double> &x, double tol, int maxIter, double &autovalor )
 		{
 			assert( x.cantFil() == n && x.cantCol()==1 );
 
-			Matriz<double> xt(1,n);
-			Matriz<double> resta(n,1);
-			Matriz<double> mult(1,1);
-			Matriz<double> xtA(1,n);
-			Matriz<double> xtAx(1,1);
 			Matriz<double> y(n,1);
+			Matriz<double> resta(n,1);
+
 			Matriz<double> P(n,n);	// asumo que P, L y U son cuadradas
 			Matriz<double> L(n,n);
 			Matriz<double> U(n,n);
+			
 			Matriz<double> B(n,n);
+
+			B.copiar(matriz);
+
 			Matriz<double> qident(n,n);
+			qident.identidad( autovalor );
 
-			mult.cargarMultiplicacion(xt,x);
-			double m = mult[0][0];
-			int k = 0;
-			
-
-			xtA.cargarMultiplicacion(xt,*this);
-			xtAx.cargarMultiplicacion(xtA,x);
-			double q = xtAx[0][0] / m;
-			qident.identidad();
-			qident.multiplicarEscalar(q);
-			
-
-			int p = x.menorP();
-			double xp = x[p][0];
-			x.multiplicarEscalar(1.f/xp);
-			B.cargarResta(*this,qident);
+			B.restarle(qident);
 			B.factorizacionLU(P,L,U);
-			while (k<n){
-				
-				y.resolverLU(x,P,L,U);		// resuelvo el sistema de ecuaciones
-				double mu =  y[p][0];
+
+			int p;
+
+			int k = 0;
+			while ( k<maxIter ){
+
+				// resuelvo el sistema de ecuaciones
+				y.resolverLU(x,P,L,U);
+
+				double mu = y[p][0];
+
 				p = y.menorP();
-				y.multiplicarEscalar(1.f/mu);
+				
+				double yp = y[p][0];
+				y.multiplicarEscalar(1.f/yp);
 				resta.cargarResta(x,y);
-				for (int i = 0; i < n; i++)
-				{
-					x[i][0] = y[i][0];
-				}
-				double err = resta.normaInf();
-				if ( COMPARAR_DOUBLE(err,tol) )
-				{
-					mu = 1.f / mu + q;
+
+				double err = fabs( resta.normaInf() );
+				x.copiar( y );
+
+				if ( err < tol ) {
+					mu = (1.f / mu) + autovalor;
 					autovalor = mu;
-					autovector.copiar(x);
 					return;
 				}
 				k++;
 			}
-			printf("se llego a la maxima cant de iteraciones");
+			printf("se llego a la maxima cant de iteraciones\n");
 			return;
 		}
 		
