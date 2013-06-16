@@ -20,5 +20,7 @@ $(OBJPATH)%.o : $(SRCPATH)%.cpp
 tp2 : $(OBJFILES) 
 	        $(CC) $(OBJFILES) -o $(EXEPATH)$(EJECUTABLE)
 		        
+remake : clean all
+
 clean :
 	        rm -f $(OBJPATH)*.o $(EXEPATH)*.exe

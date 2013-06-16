@@ -151,12 +151,7 @@ class Matriz
 
 			for ( i=0 ; i<n ; ++i )
 				for ( j=0 ; j<m ; ++j )
-					if (matriz[i][j] != matriz[i][j]) {
-						printf("CONTIENE NAAN!!!\n");
-						fflush(stdout);
-						return;
-					}
-			printf("No contiene NaN, ta todo bien por ahora\n");
+					assert( !(matriz[i][j]!=matriz[i][j]));
 		}
 
 		void guardarArchivo(char * archivo)
