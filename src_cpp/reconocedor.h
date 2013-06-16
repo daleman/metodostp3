@@ -13,7 +13,7 @@ class Reconocedor
 		~Reconocedor();
 
 		void guardarCovarianza( char *nombre_archivo );
-		void calcularAutovectores_QR( int maxIterQR, int maxIterInvPot, double tol);
+		void calcularAutovectores_QR( int maxIterQR, int maxIterInvPot, double tol, double minimo_autovalor_significativo );
 		void calcularAutovectores_potencia();
 
 //		reconocer_kVecinos( char *archivo );
