@@ -460,9 +460,9 @@ class Matriz
 
 		double norma()
 		{
-			double res;
+			double res = 0;
 			for (int i = 0; i < n; i++)
-				res = matriz[i][0] * matriz[i][0];
+				res += matriz[i][0] * matriz[i][0];
 
 			return sqrt(res);
 		}
@@ -490,6 +490,25 @@ class Matriz
 			}
 			return p;
 		}
+
+		void deflacion(double autovalor, Matriz<T> &autovector){
+			
+			int n = autovector.cantFil();
+			Matriz<double> temp(n,n);
+
+			Matriz<double> autovectorN( autovector );
+			Matriz<double> autovectorNT(1,n);
+
+			autovectorN.normalizar();
+
+			autovectorNT.transponer(autovectorN);
+	
+			temp.cargarMultiplicacion(autovectorN,autovectorNT);
+			temp.multiplicarEscalar(autovalor);
+
+			this->cargarResta(*this, temp);
+		}
+
 				
 		void potenciaSimple(double &guess, Matriz <T> &x, double tol, int maxIter ){
 			assert( x.cantFil() == n && x.cantCol()==1 );
