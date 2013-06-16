@@ -184,23 +184,25 @@ void Reconocedor::calcularAutovectores_potencia()
 {
 }
 
-/*
-int kvecinos(int cantComponentes, Matriz<T> imagen, Matriz<T> V,Matriz<T> X, Vector<int> labels,k)
+
+int kvecinos(int cantComponentes, Matriz<double> imagen, Matriz<double> V,Matriz<double> X, vector<int> labels)
 {
 	std::vector<double> digitos(10,0.f);
-	std::vector<double> labels;
 	std::vector<double> normas(cantComponentes,0.f);
+	Matriz<double> Vt(V.cantCol(),V.cantFil());
 	Vt.transponer(V);
-	Matriz<double> autodigito_orig = cargarMultiplicacion(Vt,imagen);
-	Matriz<T> x_i(cantComponentes,1);
-	Matriz<T> temp(cantComponentes,1);
+	Matriz<double> autodigito_orig(cantComponentes,1); 
+	autodigito_orig.cargarMultiplicacion(Vt,imagen);
+	Matriz<double> x_i(cantComponentes,1);
+	Matriz<double> temp(cantComponentes,1);
+	Matriz<double> resta(cantComponentes,1);
 	
-	for (i = 0; i < cantComponentes; i++)
+	for (unsigned int i = 0; i < cantComponentes; i++)
 	{
-		x_i.submatriz(i,i,1,n,X);		//agarro la fila i, es decir una imagen
+		x_i.submatriz(i,i,1,X.cantCol(),X);		//agarro la fila i, es decir una imagen
 		
 		temp.cargarMultiplicacion(Vt,x_i);
-		resta.cargarResta(autodigito_original,temp);
+		resta.cargarResta(autodigito_orig,temp);
 		normas[i] = resta.norma();
 	}
 	
@@ -210,14 +212,14 @@ int kvecinos(int cantComponentes, Matriz<T> imagen, Matriz<T> V,Matriz<T> X, Vec
 	// primeros elementos de normas, sumando 1 cuando vemos que es uno de los primeros k de menor distancia.
 	
 	double min = 0;
-	for (i = 0; i < k; i++)
+	for (unsigned int i = 0; i < cantComponentes; i++)
 	{
 		min = i;
-		for (j = i; j < n-1 ; j++)
+		for (unsigned int j = i; j < cantComponentes-1 ; j++)
 		{
 			min = ( normas [min] < normas[j+1] ) ?  min : (j+1) ;
 		}
-		double temp2 = normas [i]
+		double temp2 = normas [i];
 		double templ = labels[i];
 		labels[i] = labels[min];
 		normas[i] = normas[min];
@@ -227,9 +229,9 @@ int kvecinos(int cantComponentes, Matriz<T> imagen, Matriz<T> V,Matriz<T> X, Vec
 	}
 	
 	int max = 0;
-	for (i = 0; i < 9; i++)
+	for (unsigned int i = 0; i < 9; i++)
 	{
-		max = ( digitos[max] > digitos[i+1] ) ?  max : (i+1) ;
+		max = ( digitos[max] > digitos[i+1] ) ?  max : (i+1);
 	}
 }
-*/
+
