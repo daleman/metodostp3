@@ -497,64 +497,107 @@ class Matriz
 		}
 
 				
-		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter )
-		{
+		void potenciaSimple(double &guess, Matriz <T> &x, double tol, int maxIter ){
 			assert( x.cantFil() == n && x.cantCol()==1 );
 
-			//Matriz<double> xt(1,n);
 			Matriz<double> resta(n,1);
 			Matriz<double> mult(1,1);
-			//Matriz<double> xtA(1,n);
-			//Matriz<double> xtAx(1,1);
 			Matriz<double> y(n,1);
-			Matriz<double> P(n,n);	// asumo que P, L y U son cuadradas
-			Matriz<double> L(n,n);
-			Matriz<double> U(n,n);
-			Matriz<double> B(n,n);
-			Matriz<double> qident(n,n);
-
-
-			qident.identidad( guess );
-
-//			x.imprimirMatriz();
 
 			int p = x.menorP();
 			double xp = x[p][0];
 			x.multiplicarEscalar(1.f/xp);
 
-			B.cargarResta(*this,qident);
-			B.factorizacionLU(P,L,U);
+			double mu_0 = 0;
+			double mu_1 = 0;
+			double mu_s = 0;
 
 			int k = 0;
 			while (k<n){
 
-//				x.imprimirMatriz();
-				// resuelvo el sistema de ecuaciones
-				y.resolverLU(x,P,L,U);
-//				y.imprimirMatriz();
+				y.cargarMultiplicacion(*this,x);
+
 				double mu =  y[p][0];
+				mu_s = mu_0 - (mu_1 - mu_0)*(mu_1 - mu_0)/( mu - 2*mu_1 + mu_0 );
+
 				p = y.menorP();
 
+//				printf("matrix Y");
 				y.multiplicarEscalar(1.f/mu);
+		
 				resta.cargarResta(x,y);
 
 				x.copiar( y );
 				double err = resta.normaInf();
 
-				if ( fabs(err)<fabs(tol) )
+				if ( fabs(err)<fabs(tol) && k >= 4 )
 				{
-					mu = 1.f / mu + guess;
-					guess = mu;
+					guess = mu_s;
+					//printf("Termino Bien en %d iteraciones \n", k);
 					return;
 				}
 
 				k++;
+				mu_0 = mu_1;
+				mu_1 = mu;
 			}
+
 			printf("se llego a la maxima cant de iteraciones");
+
+			guess = mu_s;
 			return;
 		}
+
+		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter ){
+			assert( x.cantFil() == n && x.cantCol()==1 );
+
+			Matriz<double> resta(n,1);
+			Matriz<double> mult(1,1);
+			Matriz<double> y(n,1);
+
+			int p = x.menorP();
+			double xp = x[p][0];
+			x.multiplicarEscalar(1.f/xp);
+
+			double mu_0 = 0;
+			double mu_1 = 0;
+			double mu_s = 0;
+
+			int k = 0;
+			while (k<n){
+
+				y.cargarMultiplicacion(*this,x);
+
+				double mu =  y[p][0];
+				mu_s = mu_0 - (mu_1 - mu_0)*(mu_1 - mu_0)/( mu - 2*mu_1 + mu_0 );
+
+				p = y.menorP();
+
+//				printf("matrix Y");
+				y.multiplicarEscalar(1.f/mu);
 		
-		
+				resta.cargarResta(x,y);
+
+				x.copiar( y );
+				double err = resta.normaInf();
+
+				if ( fabs(err)<fabs(tol) && k >= 4 )
+				{
+					guess = mu_s;
+					printf("Termino Bien en %d iteraciones \n", k);
+					return;
+				}
+
+				k++;
+				mu_0 = mu_1;
+				mu_1 = mu;
+			}
+
+			printf("se llego a la maxima cant de iteraciones");
+
+			guess = mu_s;
+			return;
+		}
 
 		void factorizacionLU(  Matriz<T> &P, Matriz<T> &L, Matriz<T> &U )
 		{
@@ -677,5 +720,60 @@ class Matriz
                 }                       
         }
 };
+
+/*
+		Matriz(int _n, int _m) //Constructor
+		Matriz( Matriz<T> &B ) //Constructor
+
+		int cantFil() { return n; }
+		int cantCol() { return m; }
+
+		void cargarSuma( Matriz<T> &A, Matriz<T> &B)
+		void cargarResta( Matriz<T> &A, Matriz<T> &B)
+		void cargarMultiplicacion( Matriz<T> &A, Matriz<T> &B )
+		void restarle( Matriz<T> &A )
+
+		void cargarTranspuestaPorMat(Matriz<T> &A )
+		void transponer( Matriz<T> &B )
+		void imprimirMatriz()
+
+		void contieneNaN()
+
+
+		void guardarArchivo(char * archivo)
+
+
+		void Householder ()
+		void submatriz(int desde1, int hasta1, int desde2, int hasta2, Matriz<T> &salida)
+		void dameDiagonales( std::vector<double> &As, std::vector<double> &Bs )
+
+		void QR( double tol, int maxIter, std::vector<double> &autoval )
+
+		void QR_rec( std::vector<double> &As, std::vector<double> &Bs, double tol, int &maxIter, std::vector<double> &autoval, double shift )
+
+
+		void multiplicarEscalar ( double beta)
+		void copiar (Matriz<T> &entrada)
+
+		void identidad( double factor )
+		double norma()
+
+		double normaInf()
+		int menorP()
+
+
+		void potenciaSimple(double &guess, Matriz <T> &x, double tol, int maxIter ){
+		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter ){
+
+
+		void factorizacionLU(  Matriz<T> &P, Matriz<T> &L, Matriz<T> &U )
+		void resolverLU(Matriz<T> &entrada, Matriz<T> &P, Matriz<T> &L, Matriz<T> &U)
+
+		void forwardSubstituion( Matriz<T> &L, Matriz<T> &B ,Matriz<T> &res )
+		void backwardSubstitution( Matriz<T> &U, Matriz<T> &B ,Matriz<T> &res )
+
+		void pivoteoParcial( int i,Matriz<T> &P,Matriz<T> &L)
+
+/*
 
 #endif
