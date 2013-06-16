@@ -470,7 +470,7 @@ class Matriz
 		void normalizar()
 		{
 			double norm = this->norma();
-			this->multiplicarEscalar( norm );
+			this->multiplicarEscalar( 1.f/norm );
 		}
 
 		double normaInf()
