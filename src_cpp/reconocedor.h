@@ -16,22 +16,32 @@ class Reconocedor
 		void calcularAutovectores_QR( int maxIterQR, int maxIterInvPot, double tol, double minimo_autovalor_significativo );
 		void calcularAutovectores_potencia();
 
-//		reconocer_kVecinos( char *archivo );
+		void abrir_intancia_a_evaluar( char *archivo, int primero, int ultimo );
+
+		void reconocer_kVecinos( char *archivo );
 //		reconocer_kPromedio( char *archivo );
 
 		int cuantosAutovectores() { return cantAutovectores; };
 
+	private :
+	
+		void tcs();
+
 		Matriz<double> *imagenes;
+		int *labels;
+
 		Matriz<double> *covarianza;
 		Matriz<double> *autovectores;
+		Matriz<double> *tcs;
 
+		Matriz<double> *aEvaluar;
+		int *labels_aEvaluar;
+		Matriz<double> *tcs_aEvaluar;
 
-	private :
-		
 		int cantidad;
-		int *labels;
 		int cantAutovectores;
-		// supongo que mas cosas
+		bool instanciaAbierta;
+		bool tcsCalculados;
 };
 
 #endif

@@ -7,6 +7,9 @@ using namespace std;
 
 Reconocedor::Reconocedor( char *puntoDat )
 {
+	instanciaAbierta = false;
+	tcsCalculados = false;
+
 	FILE *data = fopen( puntoDat, "r" );
 
 	fscanf( data, "%d\n", &cantidad );
@@ -58,11 +61,15 @@ Reconocedor::Reconocedor( char *puntoDat )
 	covarianza = new Matriz<double> (TAMANO_IMAGEN,TAMANO_IMAGEN);
 	covarianza->cargarTranspuestaPorMat(X);
 
+	autovectores = new Matriz<double> (TAMANO_IMAGEN, TAMANO_IMAGEN);
 	cantAutovectores = 0;
 }
 
 Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 {
+	instanciaAbierta = false;
+	tcsCalculados = false;
+
 	FILE *data = fopen( puntoDat, "r" );
 
 	fscanf( data, "%d\n", &cantidad );
@@ -108,6 +115,7 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 
 	fclose( dataCov );
 
+	autovectores = new Matriz<double> (TAMANO_IMAGEN, TAMANO_IMAGEN);
 	cantAutovectores = 0;
 }
 
@@ -115,7 +123,14 @@ Reconocedor::~Reconocedor()
 {
 	delete imagenes;
 	delete covarianza;
+	delete autovectores;
+	delete tcs;
 	delete[] labels;
+
+	if (intanciaAbierta) {
+		delete aEvaluar;
+		delete[] labels_aEvaluar;
+	}
 }
 
 void Reconocedor::guardarCovarianza( char *nombre )
@@ -136,10 +151,53 @@ void Reconocedor::guardarCovarianza( char *nombre )
 	fclose(guardar);
 }
 
+void Reconocedor::abrir_instacia_a_evaluar( char *archivo, int primero, int ultimo )
+{
+	FILE *data = fopen( archivo, "r" );
+
+	fscanf( data, "%d\n", &cantidad );
+
+	if ( ultimo > cantidad ) {
+		printf("pediste mas indices de los que hay, esto va a explotar\n");
+		return;
+	}
+
+	int cuantosPidio = ultimo - primero + 1;
+
+	aEvaluar = new Matriz<double>( cuantosPidio, TAMANO_IMAGEN );
+	labels_aEvaluar = new int[cuantosPidio]; 
+
+	int numerito;
+
+	int indice = 0;
+	for ( int i=0 ; i<cantidad ; ++i ) {
+		fscanf( data, "%d ", &numerito );
+
+		if ( i+1 >= primero && i+1 <= ultimo ) {
+			labels_aEvaluar[indice] = numerito;
+			indice++;
+		}
+	}
+
+	indice = 0;
+	for ( int i=0 ; i<cantidad ; ++i ) {
+		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
+			fscanf( data, "%d ", &numerito );
+
+			if ( i+1 >= primero && i+1 <= ultimo ) {
+				(*aEvaluar)[indice][j] = (double) numerito;
+				indice++;
+			}
+		}
+	}
+
+	fclose( data );
+
+	instanciaAbierta = true;
+}
+
 void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia, double tolerancia, double minSignificativo )
 {
-	autovectores = new Matriz<double> (TAMANO_IMAGEN, TAMANO_IMAGEN);
-
 	autovectores->copiar(*covarianza);
 	autovectores->contieneNaN();
 
@@ -173,6 +231,8 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 
 		covarianza->potenciaInversa(autovalActual, x, tolerancia, maxIterInvPotencia);
 
+		x.normalizar();
+
 		// lo guardo en mi matriz de autovectores
 		for( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
 			(*autovectores)[j][i] = x[j][0];
@@ -185,19 +245,25 @@ void Reconocedor::calcularAutovectores_potencia()
 }
 
 
-int kvecinos(int cantComponentes, Matriz<double> imagen, Matriz<double> V,Matriz<double> X, vector<int> labels)
+int Reconocedor::reconocer_kVecinos( int cantComponentes, int k )
 {
-	std::vector<double> digitos(10,0.f);
-	std::vector<double> normas(cantComponentes,0.f);
-	Matriz<double> Vt(V.cantCol(),V.cantFil());
-	Vt.transponer(V);
+	if (!instanciaAbierta) {
+		printf("No se elegio instancia a evaluar\n");
+		return;
+	}
+
+	tcs();
+
+	vector<double> digitos(10,0.f);
+	vector<double> normas(cantComponentes,0.f);
+
 	Matriz<double> autodigito_orig(cantComponentes,1); 
 	autodigito_orig.cargarMultiplicacion(Vt,imagen);
 	Matriz<double> x_i(cantComponentes,1);
 	Matriz<double> temp(cantComponentes,1);
 	Matriz<double> resta(cantComponentes,1);
 	
-	for (unsigned int i = 0; i < cantComponentes; i++)
+	for (int i = 0; i < cantComponentes; i++)
 	{
 		x_i.submatriz(i,i,1,X.cantCol(),X);		//agarro la fila i, es decir una imagen
 		
@@ -212,10 +278,10 @@ int kvecinos(int cantComponentes, Matriz<double> imagen, Matriz<double> V,Matriz
 	// primeros elementos de normas, sumando 1 cuando vemos que es uno de los primeros k de menor distancia.
 	
 	double min = 0;
-	for (unsigned int i = 0; i < cantComponentes; i++)
+	for (int i = 0; i < cantComponentes; i++)
 	{
 		min = i;
-		for (unsigned int j = i; j < cantComponentes-1 ; j++)
+		for (int j = i; j < cantComponentes-1 ; j++)
 		{
 			min = ( normas [min] < normas[j+1] ) ?  min : (j+1) ;
 		}
@@ -229,9 +295,25 @@ int kvecinos(int cantComponentes, Matriz<double> imagen, Matriz<double> V,Matriz
 	}
 	
 	int max = 0;
-	for (unsigned int i = 0; i < 9; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		max = ( digitos[max] > digitos[i+1] ) ?  max : (i+1);
 	}
 }
 
+void Reconocedor::tcs()
+{
+	int cantIm = imagenes->cantFil();
+	int tamIm = imagenes->cantCol();
+
+	tcs = new Matriz<double>( cantIm, tamIm );
+
+	int cantImEval = aEvaluar->cantFil();
+
+	tcs = new Matriz<double>( cantImEval, tamIm );
+
+	tcs->cargarMultiplicacion( *imagenes, *autovectores );
+	tcs_aEvaluar->cargarMultiplicacion( *aEvaluar, *autovectores );
+
+	tcsCalulculados = true;
+}

@@ -467,6 +467,12 @@ class Matriz
 			return sqrt(res);
 		}
 
+		void normalizar()
+		{
+			double norma = norma();
+			multiplicarPorEscalar( norma );
+		}
+
 		double normaInf()
 		{
 			double res = matriz[0][0];

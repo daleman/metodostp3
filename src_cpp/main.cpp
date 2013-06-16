@@ -14,7 +14,7 @@ int main( int argc, char** argv )
 
 	Reconocedor rec2( argv[1], nombre );
 
-	rec2.calcularAutovectores_QR( 100, 30, 0.001f, 0.1f );
+	rec2.calcularAutovectores_QR( 1000, 30, 0.001f, 0.1f );
 
 	printf("tengo %d autovectores\n", rec2.cuantosAutovectores() );
 
