@@ -98,10 +98,11 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 
 	covarianza = new Matriz<double> (dim1, dim2);
 
+	double numeritoDoubel;
 	for ( int i=0 ; i<cantidad ; ++i ) {
 		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
-			fscanf( dataCov, "%d ", &numerito );
-			(*covarianza)[i][j] = (double) numerito;
+			fscanf( dataCov, "%lf ", &numeritoDoubel );
+			(*covarianza)[i][j] = numeritoDoubel;
 		}
 	}
 
