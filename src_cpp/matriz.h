@@ -521,7 +521,7 @@ class Matriz
 			B.factorizacionLU(P,L,U);
 
 			int k = 0;
-			while (k<n){
+			while (k<n) {
 
 //				x.imprimirMatriz();
 				// resuelvo el sistema de ecuaciones
@@ -545,7 +545,7 @@ class Matriz
 
 				k++;
 			}
-			printf("se llego a la maxima cant de iteraciones");
+			printf("se llego a la maxima cant de iteraciones\n");
 			return;
 		}
 		
