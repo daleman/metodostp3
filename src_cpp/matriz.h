@@ -469,8 +469,8 @@ class Matriz
 
 		void normalizar()
 		{
-			double norma = norma();
-			multiplicarPorEscalar( norma );
+			double norm = this->norma();
+			this->multiplicarEscalar( norm );
 		}
 
 		double normaInf()
