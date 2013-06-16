@@ -2,8 +2,17 @@
 
 #define TAMANO_IMAGEN 784
 
-
 using namespace std;
+
+
+
+// PARA COMPARAR TUPLAS POR LA SEGUNDA COMPONENTE
+//template< typename T >
+//bool compararTupla ( T *i,T *j ) { return ( i[1]<j[1] ); }
+
+bool compararTupla ( double *i, double *j ) { return ( i[1]<j[1] ); }
+
+
 
 Reconocedor::Reconocedor( char *puntoDat )
 {
@@ -122,12 +131,14 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 Reconocedor::~Reconocedor()
 {
 	delete imagenes;
-	delete covarianza;
-	delete autovectores;
-	delete tcs;
 	delete[] labels;
 
-	if (intanciaAbierta) {
+	delete covarianza;
+	delete autovectores;
+
+	if (tcsCalculados) delete tcs;
+
+	if (instanciaAbierta) {
 		delete aEvaluar;
 		delete[] labels_aEvaluar;
 	}
@@ -151,7 +162,7 @@ void Reconocedor::guardarCovarianza( char *nombre )
 	fclose(guardar);
 }
 
-void Reconocedor::abrir_instacia_a_evaluar( char *archivo, int primero, int ultimo )
+void Reconocedor::abrir_instancia_a_evaluar( char *archivo, int primero, int ultimo )
 {
 	FILE *data = fopen( archivo, "r" );
 
@@ -178,7 +189,6 @@ void Reconocedor::abrir_instacia_a_evaluar( char *archivo, int primero, int ulti
 			indice++;
 		}
 	}
-
 	indice = 0;
 	for ( int i=0 ; i<cantidad ; ++i ) {
 		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
@@ -186,9 +196,10 @@ void Reconocedor::abrir_instacia_a_evaluar( char *archivo, int primero, int ulti
 
 			if ( i+1 >= primero && i+1 <= ultimo ) {
 				(*aEvaluar)[indice][j] = (double) numerito;
-				indice++;
 			}
 		}
+		if ( i+1 >= primero && i+1 <= ultimo )
+			indice++;
 	}
 
 	fclose( data );
@@ -249,15 +260,19 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 {
 	if (!instanciaAbierta) {
 		printf("No se elegio instancia a evaluar\n");
-		return;
+		return -1;
 	}
 
-	tcs();
+	calcular_tcs();
 
 	if ( indice_imagen > aEvaluar->cantFil() ) {
 		printf("pediste una imagen fuera de rango\n");
-		return;
+		return -1;
 	}
+
+	//me lo dan partiendo de 1
+	//pero yo lo uso desde 0
+	indice_imagen--;
 
 	int cantIm = imagenes->cantFil();
 
@@ -267,19 +282,39 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 
 	for ( int i=0 ; i<cantIm ; ++i ) {
 
-		resta = 0;
-		for( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
-			resta[i][0] = (*aEvaluar)[indice_imagen][j] - (*imagenes)[i][j];
-			resta.norma();
+		for( int j=0 ; j<TAMANO_IMAGEN ; ++j )
+			resta[j][0] = (*aEvaluar)[indice_imagen][j] - (*imagenes)[i][j];
+
+		double distancia = resta.norma();
+		
+		double labelDistancia[2];
+		labelDistancia[0] = labels[i];
+		labelDistancia[1] = distancia;
+		distancias.push_back(labelDistancia);
+	}
 
 
-	vector< int* > frecuencias;
+	sort( distancias.begin(), distancias.end(), compararTupla );
 
+	vector<int> frecuencias(10, 0);
 
+	for (int i=0 ; i<k ; ++i )
+		frecuencias[ (int) distancias[i][0] ]++;	// jaja
 
+	int mejor = k;		// k es una cota superior para las frecuencias
+	int digito = -1;
+
+	for (int i=0 ; i<10 ; ++i ) {
+		if ( frecuencias[i] < mejor ) {
+			mejor = frecuencias[i];
+			digito = i;
+		}
+	}
+
+	return digito;
 }
 
-void Reconocedor::tcs()
+void Reconocedor::calcular_tcs()
 {
 	int cantIm = imagenes->cantFil();
 	int tamIm = imagenes->cantCol();
@@ -288,10 +323,10 @@ void Reconocedor::tcs()
 
 	int cantImEval = aEvaluar->cantFil();
 
-	tcs = new Matriz<double>( cantImEval, tamIm );
+	tcs_aEvaluar = new Matriz<double>( cantImEval, tamIm );
 
 	tcs->cargarMultiplicacion( *imagenes, *autovectores );
 	tcs_aEvaluar->cargarMultiplicacion( *aEvaluar, *autovectores );
 
-	tcsCalulculados = true;
+	tcsCalculados = true;
 }

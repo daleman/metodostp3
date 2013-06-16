@@ -16,16 +16,16 @@ class Reconocedor
 		void calcularAutovectores_QR( int maxIterQR, int maxIterInvPot, double tol, double minimo_autovalor_significativo );
 		void calcularAutovectores_potencia();
 
-		void abrir_intancia_a_evaluar( char *archivo, int primero, int ultimo );
+		void abrir_instancia_a_evaluar( char *archivo, int primero, int ultimo );
 
-		void reconocer_kVecinos( char *archivo );
+		int reconocer_kVecinos( int cantComponentes, int k, int indice_imagen );
 //		reconocer_kPromedio( char *archivo );
 
 		int cuantosAutovectores() { return cantAutovectores; };
 
 	private :
 	
-		void tcs();
+		void calcular_tcs();
 
 		Matriz<double> *imagenes;
 		int *labels;

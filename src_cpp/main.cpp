@@ -8,15 +8,15 @@ int main( int argc, char** argv )
 {
 	Reconocedor rec( argv[1] );
 
-	char *nombre = "matCov.cov";
+	rec.calcularAutovectores_QR( 1000, 30, 0.001f, 0.1f );
 
-	rec.guardarCovarianza( nombre );
+	printf("tengo %d autovectores\n", rec.cuantosAutovectores() );
 
-	Reconocedor rec2( argv[1], nombre );
+	rec.abrir_instancia_a_evaluar( argv[2], 1, 2);
 
-	rec2.calcularAutovectores_QR( 1000, 30, 0.001f, 0.1f );
+	int dig = rec.reconocer_kVecinos(50, 20, 2);
 
-	printf("tengo %d autovectores\n", rec2.cuantosAutovectores() );
+	printf("me dio esto: %d\n", dig);
 
 	return 0;
 }
