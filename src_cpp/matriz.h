@@ -490,6 +490,56 @@ class Matriz
 			}
 			return p;
 		}
+				
+		void potenciaSimple(double &guess, Matriz <T> &x, double tol, int maxIter ){
+			assert( x.cantFil() == n && x.cantCol()==1 );
+
+			Matriz<double> resta(n,1);
+			Matriz<double> mult(1,1);
+			Matriz<double> y(n,1);
+
+			int p = x.menorP();
+			double xp = x[p][0];
+			x.multiplicarEscalar(1.f/xp);
+
+			double mu_0 = 0;
+			double mu_1 = 0;
+			double mu_s = 0;
+
+			int k = 0;
+			while (k<n){
+
+				y.cargarMultiplicacion(*this,x);
+
+				double mu =  y[p][0];
+				mu_s = mu_0 - (mu_1 - mu_0)*(mu_1 - mu_0)/( mu - 2*mu_1 + mu_0 );
+
+				p = y.menorP();
+
+//				printf("matrix Y");
+				y.multiplicarEscalar(1.f/mu);
+		
+				resta.cargarResta(x,y);
+
+				x.copiar( y );
+				double err = resta.normaInf();
+
+				if ( fabs(err)<fabs(tol) && k >= 4 )
+				{
+					guess = mu_s;
+					//printf("Termino Bien en %d iteraciones \n", k);
+					return;
+				}
+
+				k++;
+				mu_0 = mu_1;
+				mu_1 = mu;
+			}
+
+			printf("se llego a la maxima cant de iteraciones");
+
+			guess = mu_s;
+		}
 
 				
 		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter )
@@ -546,7 +596,6 @@ class Matriz
 				k++;
 			}
 			printf("se llego a la maxima cant de iteraciones\n");
-			return;
 		}
 		
 		
