@@ -14,7 +14,7 @@ class Reconocedor
 
 		void guardarCovarianza( char *nombre_archivo );
 		void calcularAutovectores_QR( int maxIterQR, int maxIterInvPot, double tol, int cuantosAutovec);
-		void calcularAutovectores_potencia();
+		void calcularAutovectores_potencia(int maxIterPot, double tol, int cuantosAutovec);
 
 		void abrir_instancia_a_evaluar( char *archivo, int primero, int ultimo );
 

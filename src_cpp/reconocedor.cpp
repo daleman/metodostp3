@@ -258,9 +258,38 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 	}
 }
 
-void Reconocedor::calcularAutovectores_potencia()
+void Reconocedor::calcularAutovectores_potencia( int maxIterPotSim, double tolerancia, int cuantosAutovec )
 {
+	if ( cuantosAutovec > covarianza->cantFil() ) {
+		printf("pediste mas autovalores que la cantidad de dimensiones de la matriz, esto va a explotar\n");
+		return;
+	}
+
+	autovectores->copiar(*covarianza);
+	autovectores->contieneNaN();
+	double autovalActual;
+
+	for (int i=0 ; i<cuantosAutovec ; ++i ) {
+
+		covarianza->potenciaSimple(autovalActual,autovectores[i],tolerancia, maxIterPotSim);
+
+		// agarro los autovalores de menor a mayor!
+		if ( fabs(autovalActual) < MIN_SIGNIFICATIVO )
+			break;
+		else
+			cantAutovectores++;	//calculo un autovector
+
+		covarianza->deflacion(autovalActual,autovectores[i]);
+
+
+//		printf("%f %f\n", autovalActual, autoval[autoval.size()-i-2]);
+//		__BITACORA
+
+
+	}
 }
+
+
 
 
 int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imagen )
