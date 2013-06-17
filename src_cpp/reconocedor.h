@@ -25,6 +25,11 @@ class Reconocedor
 
 		int cuantosAutovectores() { return cantAutovectores; };
 
+		int reconocer_digitoMedio(int, int);
+
+		Matriz<double> *autovectores;
+
+
 	private :
 	
 		void calcular_tcs();
@@ -33,7 +38,6 @@ class Reconocedor
 		int *labels;
 
 		Matriz<double> *covarianza;
-		Matriz<double> *autovectores;
 		Matriz<double> *tcs;
 
 		Matriz<double> *aEvaluar;
