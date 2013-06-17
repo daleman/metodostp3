@@ -365,6 +365,160 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 	return digito;
 }
 
+int Reconocedor::reconocer_distanciaMedia( int cantComponentes, int indice_imagen )
+{
+	if (!instanciaAbierta) {
+		printf("No se elegio instancia a evaluar\n");
+		return -1;
+	}
+
+	if ( indice_imagen > aEvaluar->cantFil() ) {
+		printf("pediste una imagen fuera de rango\n");
+		return -1;
+	}
+
+	if ( cantComponentes > cantAutovectores ) {
+		printf("pediste mas componenes principales que la cantidad de autovectores que calculaste\n");
+		return -1;
+	}
+
+	indice_imagen--;
+
+	int cantIm = imagenes->cantFil();
+
+	vector<double> distanciasMedias(10, 0.f);
+	vector<int> cantApariciones(10, 0);
+
+	Matriz<double> resta(cantComponentes,1);
+
+	for ( int i=0 ; i<cantIm ; ++i ) {
+
+		for( int j=0 ; j<cantComponentes ; ++j )
+			resta[j][0] = (*tcs_aEvaluar)[indice_imagen][j] - (*tcs)[i][j];
+
+		double distancia = resta.norma();
+		
+		//aparecion un a vez mas
+		cantApariciones[ labels[i] ]++;
+		//con esta distancIA
+		distanciasMedias[ labels[i] ] += distancia;
+	}
+
+
+	double mejor = INFINITY;
+	int digito = -1;
+
+	for (int i=0 ; i<10 ; ++i ) {
+//		printf("%d ", frecuencias[i]);
+
+		double mediaActual = distanciasMedias[i]/(double)cantApariciones[i];
+		if ( mediaActual < mejor ) {
+			mejor = mediaActual;
+			digito = i;
+		}
+	}
+
+	return digito;
+}
+
+int Reconocedor::reconocer_kVecinosPonderados( int cantComponentes, int k, int indice_imagen )
+{
+	if (!instanciaAbierta) {
+		printf("No se elegio instancia a evaluar\n");
+		return -1;
+	}
+
+	if ( indice_imagen > aEvaluar->cantFil() ) {
+		printf("pediste una imagen fuera de rango\n");
+		return -1;
+	}
+
+	if ( cantComponentes > cantAutovectores ) {
+		printf("pediste mas componenes principales que la cantidad de autovectores que calculaste\n");
+		return -1;
+	}
+
+	//me lo dan partiendo de 1
+	//pero yo lo uso desde 0
+	indice_imagen--;
+
+	int cantIm = imagenes->cantFil();
+
+	//first LABEL
+	//second DISTANCIA
+	vector< pair<int,double> > distancias;
+
+	Matriz<double> resta(cantComponentes,1);
+
+	for ( int i=0 ; i<cantIm ; ++i ) {
+
+		for( int j=0 ; j<cantComponentes ; ++j )
+			resta[j][0] = (*tcs_aEvaluar)[indice_imagen][j] - (*tcs)[i][j];
+
+		double distancia = resta.norma();
+		
+		pair<int,double> labelDistancia;
+		labelDistancia.first = labels[i];
+		labelDistancia.second = distancia;
+
+		distancias.push_back(labelDistancia);
+	}
+
+
+	sort( distancias.begin(), distancias.end(), compararTupla );
+
+	vector<int> frecuencias(10, 0);
+	vector<double> distanciasMedias(10, 0.f);
+
+	for (int i=0 ; i<k ; ++i ) {
+
+		int labelActual = distancias[i].first;
+
+		frecuencias[ labelActual ]++;
+		distanciasMedias[ labelActual ] += distancias[i].second;
+	}
+
+	double mejor = INFINITY;
+	int digito = -1;
+
+	for (int i=0 ; i<10 ; ++i ) {
+
+//		printf("%d ", frecuencias[i]);
+		double mediaActual = (frecuencias[i]==0)? INFINITY : distanciasMedias[i]/(double)frecuencias[i];
+
+		if ( mediaActual < mejor ) {
+			mejor = mediaActual;
+			digito = i;
+		}
+	}
+
+	return digito;
+}
+
+int Reconocedor::reconocer_digitoMedio( int cantComponentes, int indice_imagen )
+{
+	if (!instanciaAbierta) {
+		printf("No se elegio instancia a evaluar\n");
+		return -1;
+	}
+
+	if ( indice_imagen > aEvaluar->cantFil() ) {
+		printf("pediste una imagen fuera de rango\n");
+		return -1;
+	}
+
+	if ( cantComponentes > cantAutovectores ) {
+		printf("pediste mas componenes principales que la cantidad de autovectores que calculaste\n");
+		return -1;
+	}
+
+	indice_imagen--;
+
+	return 0;
+}
+
+
+
 void Reconocedor::calcular_tcs()
 {
 	int cantIm = imagenes->cantFil();
