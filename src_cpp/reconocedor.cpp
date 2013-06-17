@@ -266,27 +266,33 @@ void Reconocedor::calcularAutovectores_potencia( int maxIterPotSim, double toler
 		return;
 	}
 
-	autovectores->copiar(*covarianza);
-	autovectores->contieneNaN();
 	double autovalActual;
+
+	autovectores = new Matriz<double> (TAMANO_IMAGEN, cuantosAutovec);
+
+	Matriz<double> autovectorActual(TAMANO_IMAGEN, 1);
+
+	for( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
+		autovectorActual[j][0] = 1.f;
+	}
+
 
 	for (int i=0 ; i<cuantosAutovec ; ++i ) {
 
-		covarianza->potenciaSimple(autovalActual,autovectores[i],tolerancia, maxIterPotSim);
+		covarianza->potenciaSimple(autovalActual,autovectorActual,tolerancia, maxIterPotSim);
 
-		// agarro los autovalores de menor a mayor!
 		if ( fabs(autovalActual) < MIN_SIGNIFICATIVO )
 			break;
 		else
 			cantAutovectores++;	//calculo un autovector
 
-		covarianza->deflacion(autovalActual,autovectores[i]);
 
+		// lo guardo en mi matriz de autovectores
+		for( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
+			(*autovectores)[j][i] = autovectorActual[j][0];
+		}
 
-//		printf("%f %f\n", autovalActual, autoval[autoval.size()-i-2]);
-//		__BITACORA
-
-
+		covarianza->deflacion(autovalActual,autovectorActual);
 	}
 }
 

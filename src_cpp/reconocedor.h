@@ -4,6 +4,8 @@
 #include "master_header.h"
 #include "matriz.h"
 
+#define COMPONENTES 20
+
 class Reconocedor
 {
 	public :
