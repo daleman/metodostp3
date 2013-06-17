@@ -297,6 +297,9 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 		double labelDistancia[2];
 		labelDistancia[0] = labels[i];
 		labelDistancia[1] = distancia;
+
+//		printf("distancia a %f es %f\n", labelDistancia[0], labelDistancia[1]);
+
 		distancias.push_back(labelDistancia);
 	}
 
@@ -307,6 +310,11 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 
 	for (int i=0 ; i<k ; ++i )
 		frecuencias[ (int) distancias[i][0] ]++;	// jaja
+
+	for (int i=0 ; i<10 ; ++i )
+		printf( "%d ", frecuencias[i] );
+	printf("\n");
+
 
 	int mejor = 0;
 	int digito = -1;
