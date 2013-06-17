@@ -4,8 +4,7 @@
 #include "master_header.h"
 #include "matriz.h"
 
-class Reconocedor
-{
+class Reconocedor {
 	public :
 		
 		Reconocedor( char *puntoDat );
@@ -19,6 +18,8 @@ class Reconocedor
 		void abrir_instancia_a_evaluar( char *archivo, int primero, int ultimo );
 
 		int reconocer_kVecinos( int cantComponentes, int k, int indice_imagen );
+		int reconocer_distanciaMedia( int cantComponentes, int indice_imagen );
+		int reconocer_kVecinosPonderados( int cantComponentes, int k, int indice_imagen );
 //		reconocer_kPromedio( char *archivo );
 
 		int cuantosAutovectores() { return cantAutovectores; };
