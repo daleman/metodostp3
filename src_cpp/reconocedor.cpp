@@ -11,7 +11,7 @@ using namespace std;
 //template< typename T >
 //bool compararTupla ( T *i,T *j ) { return ( i[1]<j[1] ); }
 
-bool compararTupla ( double *i, double *j ) { return ( i[1]<j[1] ); }
+bool compararTupla ( pair<int,double> i, pair<int,double> j ) { return ( i.second < j.second ); }
 
 
 
@@ -283,7 +283,7 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 
 	int cantIm = imagenes->cantFil();
 
-	vector< double* > distancias;
+	vector< pair<int,double> > distancias;
 
 	Matriz<double> resta(TAMANO_IMAGEN,1);
 
@@ -294,11 +294,9 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 
 		double distancia = resta.norma();
 		
-		double labelDistancia[2];
-		labelDistancia[0] = labels[i];
-		labelDistancia[1] = distancia;
-
-//		printf("distancia a %f es %f\n", labelDistancia[0], labelDistancia[1]);
+		pair<int,double> labelDistancia;
+		labelDistancia.first = labels[i];
+		labelDistancia.second = distancia;
 
 		distancias.push_back(labelDistancia);
 	}
@@ -308,13 +306,9 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 
 	vector<int> frecuencias(10, 0);
 
-	for (int i=0 ; i<k ; ++i )
-		frecuencias[ (int) distancias[i][0] ]++;	// jaja
-
-	for (int i=0 ; i<10 ; ++i )
-		printf( "%d ", frecuencias[i] );
-	printf("\n");
-
+	for (int i=0 ; i<k ; ++i ) {
+		frecuencias[ distancias[i].first ]++;
+	}
 
 	int mejor = 0;
 	int digito = -1;
