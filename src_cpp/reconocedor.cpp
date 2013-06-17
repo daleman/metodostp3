@@ -117,7 +117,7 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 	double numeritoDoubel;
 	for ( int i=0 ; i<TAMANO_IMAGEN; ++i ) {
 		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
-			fscanf( dataCov, "%le ", &numeritoDoubel );
+			fscanf( dataCov, "%lf ", &numeritoDoubel );
 			(*covarianza)[i][j] = numeritoDoubel;
 		}
 	}
@@ -154,7 +154,7 @@ void Reconocedor::guardarCovarianza( char *nombre )
 	//coeficientes de la matriz
 	for ( int i=0 ; i<covarianza->cantFil() ; ++i ) {
 		for ( int j=0 ; j<covarianza->cantCol() ; ++j )
-		 	fprintf(guardar, "%e ", (*covarianza)[i][j]);
+		 	fprintf(guardar, "%d ", (int) (*covarianza)[i][j]);
 
 		fprintf(guardar, "\n");
 	}
@@ -233,7 +233,8 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 		else
 			cantAutovectores++;	//calculo un autovector
 
-//		printf("%f\n", autovalActual);
+		printf("%f %f\n", autovalActual, autoval[autoval.size()-i-2]);
+		__BITACORA
 
 		// le paso un autovector que este lejos de 0
 		for( int j=0 ; j<TAMANO_IMAGEN; ++j ) {
@@ -301,11 +302,11 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 	for (int i=0 ; i<k ; ++i )
 		frecuencias[ (int) distancias[i][0] ]++;	// jaja
 
-	int mejor = k;		// k es una cota superior para las frecuencias
+	int mejor = 0;
 	int digito = -1;
 
 	for (int i=0 ; i<10 ; ++i ) {
-		if ( frecuencias[i] < mejor ) {
+		if ( frecuencias[i] > mejor ) {
 			mejor = frecuencias[i];
 			digito = i;
 		}
