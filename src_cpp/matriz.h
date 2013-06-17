@@ -598,10 +598,8 @@ class Matriz
 			int k = 0;
 			while (k<n) {
 
-//				x.imprimirMatriz();
 				// resuelvo el sistema de ecuaciones
 				y.resolverLU(x,P,L,U);
-//				y.imprimirMatriz();
 				double mu =  y[p][0];
 				p = y.menorP();
 
@@ -632,22 +630,22 @@ class Matriz
 			for(int i=0;i<n;i++){
 				for(k=0;k<n;k++){
 					U[i][k] = matriz[i][k];
-					P[i][k] = (i==k) ? 1 : 0;
+					P[i][k] = (i==k) ? 1.f : 0.f;
 				}
 			}		
 					
 			for (i=0;i<n;i++){
 				
 				U.pivoteoParcial(i,P,L);
-				L[i][i]=1;
+				L[i][i]=1.f;
 				for(j=i+1;j<n;j++){					
-					assert( U[i][i] !=0 );
+					assert( !COMPARAR_DOUBLE( U[i][i], 0.f ) );
 					double mji = U[j][i] / U[i][i];
 					for (k=i+1;k<n;k++){
 						U[j][k] = (double)U[j][k] - mji * (double)U[i][k];
 						
 					}					
-					U[j][i] = 0;
+					U[j][i] = 0.f;
 					L[j][i] = (T) mji;
 				}
 			}	
@@ -724,7 +722,7 @@ class Matriz
 			int max=i;
 
 			for (k=i;k<n;k++){
-				 max = (abs(matriz[k][i]) > abs(matriz[max][i])) ? k :max;
+				 max = (fabs(matriz[k][i]) > fabs(matriz[max][i])) ? k :max;
 			}
 
 			if( max != i ){
@@ -743,8 +741,8 @@ class Matriz
 					L[i][k]= L[max][k];
 					L[max][k] = temp;
 				}               
-                }                       
-        }
+                	}             
+        	}
 };
 
 #endif

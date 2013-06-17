@@ -8,15 +8,16 @@ int main( int argc, char** argv )
 {
 	Reconocedor rec( argv[1] , argv[2] );
 
-	rec.calcularAutovectores_QR( 1000, 30, 0.001f, 0.1f );
+	rec.calcularAutovectores_QR(1000, 30, 0.001f, 50);
 
 	printf("tengo %d autovectores\n", rec.cuantosAutovectores() );
 
-	rec.abrir_instancia_a_evaluar( argv[3], 1, 2);
+	rec.abrir_instancia_a_evaluar( argv[3], 1, 20);
 
-	int dig = rec.reconocer_kVecinos(50, 20, 1);
-
-	printf("me dio esto: %d\n", dig);
+	for ( int i=0 ; i<20 ; ++i ) { 
+		int dig = rec.reconocer_kVecinos(50, 20, i+1);
+		printf("%d\n", dig);
+	}
 
 	return 0;
 }

@@ -1,6 +1,7 @@
 #include "reconocedor.h"
 
 #define TAMANO_IMAGEN 784
+#define MIN_SIGNIFICATIVO 0.1f 
 
 using namespace std;
 
@@ -207,8 +208,13 @@ void Reconocedor::abrir_instancia_a_evaluar( char *archivo, int primero, int ult
 	instanciaAbierta = true;
 }
 
-void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia, double tolerancia, double minSignificativo )
+void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia, double tolerancia, int cuantosAutovec )
 {
+	if ( cuantosAutovec > covarianza->cantFil() ) {
+		printf("pediste mas autovalores que la cantidad de dimensiones de la matriz, esto va a explotar\n");
+		return;
+	}
+
 	autovectores->copiar(*covarianza);
 	autovectores->contieneNaN();
 
@@ -225,16 +231,16 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 
 	Matriz<double> x(TAMANO_IMAGEN, 1);
 
-	for (uint i=0 ; i<autoval.size() ; ++i ) {
+	for (int i=0 ; i<cuantosAutovec ; ++i ) {
 		// agarro los autovalores de menor a mayor!
 		double autovalActual = autoval[autoval.size()-i-1];
-		if ( fabs(autovalActual) < minSignificativo )
+		if ( fabs(autovalActual) < MIN_SIGNIFICATIVO )
 			break;
 		else
 			cantAutovectores++;	//calculo un autovector
 
-		printf("%f %f\n", autovalActual, autoval[autoval.size()-i-2]);
-		__BITACORA
+//		printf("%f %f\n", autovalActual, autoval[autoval.size()-i-2]);
+//		__BITACORA
 
 		// le paso un autovector que este lejos de 0
 		for( int j=0 ; j<TAMANO_IMAGEN; ++j ) {
