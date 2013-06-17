@@ -1,5 +1,6 @@
 #ifndef __MATRIZ_H
 #define __MATRIZ_H 
+
 #include "master_header.h"
 
 #define COMPARAR_DOUBLE(a, b) (fabs( (a) - (b) ) < 0.0001)

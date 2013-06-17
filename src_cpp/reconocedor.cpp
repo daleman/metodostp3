@@ -6,13 +6,8 @@
 using namespace std;
 
 
-
 // PARA COMPARAR TUPLAS POR LA SEGUNDA COMPONENTE
-//template< typename T >
-//bool compararTupla ( T *i,T *j ) { return ( i[1]<j[1] ); }
-
 bool compararTupla ( pair<int,double> i, pair<int,double> j ) { return ( i.second < j.second ); }
-
 
 
 Reconocedor::Reconocedor( char *puntoDat )
@@ -71,7 +66,6 @@ Reconocedor::Reconocedor( char *puntoDat )
 	covarianza = new Matriz<double> (TAMANO_IMAGEN,TAMANO_IMAGEN);
 	covarianza->cargarTranspuestaPorMat(X);
 
-	autovectores = new Matriz<double> (TAMANO_IMAGEN, TAMANO_IMAGEN);
 	cantAutovectores = 0;
 }
 
@@ -125,7 +119,6 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 
 	fclose( dataCov );
 
-	autovectores = new Matriz<double> (TAMANO_IMAGEN, TAMANO_IMAGEN);
 	cantAutovectores = 0;
 }
 
@@ -135,7 +128,8 @@ Reconocedor::~Reconocedor()
 	delete[] labels;
 
 	delete covarianza;
-	delete autovectores;
+
+	if (cantAutovectores>0) delete autovectores;
 
 	if (tcsCalculados) delete tcs;
 
@@ -206,6 +200,8 @@ void Reconocedor::abrir_instancia_a_evaluar( char *archivo, int primero, int ult
 	fclose( data );
 
 	instanciaAbierta = true;
+
+	calcular_tcs();
 }
 
 void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia, double tolerancia, int cuantosAutovec )
@@ -215,32 +211,37 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 		return;
 	}
 
-	autovectores->copiar(*covarianza);
-	autovectores->contieneNaN();
+	cantAutovectores = cuantosAutovec;
 
-	autovectores->Householder();
-	autovectores->contieneNaN();
+	autovectores = new Matriz<double> (TAMANO_IMAGEN, cantAutovectores);
+
+	Matriz<double> temp (*covarianza);
+	temp.contieneNaN();
+	temp.Householder();
+	temp.contieneNaN();
 
 	vector<double> autoval;
 	int iter = maxIterQR;
-	autovectores->QR( tolerancia, iter, autoval );
+	temp.QR( tolerancia, iter, autoval );
 
-	//ya tengo los autovalores, puedo usar autovectores
-	//para empezar a guardar los autovectores
+	//ya tengo los autovalores
 	sort(autoval.begin(),autoval.end() );
+
+//	for ( int i=0 ; i<autoval.size() ; ++i ) {
+//		printf("%f\n", autoval[i]);
+//	}
 
 	Matriz<double> x(TAMANO_IMAGEN, 1);
 
 	for (int i=0 ; i<cuantosAutovec ; ++i ) {
 		// agarro los autovalores de menor a mayor!
 		double autovalActual = autoval[autoval.size()-i-1];
-		if ( fabs(autovalActual) < MIN_SIGNIFICATIVO )
-			break;
-		else
-			cantAutovectores++;	//calculo un autovector
+
+		if ( fabs(autovalActual) < MIN_SIGNIFICATIVO ) break;
 
 //		printf("%f %f\n", autovalActual, autoval[autoval.size()-i-2]);
 //		__BITACORA
+
 
 		// le paso un autovector que este lejos de 0
 		for( int j=0 ; j<TAMANO_IMAGEN; ++j ) {
@@ -299,10 +300,13 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 		return -1;
 	}
 
-	calcular_tcs();
-
 	if ( indice_imagen > aEvaluar->cantFil() ) {
 		printf("pediste una imagen fuera de rango\n");
+		return -1;
+	}
+
+	if ( cantComponentes > cantAutovectores ) {
+		printf("pediste mas componenes principales que la cantidad de autovectores que calculaste\n");
 		return -1;
 	}
 
@@ -314,18 +318,20 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 
 	vector< pair<int,double> > distancias;
 
-	Matriz<double> resta(TAMANO_IMAGEN,1);
+	Matriz<double> resta(cantComponentes,1);
 
 	for ( int i=0 ; i<cantIm ; ++i ) {
 
-		for( int j=0 ; j<TAMANO_IMAGEN ; ++j )
-			resta[j][0] = (*aEvaluar)[indice_imagen][j] - (*imagenes)[i][j];
+		for( int j=0 ; j<cantComponentes ; ++j )
+			resta[j][0] = (*tcs_aEvaluar)[indice_imagen][j] - (*tcs)[i][j];
 
 		double distancia = resta.norma();
 		
 		pair<int,double> labelDistancia;
 		labelDistancia.first = labels[i];
 		labelDistancia.second = distancia;
+
+//		printf("label %d, a distancia %f\n", labelDistancia.first, labelDistancia.second);
 
 		distancias.push_back(labelDistancia);
 	}
@@ -343,6 +349,7 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 	int digito = -1;
 
 	for (int i=0 ; i<10 ; ++i ) {
+//		printf("%d ", frecuencias[i]);
 		if ( frecuencias[i] > mejor ) {
 			mejor = frecuencias[i];
 			digito = i;
@@ -355,13 +362,13 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 void Reconocedor::calcular_tcs()
 {
 	int cantIm = imagenes->cantFil();
-	int tamIm = imagenes->cantCol();
+	int componentes = cantAutovectores;
 
-	tcs = new Matriz<double>( cantIm, tamIm );
+	tcs = new Matriz<double>( cantIm, componentes );
 
 	int cantImEval = aEvaluar->cantFil();
 
-	tcs_aEvaluar = new Matriz<double>( cantImEval, tamIm );
+	tcs_aEvaluar = new Matriz<double>( cantImEval, componentes );
 
 	tcs->cargarMultiplicacion( *imagenes, *autovectores );
 	tcs_aEvaluar->cargarMultiplicacion( *aEvaluar, *autovectores );
