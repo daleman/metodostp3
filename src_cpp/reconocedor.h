@@ -28,20 +28,21 @@ class Reconocedor
 		int reconocer_digitoMedio(int, int);
 
 		Matriz<double> *autovectores;
-
+		int *labels;
+		int *labels_aEvaluar;
 
 	private :
 	
 		void calcular_tcs();
 
 		Matriz<double> *imagenes;
-		int *labels;
+		
 
 		Matriz<double> *covarianza;
 		Matriz<double> *tcs;
 
 		Matriz<double> *aEvaluar;
-		int *labels_aEvaluar;
+		
 		Matriz<double> *tcs_aEvaluar;
 
 		int cantidad;
