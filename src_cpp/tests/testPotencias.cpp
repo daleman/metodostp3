@@ -15,17 +15,15 @@ int main(int argc, char** argv)
 	rec.calcularAutovectores_QR(1000, 30, 0.001f, COMPONENTES);
 
 
-	printf("here comes de QR,and its all right\n");
-	rec.autovectores->imprimirMatriz();
-	printf("\n");
+//	printf("here comes de QR,and its all right\n");
+//	rec.autovectores->imprimirMatriz();
+//	printf("\n");
 
 
 
-	printf("here comes de QR,and its all right\n");
-	rec.calcularAutovectores_potencia( 1000 , 0.001f, COMPONENTES);
-	printf("\n");
+//	rec.calcularAutovectores_potencia( 1000 , 0.001f, COMPONENTES);
 
-	rec.autovectores->imprimirMatriz();
+//	rec.autovectores->imprimirMatriz();
 
 	rec.abrir_instancia_a_evaluar( argv[3], 1, 20);
 
