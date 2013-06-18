@@ -537,10 +537,10 @@ class Matriz
 
 				y.cargarMultiplicacion(*this,x);
 
+				p = y.menorP();
+
 				double mu =  y[p][0];
 				mu_s = mu_0 - (mu_1 - mu_0)*(mu_1 - mu_0)/( mu - 2*mu_1 + mu_0 );
-
-				p = y.menorP();
 
 //				printf("matrix Y");
 				y.multiplicarEscalar(1.f/mu);
