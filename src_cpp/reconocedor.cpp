@@ -21,7 +21,6 @@ Reconocedor::Reconocedor( char *puntoDat )
 
 	imagenes = new Matriz<double>( cantidad, TAMANO_IMAGEN );
 	labels = new int[cantidad]; 
-
 	int numerito;
 
 	for ( int i=0 ; i<cantidad ; ++i ) {
@@ -216,9 +215,9 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 	autovectores = new Matriz<double> (TAMANO_IMAGEN, cantAutovectores);
 
 	Matriz<double> temp (*covarianza);
-	temp.contieneNaN();
+	//temp.contieneNaN();
 	temp.Householder();
-	temp.contieneNaN();
+	//temp.contieneNaN();
 
 	vector<double> autoval;
 	int iter = maxIterQR;
