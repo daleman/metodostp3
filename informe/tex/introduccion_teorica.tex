@@ -1,3 +1,5 @@
+\section{Introducc\'ion te\'orica}
+
 \PARstart La factorizaci\'on SVD puede tener varias interpretaciones.
 Se llama factorizaci\'on SVD de una matriz $A$ (de dimensiones arbitrarias)
 a un producto de tres matrices $U\Sigma T^{t} = A$. Donde $U$ y $T$
@@ -8,6 +10,19 @@ la particularidad de estar ordenadas de la forma $\sigma_{i,i} \geq
 \sigma_{j,j}, i<j$, entonces esta factorizaci\'on es \'unica.
 
 Esta factorizaci\'on puede ser interpretada de varias formas y suele
-dar mucha informaci\'on. En este caso queremos calcular las componentes
-principales de un cierto vector que representa una imagen de un d\'igito
-manuscrito.
+brindar mucha informaci\'on acerca de la matriz. En este caso queremos
+calcular las componentes principales de un cierto vector que representa
+una imagen de un d\'igito manuscrito.
+
+Para esto usamos una base de datos de d\'igitos manuscritos.
+Cada uno de estos d\'igitos es una imagen que la interpretamos como
+un vector fila. De esta manera obtenemos una matriz de im\'agenes.
+Donde la cantidad de columnas es la cantidad de pixeles en cada imagen
+y la cantidad de filas es la cantidad de im\'genes.
+A partir de esta base de datos nos interesa calcular la covarianza entre
+cada pixel. Usamos la f\'ormula: JSDAKJSDBAD constrsdijnaskdjansjka
+
+Las k-componentes principales de una imagen dada se obtienen ralizando
+el producto interno entre el vector de la imagen y los k-autovectores
+que se corresponden con los k-autovalores de mayor m\'odulo de la matriz
+de covarianza.

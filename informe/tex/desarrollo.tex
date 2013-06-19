@@ -1,138 +1,33 @@
-\PARstart Deseamos eliminar ruido tanto de im\'agenes como de
-audios. Si bien el proceso es similar debemos realizar algunas
-operaciones de manera particular en cada caso.
+\section{Desarrollo}
 
-\subsection{Procesando audio}
+\PARstart Para obtener los autovectores de una matriz implementamos
+dos estrategias:
+\begin{itemize}
+	\item[M\'etodo de la Potencia y deflaci\'on:] Suponiendo que
+	tenemos autovalores distintos $\lambda_1 > \ldots > \lamda_n$,
+	Obtenemos $\lambda_1$, el autovalor mayor, mediante
+	el m\'etodo de la potencia. Luego construimos una matriz que tenga
+	como autovalores $\lambda_2 > \ldots > \lambda_n \geq 0$.
 
-Como se explica en \cite{enunciado}, a partir del vector $v$ que
-representa el audio sampleado, obtenemos su tranformado $t$ realizando
-la multiplicaci\'on $M \times v = t$, donde $M$ representa la
-matriz cambio de base entre la can\'onica y la base
-$\{1, cos(x), \ldots, cos(\frac{x}{n-1})\}$. Aqu\'i $x$ es la frecuencia
-de sampleo.
+	\item[M\'etodo QR para matrices sim\'etricas tridiagonales y m\'etodo
+	de la potencia inversa???:] Asumiendo que partimos de una matriz
+	sim\'etrica, obtenemos una matriz de hessemberg (y en este caso
+	tridiagonal, por ser sim\'etrica) semejante, mediante reflexiones de
+	Householder. Luego, mediante el algoritmo QR calculamos sus
+	autovalores. Finalemente usamos esta aproximaci\'on de
+	los autovalores para calcular los autovectores mediante el m\'etodo
+	de la potencia inversa????.
+\end{itemize}
 
-Una vez obtenido el espectro $t$ se aplica un filtro, que es una funci\'on
-de aridad $f : T \rightarrow T$, d\'onde $T$ representa el espacio
-vectorial al cual pertenece $t$, en este caso $\mathbb{R}^n$.
-De esta manera obtenemos nuestro espectro filtrado $e = f(t)$.
+A continuaci\'on se explican las implementaciones con m\'as detalle.
 
-Finalmente realizamos la transformada inversa y obtenemos nuestro
-audio filtrado $a$ resolviendo el sistema
-$ M \times a = e $.
-Este sistema es resuelto mediante el m\'etodo de triangulaci\'on
-y sustituci\'on para atr\'as, {\em gauss con pivoteo}.
+\subsection{M\'etodo de la potencia y deflaci\'on}
+BAH
 
-\subsection{Procesando im\'agenes}
+\subsection{M\'etodo QR para matrices sim\'etricas tridiagonales y m\'etodo
+de la potencia inversa}
 
-En \cite{enunciado} se explica que la transformada $T$ de una se\~nal
-$S$, una matriz cuadrada que representa los pixeles de una
-im\'agen, se obtiene realizando: $ M \times S \times M^{t} = T $.
-Dado que la matriz asociada a una imagen no suele ser cuadrada
-recortamos la im\'agen para obtener una imagen cuadrada\footnote{
-Veremos que uno de los filtros implementados no impondr\'a esta
-precondici\'on en la entrada.}.
-
-Luego transformamos y aplicamos una funci\'on similar a la
-explicada anteriormente
-para obtener el espectro filtrado $E$.
-
-Finalmente debemos realizar la transformada inversa para regresar
-al dominio original y obtener nuestra se\~nal filtrada $A$.
-Para esto debe resolverse el sistema: $ M \times A \times M^{t} = E $.
-
-Esto se logra notando que podemos resolverlo de a poco. Planteamos
-$ Y = A \times M^{t} $ y obtenemos el sistema: $ M \times Y = E $.
-Este lo resolvemos realizando $n$ veces {\em gauss}, uno por cada
-columna de $E$ e $Y$.
-
-Luego resolvemos la ecuaci\'on $ Y = A \times M^{t} $.
-Para esto notamos que es equivalente a: $ Y^{t} = M \times A^{t} $.
-Este sistema se resuelve de manera an\'aloga al explicado
-anteriormente.
-
-Vimos que el proceso de realizar {\em gauss} $n$ tomaba demasiado tiempo.
-De hecho, ya que {\em gauss} toma un tiempo c\'ubico, estaremos hablando
-de una complejidad de $O(n^4)$. Una complejidad como esta suele
-no ser admisible, sobre todo si puede mejorarse.
-Por este motivo realizamos la optimizaci\'on de factorizar a la matriz
-cambio de base mediante la factorizaci\'on PLU.
-De esta manera estaremos triangulando una \'unica vez, y la complejidad
-permanecer\'a c\'ubica.
-
-Finalmente, luego de resolver ambos sistemas, obtenemos la matriz $A$,
-nuestra imagen filtrada.
-
-\subsection{Filtrando una se\~nal}
-
-Implementamos dos filtros que trabajan sobre el espectro
-de maneras distintas.
-
-\subsubsection{Filtro tipo Gate}
-
-Este filtro se comporta como una compuerta multibanda. A partir de un
-umbral dado en decibeles,
-se reducen, por un factor dado, todas las componentes arm\'onicas que
-se encuentran por debajo del umbral.
-
-La idea es que frecuencias con una baja amplitud contribuyen m\'as
-al ruido que a la se\~nal en si.
-
-\subsubsection{Filtro tipo LPF}
-
-Este filtro atenua por factor dado, las frecuencias agudas,
-a partir de cierta frecuencia inicial.
-Para esto se elige un porcentaje que
-simboliza el punto del espectro a partir del cual
-deben filtrarse las componentes arm\'onicas.
-Esto es an\'alogo a realizar una convoluci\'on entre la se\~nal y una
-{\em sinc function}, es decir, es el filtro pasa-bajos m\'as simple
-que puede lograrse\cite[The Ideal Lowpass Filter]{stanford}.
-
-La idea detr\'as de este filtro es que la frecuencias agudas tienden
-a ser percibidas m\'as por el ser humano, tanto visual como auditivamente.
-Por ende, si hubiese ruido, ser\'a percibido m\'as en esta parte del
-espectro.
-
-Las frecuencias agudas se asocian, visualmente, con transiciones
-m\'as frecuentes en la escala
-de grises. Por lo tanto reducir las frecuencias agudas resultar\'a en
-una imagen con cambios m\'as suaves.
-
-Auditivamente, la reducci\'on de frecuencias agudas suele utilizarse
-para disminuir el {\em hiss} de casettes, vinilos e incluso, en etapas
-de edici\'on y mezcla de audio, para limpiar guitarras electricas y voces
-de componentes arm\'onicas innecesarias, que contribuyen al piso de ruido
-general.
-
-\subsubsection{Filtro por bloques}
-
-En el caso de las imagenes notamos que, por m\'as que usemos la
-factorizaci\'on PLU para reducir el tiempo de c\'omputo, el mismo
-sigue siendo muy significativo.
-
-Por esta raz\'on implementamos los filtros previamente explicados
-por bloques.
-Es decir, dada una imagen, tomaremos submatrices cuadradas de la
-misma y las filtraremos una por una. La dimensi\'on de estas
-matrices ser\'a elegida en un {\em trade-off} entre calidad del
-resultado y tiempo de c\'omputo.
-
-Notemos adem\'as, que este filtro no tendr\'a restricciones en
-cuanto a las dimensiones de la imagen.
-
-\subsection{Midiendo las mejoras}
-
-Si bien las mejoras terminan siendo \'utiles en la medida en que sean
-agradables al ser humano, es de suma utilidad poder cuantificarlas.
-Para esto implementamos una funci\'on que calcula el
-{\em peak signal-to-noise ratio} en funci\'on de la se\~nal original
-y la filtrada.
-
-\subsection{Ensuciando una se\~nal}
-
-Para poder experimentar m\'as c\'omodamente realizamos una 
-funci\'on para aplicar ruido a una se\~nal.
-El tipo de ruido elegido es el ruido gaussiano.
-
-Cada muestra del ruido se genera con la f\'ormula:
-$$ guille tira la formula $$.
+La matriz de covarianza es sim\'etrica. Utilizamos el algoritmo CITAA de CITAA
+para obtener una matriz tridiagonal semejante a esta. Basicamente se obtiene
+mediante transformaciones de Householder
+Una vez obtenida usamos CITAA para calcular sus autovectores

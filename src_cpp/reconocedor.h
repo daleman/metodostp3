@@ -21,7 +21,6 @@ class Reconocedor
 		int reconocer_kVecinos( int cantComponentes, int k, int indice_imagen );
 		int reconocer_distanciaMedia( int cantComponentes, int indice_imagen );
 		int reconocer_kVecinosPonderados( int cantComponentes, int k, int indice_imagen );
-//		reconocer_kPromedio( char *archivo );
 
 		int cuantosAutovectores() { return cantAutovectores; };
 
@@ -37,7 +36,6 @@ class Reconocedor
 
 		Matriz<double> *imagenes;
 		
-
 		Matriz<double> *covarianza;
 		Matriz<double> *tcs;
 
@@ -45,10 +43,13 @@ class Reconocedor
 		
 		Matriz<double> *tcs_aEvaluar;
 
+		Matriz<double> *promediosTcs;
+
 		int cantidad;
 		int cantAutovectores;
 		bool instanciaAbierta;
 		bool tcsCalculados;
+		bool promediosCalculados;
 };
 
 #endif

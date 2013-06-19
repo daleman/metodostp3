@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 // PARA COMPARAR TUPLAS POR LA SEGUNDA COMPONENTE
 bool compararTupla ( pair<int,double> i, pair<int,double> j ) { return ( i.second < j.second ); }
 
@@ -65,6 +64,9 @@ Reconocedor::Reconocedor( char *puntoDat )
 	covarianza = new Matriz<double> (TAMANO_IMAGEN,TAMANO_IMAGEN);
 	covarianza->cargarTranspuestaPorMat(X);
 
+	
+	promediosCalculados = false;
+
 	cantAutovectores = 0;
 }
 
@@ -118,6 +120,8 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 
 	fclose( dataCov );
 
+	promediosCalculados = false;
+
 	cantAutovectores = 0;
 }
 
@@ -136,6 +140,9 @@ Reconocedor::~Reconocedor()
 		delete aEvaluar;
 		delete[] labels_aEvaluar;
 	}
+
+	if (promediosCalculados)
+		delete promediosTcs;
 }
 
 void Reconocedor::guardarCovarianza( char *nombre )
@@ -219,7 +226,7 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 
 	Matriz<double> temp (*covarianza);
 	//temp.contieneNaN();
-	temp.Householder();
+	temp.Householder( tolerancia );
 	//temp.contieneNaN();
 
 	vector<double> autoval;
@@ -451,7 +458,6 @@ int Reconocedor::reconocer_kVecinosPonderados( int cantComponentes, int k, int i
 	vector< pair<int,double> > distancias;
 
 	Matriz<double> resta(cantComponentes,1);
-
 	for ( int i=0 ; i<cantIm ; ++i ) {
 
 		for( int j=0 ; j<cantComponentes ; ++j )
@@ -473,7 +479,6 @@ int Reconocedor::reconocer_kVecinosPonderados( int cantComponentes, int k, int i
 	vector<double> distanciasMedias(10, 0.f);
 
 	for (int i=0 ; i<k ; ++i ) {
-
 		int labelActual = distancias[i].first;
 
 		frecuencias[ labelActual ]++;
@@ -504,6 +509,11 @@ int Reconocedor::reconocer_digitoMedio( int cantComponentes, int indice_imagen )
 		return -1;
 	}
 
+	if (!promediosCalculados) {
+		printf("No promediaste antes de llamar a la funcion, esto va a explotar\n");
+		return -1;
+	}
+
 	if ( indice_imagen > aEvaluar->cantFil() ) {
 		printf("pediste una imagen fuera de rango\n");
 		return -1;
@@ -513,12 +523,68 @@ int Reconocedor::reconocer_digitoMedio( int cantComponentes, int indice_imagen )
 		printf("pediste mas componenes principales que la cantidad de autovectores que calculaste\n");
 		return -1;
 	}
+indice_imagen--; 
 
-	indice_imagen--;
+	vector<double> distanciasMedias(10, 0.f);
+
+	Matriz<double> resta(cantComponentes,1);
+
+	for ( int i=0 ; i<10 ; ++i ) {
+		for( int j=0 ; j<cantComponentes ; ++j )
+			resta[j][0] = (*tcs_aEvaluar)[indice_imagen][j] - (*promediosTcs)[i][j];
+
+		double distancia = resta.norma();
+		
+		//con esta distancIA
+		distanciasMedias[ labels[i] ] += distancia;
+	}
+
+
+	double mejor = INFINITY;
+	int digito = -1;
+
+	for (int i=0 ; i<10 ; ++i ) {
+
+		double mediaActual = distanciasMedias[i];
+		if ( mediaActual < mejor ) {
+			mejor = mediaActual;
+			digito = i;
+		}
+	}
+
 
 	return 0;
 }
 
+
+void Reconocedor::promediarTcs( int cantComponentes )
+{
+	promediosTcs = new Matriz<double> (10, cantComponentes);
+
+	//inicializo
+	for (int i=0 ; i<promediosTcs->cantFil() ; ++i )
+		for (int j=0 ; j<promediosTcs->cantCol() ; ++j )
+			(*promediosTcs)[i][j] = 0.f;
+
+
+	vector<int> apariciones(10, 0);
+
+	int cuantasImagenes = tcs->cantFil();
+	
+	for ( int i=0 ; i<cuantasImagenes ; ++i ) {
+		for ( int j=0 ; j<cantComponentes ; ++j ) {
+			(*promediosTcs)[ label[i] ][j] += (*tcs)[i][j];
+			apariciones[ label[i] ]++;
+		}
+	}
+	
+	
+	for ( int i=0 ; i<10 ; ++i )
+		for ( int j=0 ; j<cantComponentes ; ++j )
+			(*promediosTcs)[i][j] /= apariciones[i];
+
+	promediosCalculados = true;
+}
 
 
 void Reconocedor::calcular_tcs()

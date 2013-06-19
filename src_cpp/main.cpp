@@ -26,7 +26,7 @@ int main( int argc, char** argv )
 	//printf("Seguidilla de digitos:\n");
 	int hits = 0;
 	for ( int i=0 ; i<DIGITOS ; ++i ) { 
-		int dig = rec.reconocer_kVecinosPonderados(atoi(argv[5]), atoi(argv[6]), i+1);
+		int dig = rec.reconocer_kVecinos(atoi(argv[5]), atoi(argv[6]), i+1);
 		if( rec.labels_aEvaluar[i]==dig){
 			hits++;
 		}

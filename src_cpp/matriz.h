@@ -172,7 +172,7 @@ class Matriz
 			fclose( nuevo );
 		}
 
-		void Householder ()
+		void Householder ( double tol )
 		{	// la matriz de entrada es la que llama a la funcion, se llama matriz
 			std::vector<double> v(n, 0.f);
 			std::vector<double> u(n, 0.f);
@@ -188,8 +188,8 @@ class Matriz
 
 				// si la columna son todos ceros,
 				// no hay nada que hacer
+				if( fabs(q) < tol ) continue;
 
-				if( COMPARAR_DOUBLE(q, 0.f) ) continue;
 				// ahora q es la sumatoria 
 
 				double alfa = - sqrt(q) * SIGNO_DOUBLE(matriz[k+1][k]);
@@ -613,7 +613,7 @@ class Matriz
 				x.copiar( y );
 				double err = resta.normaInf();
 
-				printf("%f\n", err);
+//				printf("%f\n", err);
 
 				if ( fabs(err)<fabs(tol) )
 				{
@@ -691,7 +691,7 @@ class Matriz
 			for( int f=0; f < n ; f++ ){
 				resD[f][0]= B[f][0];
 				for(int j=0;j<f;j++){
-					assert( L[f][f] != 0 );
+					assert( !COMPARAR_DOUBLE(L[f][f], 0.f) );
 					resD[f][0]-=L[f][j]*resD[j][0];
 				}
 				resD[f][0]/= L[f][f];
@@ -712,7 +712,7 @@ class Matriz
 			for( f=n-2; f >= 0 ; f-- ){
 				resD[f][0]= B[f][0];
 				for(int j=f+1;j<n;j++){
-					assert( U[f][f] != 0 );
+					assert( !COMPARAR_DOUBLE(U[f][f], 0.f) );
 					resD[f][0]-=U[f][j]*resD[j][0];
 				}
 				resD[f][0]/= U[f][f];
