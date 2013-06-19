@@ -188,7 +188,7 @@ class Matriz
 
 				// si la columna son todos ceros,
 				// no hay nada que hacer
-				if( fabs(q) < tol ) continue;
+				if( COMPARAR_DOUBLE(q, 0.f) ) continue;
 
 				// ahora q es la sumatoria 
 

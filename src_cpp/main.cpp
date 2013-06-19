@@ -37,12 +37,12 @@ int main( int argc, char** argv )
 	rec.abrir_instancia_a_evaluar( archivoEntradaTest, 1, DIGITOS );
 
 
-//	rec.promediarTcs( cantComponentes );
+	rec.promediarTcs( cantComponentes );
 
 	//printf("Seguidilla de digitos:\n");
 	int hits = 0;
 	for ( int i=0 ; i<DIGITOS ; ++i ) { 
-		int dig = rec.reconocer_kVecinos( cantComponentes, cantVecinos, i+1);
+		int dig = rec.reconocer_digitoMedio( cantComponentes, i+1);
 		if( rec.labels_aEvaluar[i]==dig){
 			hits++;
 		}

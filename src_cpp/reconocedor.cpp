@@ -258,8 +258,7 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 		}
 
 		covarianza->potenciaInversa(autovalActual, x, tolerancia, maxIterInvPotencia);
-
-		x.normalizar();
+x.normalizar();
 
 		// lo guardo en mi matriz de autovectores
 		for( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
@@ -304,9 +303,6 @@ void Reconocedor::calcularAutovectores_potencia( int maxIterPotSim, double toler
 		covarianza->deflacion(autovalActual,autovectorActual);
 	}
 }
-
-
-
 
 int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imagen )
 {
@@ -531,8 +527,9 @@ int Reconocedor::reconocer_digitoMedio( int cantComponentes, int indice_imagen )
 	Matriz<double> resta(cantComponentes,1);
 
 	for ( int i=0 ; i<10 ; ++i ) {
-		for( int j=0 ; j<cantComponentes ; ++j )
+		for( int j=0 ; j<cantComponentes ; ++j ) {
 			resta[j][0] = (*tcs_aEvaluar)[indice_imagen][j] - (*promediosTcs)[i][j];
+		}
 
 		double distancia = resta.norma();
 		
@@ -543,27 +540,28 @@ int Reconocedor::reconocer_digitoMedio( int cantComponentes, int indice_imagen )
 
 	double mejor = INFINITY;
 	int digito = -1;
-
 	for (int i=0 ; i<10 ; ++i ) {
 
 		double mediaActual = distanciasMedias[i];
+
+		printf("%f ", distanciasMedias[i]);
 		if ( mediaActual < mejor ) {
 			mejor = mediaActual;
 			digito = i;
 		}
 	}
+	printf("\n");
 
 	return digito;
 }
-
 
 void Reconocedor::promediarTcs( int cantComponentes )
 {
 	promediosTcs = new Matriz<double> (10, cantComponentes);
 
 	//inicializo
-	for ( uint i=0 ; i<promediosTcs->cantFil() ; ++i )
-		for ( uint j=0 ; j<promediosTcs->cantCol() ; ++j )
+	for ( uint i=0 ; i<10 ; ++i )
+		for ( uint j=0 ; j<cantComponentes ; ++j )
 			(*promediosTcs)[i][j] = 0.f;
 
 
@@ -591,7 +589,6 @@ void Reconocedor::promediarTcs( int cantComponentes )
 
 	promediosCalculados = true;
 }
-
 
 void Reconocedor::calcular_tcs()
 {
