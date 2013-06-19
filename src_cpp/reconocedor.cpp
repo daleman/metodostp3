@@ -205,6 +205,9 @@ void Reconocedor::abrir_instancia_a_evaluar( char *archivo, int primero, int ult
 
 void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia, double tolerancia, int cuantosAutovec )
 {
+
+//	printf("Me pidieron esta tolerancia: %f\n", tolerancia);
+
 	if ( cuantosAutovec > covarianza->cantFil() ) {
 		printf("pediste mas autovalores que la cantidad de dimensiones de la matriz, esto va a explotar\n");
 		return;

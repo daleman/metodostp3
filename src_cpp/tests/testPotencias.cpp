@@ -1,6 +1,7 @@
 #include "../master_header.h"
 #include "../matriz.h"
 #include "../reconocedor.h"
+#include<string.h>
 
 #define TOL 0.0001
 #define maxIter 200
@@ -9,68 +10,48 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+	//%1 = set entrenamiento //%2 = covar. set de entrenamiento
+	//%3 = set testeo        //%4 = itQR
+	//%5 = tolerancia	 //%6 = metodo
+	//%7 = tam muestra
+
+	int hits=0;
+	int i = 0;
 
 	Reconocedor rec( argv[1] , argv[2] );
 
-	rec.calcularAutovectores_QR(1000, 30, 0.001f, COMPONENTES);
+	int    it   = atoi(argv[4]);
+	double tol  = atof(argv[5]);
+	int    tamM = atoi(argv[7]);
 
+	clock_t end;
+	clock_t start = clock();
 
-//	printf("here comes de QR,and its all right\n");
-//	rec.autovectores->imprimirMatriz();
-//	printf("\n");
-
-
-
-//	rec.calcularAutovectores_potencia( 1000 , 0.001f, COMPONENTES);
-
-//	rec.autovectores->imprimirMatriz();
-
-	rec.abrir_instancia_a_evaluar( argv[3], 1, 20);
-
-
-	printf("Seguidilla de digitos:\n");
-	for ( int i=0 ; i<20 ; ++i ) { 
-		int dig = rec.reconocer_kVecinos(COMPONENTES, 30, i+1);
-		printf("%d ", dig);
+	if( strcmp(argv[6],"QR") == 0 ){
+		rec.calcularAutovectores_QR(1000, it , tol, COMPONENTES);
+		printf("QR\n");
+	}else{
+		rec.calcularAutovectores_potencia( it, tol, COMPONENTES);
+		printf("PS\n");
 	}
-	printf("\n");
 
-	return 0;
+	rec.abrir_instancia_a_evaluar( argv[3], 1, tamM);
 
-/*	Matriz<double> autovector(4, 1);
-	double autoval = 0;	
-	
-	double arreglo[4][4] = {{1,2,3,4},{2,3,4,5},{3,4,5,6},{4,5,6,7}};
-	Matriz<double> mat(4,4);
+	for ( i=0 ; i<tamM ; ++i ) { 
+		int dig = rec.reconocer_kVecinos(COMPONENTES, 30, i+1);
 
-	for ( int i=0 ; i<4 ; ++i ) {
-		for ( int j=0 ; j<4 ; ++j ) {
-			mat[i][j] = arreglo[i][j];
+		if( rec.labels_aEvaluar[i]==dig){
+			hits++;
 		}
 	}
-	
-	autovector[0][0] = 1.;
-	autovector[1][0] = 2.;
-	autovector[2][0] = 3.;
-	autovector[3][0] = 4.;
-	
-	mat.potenciaSimple(autoval,autovector,0.0001, 200);
 
-	printf( "\n El autovalor es: %f\n", autoval );
-	printf( "\n Su autovector asocioado es:\n");
+	end = clock();
 
-	autovector.imprimirMatriz();
+	//printf("Tolerancia: %f\n", argv[6]);
+	printf("%f\n", (double)(end - start));
+	printf("%d/%d\n",hits,tamM);
 
-	mat.deflacion(autoval, autovector);
-	mat.potenciaSimple(autoval,autovector,0.0001, 200);
-
-	printf( "\n El autovalor es: %f\n", autoval );
-	printf( "\n Su autovector asocioado es:\n");
-
-	autovector.imprimirMatriz();
-
-	mat.imprimirMatriz();
-*/
+	return 0;
 
 	
 	return 0;

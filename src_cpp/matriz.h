@@ -476,9 +476,9 @@ class Matriz
 
 		double normaInf()
 		{
-			double res = matriz[0][0];
+			double res = fabs(matriz[0][0]);
 			for (int i = 0; i < n; i++){
-				res = (fabs(res) > fabs(matriz[i][0]) ) ? res : matriz[i][0];
+				res = ( res  > fabs(matriz[i][0]) ) ? res : fabs(matriz[i][0]);
 			}
 			return res;
 		}
@@ -550,6 +550,8 @@ class Matriz
 				x.copiar( y );
 				double err = resta.normaInf();
 
+				printf("%f\n", err);
+
 				if ( fabs(err)<fabs(tol) && k >= 4 )
 				{
 					guess = mu_s;
@@ -601,8 +603,9 @@ class Matriz
 
 				// resuelvo el sistema de ecuaciones
 				y.resolverLU(x,P,L,U);
-				double mu =  y[p][0];
+
 				p = y.menorP();
+				double mu =  y[p][0];
 
 				y.multiplicarEscalar(1.f/mu);
 				resta.cargarResta(x,y);
@@ -610,8 +613,11 @@ class Matriz
 				x.copiar( y );
 				double err = resta.normaInf();
 
+				printf("%f\n", err);
+
 				if ( fabs(err)<fabs(tol) )
 				{
+				//	printf("i: %d - e: %f\n",k,err);
 					mu = 1.f / mu + guess;
 					guess = mu;
 					return;
