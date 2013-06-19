@@ -550,7 +550,7 @@ class Matriz
 				x.copiar( y );
 				double err = resta.normaInf();
 
-				printf("%f\n", err);
+//				printf("%f\n", err);
 
 				if ( fabs(err)<fabs(tol) && k >= 4 )
 				{
