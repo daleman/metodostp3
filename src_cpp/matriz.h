@@ -3,8 +3,8 @@
 
 #include "master_header.h"
 
-#define COMPARAR_DOUBLE(a, b) (fabs( (a) - (b) ) < 0.0001)
-#define SIGNO_DOUBLE( a ) ((fabs( (a) ) > 0.0001) ? (((a) > 0) ? 1.f : -1.f) : 1.f)
+#define COMPARAR_DOUBLE(a, b) (fabs( (a) - (b) ) < 1e-9)
+#define SIGNO_DOUBLE( a ) ((fabs( (a) ) > 1e-9) ? (((a) > 0) ? 1.f : -1.f) : 1.f)
 
 template< typename T >
 class Matriz
@@ -50,8 +50,8 @@ class Matriz
 			delete [] matriz;
 		}
 
-		int cantFil() { return n; }
-		int cantCol() { return m; }
+		uint cantFil() { return n; }
+		uint cantCol() { return m; }
 
 		T* operator[](uint i)
 		{
@@ -179,10 +179,10 @@ class Matriz
 			std::vector<double> z(n, 0.f);
 			std::vector<double> y(n, 0.f);
 			
-			for (int k = 0; k < n-2 ; k++)	// reveer los indices hasta donde van
+			for (uint k = 0; k < n-2 ; k++)	// reveer los indices hasta donde van
 			{
 				double q = 0.f;
-				for (int j=k+1; j<n ; j++) {
+				for (uint j=k+1; j<n ; j++) {
 					q += ( (matriz[j][k])*(matriz[j][k]) );
 				}
 
@@ -199,29 +199,29 @@ class Matriz
 				v[k] = 0.f;
 				v[k+1] = matriz[k+1][k] - alfa;
 
-				for (int j = k+2; j<n; j++)
+				for (uint j = k+2; j<n; j++)
 					v[j] = matriz[j][k];
 				
 				double suma;
-				for (int j=k; j<n ; j++)
+				for (uint j=k; j<n ; j++)
 				{	
 					suma=0.f;
-					for (int i = k+1; i<n ; i++)
+					for (uint i = k+1; i<n ; i++)
 						suma += matriz[j][i] * v[i];
 
 					u[j] = (1.f/rsq) * suma; 
 				}
 			
 				double prod = 0.f;
-				for (int i=k+1; i<n ; i++)
+				for (uint i=k+1; i<n ; i++)
 					prod += v[i] * u[i];
 				
-				for (int j=k; j<n ; j++)
+				for (uint j=k; j<n ; j++)
 					z[j] = u[j] - (prod/(2.f*rsq)) * v[j];
 				
-				for (int l=k+1; l<n-1 ; l++)
+				for (uint l=k+1; l<n-1 ; l++)
 				{
-					for (int j=l+1; j<n ; j++)
+					for (uint j=l+1; j<n ; j++)
 					{
 						matriz[j][l] = matriz[j][l] - v[l] * z[j] - v[j] * z[l];
 						matriz[l][j] = matriz[j][l];
@@ -232,7 +232,7 @@ class Matriz
 			
 				matriz[n-1][n-1] = matriz[n-1][n-1] - 2.f * v[n-1] * z[n-1];
 				
-				for (int j=k+2; j<n ; j++)
+				for (uint j=k+2; j<n ; j++)
 				{
 					matriz[k][j] = 0.f;
 					matriz[j][k] = 0.f;
@@ -257,7 +257,7 @@ class Matriz
 
 //			printf("%f\n",matriz[0][0] );
 
-			for ( int i=1 ; i<n ; ++i ) {
+			for ( uint i=1 ; i<n ; ++i ) {
 				As.push_back(matriz[i][i]);
 				Bs.push_back(matriz[i][i-1]);
 //				printf("%f\t%f\n",matriz[i][i], matriz[i][i-1]);
@@ -302,7 +302,7 @@ class Matriz
 				// busco la seguidilla mas larga de ceros
 				// en la subdiagonal empezando desde el final
 
-				while ( fabs(Bs[tam-1])<=tol && tam>0 ) {
+				while ( fabs(Bs[tam-1])<tol && tam>0 ) {
 					// el ultimo b es suficientemente chico, tengo un autoval
 					autoval.push_back( As[tam-1]+shift );
 					tam--;
@@ -314,7 +314,7 @@ class Matriz
 				// en la subdiagonal empezando desde el principio 
 
 				int inicio = 1;
-				while ( fabs(Bs[inicio]) <= tol && inicio<tam) {
+				while ( fabs(Bs[inicio]) < tol && inicio<tam) {
 					// el primer b es suficientemetne chico, tengo un autoval
 					autoval.push_back( As[inicio-1]+shift );
 					inicio++;
@@ -342,7 +342,7 @@ class Matriz
 	
 				//////// posible llamado recursivo
 				for ( int j=2 ; j<tam-1 ; ++j ) {
-					if ( fabs(Bs[j]) <= tol ) {
+					if ( fabs(Bs[j]) < tol ) {
 
 						//si tengo un numero pequeno parto la matrz
 						//para seguir teniendo una convergencia rapida
@@ -440,29 +440,29 @@ class Matriz
 
 		void multiplicarEscalar ( double beta)
 		{
-			for (int i = 0; i < n ; i++)
-				for (int j = 0; j < m ; j++)
+			for (uint i = 0; i < n ; i++)
+				for (uint j = 0; j < m ; j++)
 					matriz[i][j] = matriz[i][j] * beta;
 		}
 
 		void copiar (Matriz<T> &entrada)
 		{
-			for (int i = 0; i < n ; i++)
-				for (int j = 0; j < m ; j++)
+			for (uint i = 0; i < n ; i++)
+				for (uint j = 0; j < m ; j++)
 					matriz[i][j] = entrada[i][j];
 		}
 
 		void identidad( double factor )
 		{
-			for (int i = 0; i < n ; i++)
-				for (int j = 0; j < m ; j++)
+			for (uint i = 0; i < n ; i++)
+				for (uint j = 0; j < m ; j++)
 					matriz[i][j] = (i==j) ? factor : 0.f;
 		}
 
 		double norma()
 		{
 			double res = 0;
-			for (int i = 0; i < n; i++)
+			for (uint i = 0; i < n; i++)
 				res += matriz[i][0] * matriz[i][0];
 
 			return sqrt(res);
@@ -477,7 +477,7 @@ class Matriz
 		double normaInf()
 		{
 			double res = fabs(matriz[0][0]);
-			for (int i = 0; i < n; i++){
+			for (uint i = 0; i < n; i++){
 				res = ( res  > fabs(matriz[i][0]) ) ? res : fabs(matriz[i][0]);
 			}
 			return res;
@@ -488,7 +488,7 @@ class Matriz
 		{
 			int p = 0;
 			double res = matriz[0][0];
-			for (int i = 0; i<n; i++){
+			for (uint i = 0; i<n; i++){
 				if ( fabs(res) < fabs(matriz[i][0]) )
 				{
 					res = matriz[i][0];
@@ -532,7 +532,7 @@ class Matriz
 			double mu_1 = 0;
 			double mu_s = 0;
 
-			int k = 0;
+			uint k = 0;
 			while (k<n){
 
 				y.cargarMultiplicacion(*this,x);
@@ -598,7 +598,7 @@ class Matriz
 			B.cargarResta(*this,qident);
 			B.factorizacionLU(P,L,U);
 
-			int k = 0;
+			uint k = 0;
 			while (k<n) {
 
 				// resuelvo el sistema de ecuaciones
@@ -634,7 +634,7 @@ class Matriz
 		{
 			uint i,k,j;
 					
-			for(int i=0;i<n;i++){
+			for(uint i=0;i<n;i++){
 				for(k=0;k<n;k++){
 					U[i][k] = matriz[i][k];
 					P[i][k] = (i==k) ? 1.f : 0.f;
@@ -678,7 +678,7 @@ class Matriz
 			/*********Hago U x = Y *******************/
 			backwardSubstitution(U,Y,res);
 			
-			for(int i=0;i<n;i++){
+			for(uint i=0;i<n;i++){
 				matriz[i][0] = res[i][0];
 			}
 		}
@@ -688,16 +688,16 @@ class Matriz
 			Matriz<double> resD(res.n,res.m);
 			//resD[0][0]=B[0][0];
 
-			for( int f=0; f < n ; f++ ){
+			for( uint f=0; f < n ; f++ ){
 				resD[f][0]= B[f][0];
-				for(int j=0;j<f;j++){
+				for(uint j=0;j<f;j++){
 					assert( !COMPARAR_DOUBLE(L[f][f], 0.f) );
 					resD[f][0]-=L[f][j]*resD[j][0];
 				}
 				resD[f][0]/= L[f][f];
 			}
 
-			for(int i=0;i<res.n;i++){
+			for(uint i=0;i<res.n;i++){
 					res[i][0] = (T) resD[i][0];
 			}
 		}
@@ -711,14 +711,14 @@ class Matriz
 
 			for( f=n-2; f >= 0 ; f-- ){
 				resD[f][0]= B[f][0];
-				for(int j=f+1;j<n;j++){
+				for(uint j=f+1;j<n;j++){
 					assert( !COMPARAR_DOUBLE(U[f][f], 0.f) );
 					resD[f][0]-=U[f][j]*resD[j][0];
 				}
 				resD[f][0]/= U[f][f];
 			}
 
-			for(int i=0;i<res.n;i++){
+			for(uint i=0;i<res.n;i++){
 					res[i][0] = (T) resD[i][0];
 			}
 		}

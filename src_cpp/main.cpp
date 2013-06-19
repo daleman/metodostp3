@@ -16,17 +16,33 @@ using namespace std;
 
 int main( int argc, char** argv )
 {
-	Reconocedor rec( argv[1] , argv[2] );
 
-	rec.calcularAutovectores_QR(MAXITER_QR, MAXITER_INV_POTENCIA, atof(argv[4]), atoi(argv[5]));
+	char archivoEntradaDat[1024];
+	strcpy( archivoEntradaDat, argv[1] );
 
-	rec.abrir_instancia_a_evaluar( argv[3], 1, DIGITOS );
+	char archivoEntradaCov[1024];
+	strcpy( archivoEntradaCov, argv[2] );
 
+	char archivoEntradaTest[1024];
+	strcpy( archivoEntradaTest, argv[3] );
+
+	double tolerancia = atof(argv[4]);
+	int cantComponentes = atoi(argv[5]);
+	int cantVecinos = atoi(argv[6]);
+
+	Reconocedor rec( archivoEntradaDat , archivoEntradaCov );
+
+	rec.calcularAutovectores_QR(MAXITER_QR, MAXITER_INV_POTENCIA, tolerancia, cantComponentes);
+
+	rec.abrir_instancia_a_evaluar( archivoEntradaTest, 1, DIGITOS );
+
+
+//	rec.promediarTcs( cantComponentes );
 
 	//printf("Seguidilla de digitos:\n");
 	int hits = 0;
 	for ( int i=0 ; i<DIGITOS ; ++i ) { 
-		int dig = rec.reconocer_kVecinos(atoi(argv[5]), atoi(argv[6]), i+1);
+		int dig = rec.reconocer_kVecinos( cantComponentes, cantVecinos, i+1);
 		if( rec.labels_aEvaluar[i]==dig){
 			hits++;
 		}

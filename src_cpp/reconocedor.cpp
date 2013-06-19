@@ -1,7 +1,7 @@
 #include "reconocedor.h"
 
 #define TAMANO_IMAGEN 784
-#define MIN_SIGNIFICATIVO 0.1f 
+#define MIN_SIGNIFICATIVO 0.01f 
 
 using namespace std;
 
@@ -153,8 +153,8 @@ void Reconocedor::guardarCovarianza( char *nombre )
 	fprintf(guardar, "%d %d\n", covarianza->cantFil(), covarianza->cantCol());
 
 	//coeficientes de la matriz
-	for ( int i=0 ; i<covarianza->cantFil() ; ++i ) {
-		for ( int j=0 ; j<covarianza->cantCol() ; ++j )
+	for ( uint i=0 ; i<covarianza->cantFil() ; ++i ) {
+		for ( uint j=0 ; j<covarianza->cantCol() ; ++j )
 		 	fprintf(guardar, "%d ", (int) (*covarianza)[i][j]);
 
 		fprintf(guardar, "\n");
@@ -215,7 +215,7 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 
 //	printf("Me pidieron esta tolerancia: %f\n", tolerancia);
 
-	if ( cuantosAutovec > covarianza->cantFil() ) {
+	if ( (uint) cuantosAutovec > covarianza->cantFil() ) {
 		printf("pediste mas autovalores que la cantidad de dimensiones de la matriz, esto va a explotar\n");
 		return;
 	}
@@ -270,7 +270,7 @@ void Reconocedor::calcularAutovectores_QR( int maxIterQR, int maxIterInvPotencia
 
 void Reconocedor::calcularAutovectores_potencia( int maxIterPotSim, double tolerancia, int cuantosAutovec )
 {
-	if ( cuantosAutovec > covarianza->cantFil() ) {
+	if ( (uint) cuantosAutovec > covarianza->cantFil() ) {
 		printf("pediste mas autovalores que la cantidad de dimensiones de la matriz, esto va a explotar\n");
 		return;
 	}
@@ -315,7 +315,7 @@ int Reconocedor::reconocer_kVecinos( int cantComponentes, int k, int indice_imag
 		return -1;
 	}
 
-	if ( indice_imagen > aEvaluar->cantFil() ) {
+	if ( (uint) indice_imagen > aEvaluar->cantFil() ) {
 		printf("pediste una imagen fuera de rango\n");
 		return -1;
 	}
@@ -381,7 +381,7 @@ int Reconocedor::reconocer_distanciaMedia( int cantComponentes, int indice_image
 		return -1;
 	}
 
-	if ( indice_imagen > aEvaluar->cantFil() ) {
+	if ( (uint) indice_imagen > aEvaluar->cantFil() ) {
 		printf("pediste una imagen fuera de rango\n");
 		return -1;
 	}
@@ -437,7 +437,7 @@ int Reconocedor::reconocer_kVecinosPonderados( int cantComponentes, int k, int i
 		return -1;
 	}
 
-	if ( indice_imagen > aEvaluar->cantFil() ) {
+	if ( (uint) indice_imagen > aEvaluar->cantFil() ) {
 		printf("pediste una imagen fuera de rango\n");
 		return -1;
 	}
@@ -514,7 +514,7 @@ int Reconocedor::reconocer_digitoMedio( int cantComponentes, int indice_imagen )
 		return -1;
 	}
 
-	if ( indice_imagen > aEvaluar->cantFil() ) {
+	if ( (uint) indice_imagen > aEvaluar->cantFil() ) {
 		printf("pediste una imagen fuera de rango\n");
 		return -1;
 	}
@@ -523,7 +523,8 @@ int Reconocedor::reconocer_digitoMedio( int cantComponentes, int indice_imagen )
 		printf("pediste mas componenes principales que la cantidad de autovectores que calculaste\n");
 		return -1;
 	}
-indice_imagen--; 
+
+	indice_imagen--; 
 
 	vector<double> distanciasMedias(10, 0.f);
 
@@ -536,7 +537,7 @@ indice_imagen--;
 		double distancia = resta.norma();
 		
 		//con esta distancIA
-		distanciasMedias[ labels[i] ] += distancia;
+		distanciasMedias[i] = distancia;
 	}
 
 
@@ -552,8 +553,7 @@ indice_imagen--;
 		}
 	}
 
-
-	return 0;
+	return digito;
 }
 
 
@@ -562,8 +562,8 @@ void Reconocedor::promediarTcs( int cantComponentes )
 	promediosTcs = new Matriz<double> (10, cantComponentes);
 
 	//inicializo
-	for (int i=0 ; i<promediosTcs->cantFil() ; ++i )
-		for (int j=0 ; j<promediosTcs->cantCol() ; ++j )
+	for ( uint i=0 ; i<promediosTcs->cantFil() ; ++i )
+		for ( uint j=0 ; j<promediosTcs->cantCol() ; ++j )
 			(*promediosTcs)[i][j] = 0.f;
 
 
@@ -573,15 +573,21 @@ void Reconocedor::promediarTcs( int cantComponentes )
 	
 	for ( int i=0 ; i<cuantasImagenes ; ++i ) {
 		for ( int j=0 ; j<cantComponentes ; ++j ) {
-			(*promediosTcs)[ label[i] ][j] += (*tcs)[i][j];
-			apariciones[ label[i] ]++;
+			(*promediosTcs)[ labels[i] ][j] += (*tcs)[i][j];
+			apariciones[ labels[i] ]++;
 		}
 	}
 	
 	
-	for ( int i=0 ; i<10 ; ++i )
-		for ( int j=0 ; j<cantComponentes ; ++j )
-			(*promediosTcs)[i][j] /= apariciones[i];
+	for ( int i=0 ; i<10 ; ++i ) {
+		for ( int j=0 ; j<cantComponentes ; ++j ) {
+			if (apariciones[i] == 0) {
+				(*promediosTcs)[i][j] = INFINITY;
+			} else {
+				(*promediosTcs)[i][j] /= apariciones[i];
+			}
+		}
+	}
 
 	promediosCalculados = true;
 }

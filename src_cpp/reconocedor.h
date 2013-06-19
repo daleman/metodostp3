@@ -24,7 +24,8 @@ class Reconocedor
 
 		int cuantosAutovectores() { return cantAutovectores; };
 
-		int reconocer_digitoMedio(int, int);
+		void promediarTcs(int cantComponentes );
+		int reconocer_digitoMedio(int cantComp, int indiceImagen );
 
 		Matriz<double> *autovectores;
 		int *labels;
