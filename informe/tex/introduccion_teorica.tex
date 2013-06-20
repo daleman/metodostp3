@@ -1,28 +1,45 @@
 \section{Introducc\'ion te\'orica}
 
-\PARstart La factorizaci\'on SVD puede tener varias interpretaciones.
-Se llama factorizaci\'on SVD de una matriz $A$ (de dimensiones arbitrarias)
-a un producto de tres matrices $U\Sigma T^{t} = A$. Donde $U$ y $T$
-son ortogonales y $Sigma$ tiene entradas nulas en todo elemento
-$\sigma_{i,j}, i\neq j$ (usualmente llamada diagonal, si bien sus dimensiones
-son iguales a las de $A$). Si las entradas de la diagonal de $\Sigma$ tienen
-la particularidad de estar ordenadas de la forma $\sigma_{i,i} \geq
-\sigma_{j,j}, i<j$, entonces esta factorizaci\'on es \'unica.
+	\PARstart Se llama factorizaci\'on SVD (\textit{singular value decomposition})
+	de una matriz $A$ (de dimensiones arbitrarias) a un producto de tres matrices
+	$U\Sigma T^{t} = A$. Donde $U$ y $T$ son ortogonales y $\Sigma$ tiene
+	coeficientes nulos en todo elemento $\sigma_{i,j}, i\neq j$ (usualmente
+	llamada diagonal, si bien sus dimensiones son iguales a las de $A$).
+	Si los coeficientes de la diagonal de $\Sigma$ tienen
+	la particularidad de estar ordenados de la forma $\sigma_{i,i} \geq
+	\sigma_{j,j}, i<j$, entonces esta factorizaci\'on es \'unica.
+	Una propiedad importante de esta factorizaci\'on es que las matrices
+	$U$ y $V$ tienen como columnas lo autovectores de $AA^t$ y $A^tA$
+	respectivamente.
+	Los elementos de la diagonal de $\Sigma$ se denominan valores singulares
+	de $X$.
 
-Esta factorizaci\'on puede ser interpretada de varias formas y suele
-brindar mucha informaci\'on acerca de la matriz. En este caso queremos
-calcular las componentes principales de un cierto vector que representa
-una imagen de un d\'igito manuscrito.
+	La factorizaci\'on puede ser interpretada de varias formas y suele
+	brindar mucha informaci\'on acerca de la matriz. En este caso queremos
+	calcular las componentes principales de un cierto vector que representa
+	una imagen de un d\'igito manuscrito. Esto lo lograremos calculando la
+	factorizaci\'on SVD de la matriz de covarianza entre p\'ixeles $X^tX$.
+	Para conseguir la matriz $X$ se parte de una base de datos $x_1, \ldots, x_n$
+	con im\'agenes
+	de d\'igitos manuscritos de dimensiones iguales. Luego se interpreta cada
+	imagen $x_i$ como un vector fila y se calcula, componente a componente,
+	el vector promedio $\mu$ de todas las im\'agenes.
+	La matriz $X$ se obtiene al poner como filas los vectores $x_i - \mu$
+	y dividiendo por $\sqrt{n-1}$.
 
-Para esto usamos una base de datos de d\'igitos manuscritos.
-Cada uno de estos d\'igitos es una imagen que la interpretamos como
-un vector fila. De esta manera obtenemos una matriz de im\'agenes.
-Donde la cantidad de columnas es la cantidad de pixeles en cada imagen
-y la cantidad de filas es la cantidad de im\'genes.
-A partir de esta base de datos nos interesa calcular la covarianza entre
-cada pixel. Usamos la f\'ormula: JSDAKJSDBAD constrsdijnaskdjansjka
+	Las $k$ componentes principales de una imagen dada se obtienen ralizando
+	el producto interno entre el vector que representa la imagen y los
+	$k$ autovectores que se corresponden con los $k$ autovalores de mayor m\'odulo
+	de la matriz de covarianza entre p\'ixeles.
 
-Las k-componentes principales de una imagen dada se obtienen ralizando
-el producto interno entre el vector de la imagen y los k-autovectores
-que se corresponden con los k-autovalores de mayor m\'odulo de la matriz
-de covarianza.
+	Luego las $k$ componentes principales de una imagen $x$ se corresponden con los
+	primeros $k$ coeficientes del vector que resulta de multiplicar $V^tx$.
+	Suponiendo que se realiz\'o la factorizaci\'on SVD de $X$ de manera tal
+	de que los valores singulares de $X$ se encuentren ordenados de mayor a menor. 
+
+	Una vez obtenidas las componentes principales de la imagen que quiere
+	reconocerse, pueden compararse con las componentes principales de los
+	d\'igitos de la base de datos de diversas maneras. T\'ipicamente se toma
+	la distancia correspondiente a la norma eucl\'idea entre vectores para
+	buscar la imagen cuyas componentes principales se encuentren m\'as cercanas
+	a las de la imagen que quiere reconocerse.

@@ -1,34 +1,126 @@
 \section{Desarrollo}
 
-\PARstart Para obtener los autovectores de una matriz implementamos
-dos estrategias:
+\subsection{Descomposici\'on SVD}
 
-\begin{itemize}
-	\item[M\'etodo de la Potencia y deflaci\'on:] Suponiendo que
-	tenemos autovalores distintos $\lambda_1 > \ldots > \lambda_n$,
-	Obtenemos $\lambda_1$, el autovalor mayor, mediante
-	el m\'etodo de la potencia. Luego construimos una matriz que tenga
-	como autovalores $\lambda_2 > \ldots > \lambda_n \geq 0$.
+	\PARstart De la introducci\'on se deduce que no es necesario calcular de forma
+	completa toda la descomposici\'on en valores singulares. Basta tener
+	las primeras $k$ columnas de $V$. Es decir necesitamos un m\'etodo para
+	obtener los autovectores que se corresponden con los autovalores de mayor
+	m\'odulo de una matriz.
+	Es importante notar que la matriz con la que trabajamos es sim\'etrica
+	con coeficientes reales y por lo tanto podremos utilizar metodos optimizados.
+	Para obtener los autovectores implementamos dos estrategias:
 
-	\item[M\'etodo QR para matrices sim\'etricas tridiagonales y m\'etodo
-	de la potencia inversa???:] Asumiendo que partimos de una matriz
-	sim\'etrica, obtenemos una matriz de hessemberg (y en este caso
-	tridiagonal, por ser sim\'etrica) semejante, mediante reflexiones de
-	Householder. Luego, mediante el algoritmo QR calculamos sus
-	autovalores. Finalemente usamos esta aproximaci\'on de
-	los autovalores para calcular los autovectores mediante el m\'etodo
-	de la potencia inversa????.
-\end{itemize}
+	\begin{itemize}
+		\item \textbf{M\'etodo de la Potencia y deflaci\'on:} Suponiendo que
+		tenemos autovalores $\\lambda_1\ \geq \ldots \geq |\lambda_n|$ y los primeros
+		$k$ son distintos, obtenemos $\lambda_1$ (y su atovalor asociado),
+		mediante el m\'etodo de la potencia. Luego
+		construimos una matriz que tenga como autovalores
+		$|\lambda_2| \geq \ldots \geq |\lambda_n| \geq 0$.
+		De esta forma inductiva calculamos los primeros $k$ autovalores
+		con sus correspondientes autovectores.
 
-A continuaci\'on se explican las implementaciones con m\'as detalle.
+		\item \textbf{M\'etodo QR para matrices sim\'etricas tridiagonales y
+		m\'etodo de la potencia inversa:} Asumiendo que partimos de una matriz
+		sim\'etrica, obtenemos una matriz de hessemberg (y en este caso
+		tridiagonal, por ser sim\'etrica) semejante, mediante reflexiones de
+		Householder. Luego, mediante el algoritmo QR calculamos sus
+		autovalores. Finalemente usamos esta aproximaci\'on de
+		los autovalores para calcular los primeros $k$ autovectores con el m\'etodo
+		de la potencia inversa.
+	\end{itemize}
 
-\subsection{M\'etodo de la potencia y deflaci\'on}
-BAH
+	A continuaci\'on se explican las implementaciones con m\'as detalle.
 
-\subsection{M\'etodo QR para matrices sim\'etricas tridiagonales y m\'etodo
+\subsubsection{M\'etodo de la potencia y deflaci\'on}
+	El m\'etodo de la potencia es un m\'etodo iterativo. Se parte con un vector
+	inicial $v_0$ y se genera una sucesi\'on de vectores ${v_i}$ realizando,
+	en cada iteraci\'on, $$v_{i+1} = \frac{Av_i}{\|Av_i\|_{\infty}}$$.
+	Asumiendo que la matriz tiene un autovalor $\bar{\lambda}$ de m\'odulo
+	estrictamente
+	mayor al resto de los autovalores y que $v_0$ no es ortogonal al
+	autovector $\bar{v}$ asociado a dicho autovalor, la sucesi\'on converge 
+	a $\bar{v}$.
+
+	El metodo no depende fuertemente de la norma que se usa para renormalizar
+	en cada iteraci\'on. La \'unica diferencia es que el autovector obtenido
+	estar\'a normalizado con la norma usada. En nuestro caso usamos la norma
+	infinito porque se calcula de manera m\'as rapida.
+
+	Una vez que tenemos el autovalor $\bar{\lambda}$ obtenemos una matriz
+	$A'$ que conserva los mismos autovalores y autovectores exceptuando
+	$\bar{\lambda}$ y $\bar{v}$, realizando:
+	$$A' = A-\bar{\lambda}\bar{v}\bar{v}^t$$
+
+\subsubsection{M\'etodo QR para matrices sim\'etricas tridiagonales y m\'etodo
 de la potencia inversa}
 
-La matriz de covarianza es sim\'etrica. Utilizamos el algoritmo CITAA de CITAA
-para obtener una matriz tridiagonal semejante a esta. Basicamente se obtiene
-mediante transformaciones de Householder
-Una vez obtenida usamos CITAA para calcular sus autovectores
+	Como la matriz de covarianza es sim\'etrica. Utilizamos el algoritmo
+	CITAA de CITAA para obtener una matriz tridiagonal semejante a \'esta.
+	Esta se obtiene mediante transformaciones de Householder.
+	Una vez obtenida usamos CITAA para calcular sus autovalores.
+	Dado que trabajamos con matrices tridiagonales los autovalores pueden
+	calcularse r\'apidamente y con mucha presici\'on.
+
+	Luego utilizamos el m\'etodo inverso de la potencia.
+	Este es bastante similar al m\'etodo de la potencia pero permite calcular
+	cualquier par autovalor-autovector asumiendo las m\'ismas hip\'otesis
+	que el m\'etodo de la potencia con el agregado de tener una aproximaci\'on
+	razonable de los autovalores correspondientes a los autovectores que
+	quieren calcularse.
+
+	Partiendo de la matriz $A$ un autovector $v_0$ y una aproximaci\'on a un
+	autovalor $\lambda$ obtenemos una sucesi\'on ${v_i}$ de autovectores
+	que converge al autovector asociado al autovalor $\lambda$.
+	Para esto planteamos la iteraci\'on:
+	$$v_{i+1} = (A-\lambda Id)^{-1}v_i$$
+
+	Notemos que este es el concepto matem\'atico. En nuestra implementaci\'on
+	no invertimos la matriz, sino que resolvemos un sistema de ecuaciones
+	en cada iteraci\'on. Para alivianar el tiempo de c\'omputo realizamos
+	una descomposici\'on LU de la matriz del sistema que nos sirve para
+	todas las iteraciones que se realicen con un mismo autovalor $\lambda$.
+
+\subsection{Reconociendo d\'igitos usando las componentes principales}
+
+	\PARstart Para reconocer d\'igitos a partir de sus componentes principales
+	implementamos dos m\'etodos. Cada uno de los metodos puede ser usado con la
+	cantididad de componentes principales que se desee y por lo tanto no se
+	har\'a referencia a dicha cantidad en la explicaci\'on. En la parte test
+	experimentaremos con diversas cantidad y buscaremos la m\'as adecuada para
+	cada m\'etodo.
+
+	\subsubsection{kVecinos}
+		Se calculan las componentes principales $c$ de la imagen a evaluar
+		y las componentes $c_i$ de todas las im\'agenes $x_i$ de las bases
+		de datos. Se toman las distancias eucl\'ideas $\|c - c_i\|$
+		y se cuentan las apariciones de cada d\'igito ($0, \ldots, 9$)
+		en el conjunto de los $k$ $c_i$ m\'as cercanos a $c$.
+		El d\'igito que registre mayor frecuencia se tomar\'a como el
+		el d\'igito escrito en la imagen a evaluar.
+	
+	\subsubsection{Distancia al promedio de las componentes}
+		Para cada d\'igito $0, \ldots, 9$ se iteran todos los $c_i$ 
+		y se generan diez $\bar{c}_j$ correspondientes con el
+		promedio componente a componente de los $c_i$ de los
+		d\'igitos $j$.
+		Luego se calcula la distancia de $c$ a cada uno de los $\bar{c}_j$
+		y se toma como d\'igito escrito al $j$ tal que $\|c - \bar{c}_j\|$
+		sea m\'inimo.
+
+\subsection{Tests}
+
+	\subsubsection{Error de los autovectores calculados}
+		Para los dos m\'etodos utilizados para calcular autovectores
+		dise\~namos un experimento que busca cuantificar el error m\'aximo
+		que tienen los resultados.
+		Se calculan los primeros $k$ autovectores $v_i$ y se normalizan con la
+		norma eucl\'idea. Luego se realiza $Av_i$ para cada $i$ y se normaliza
+		el resultado, obteniendo $\hat{v}_i$. Finalmente se toman las diferencias
+		$\|v_i-\hat{v}_i\|$. Mientras m\'as precisos sean los resultados del
+		algoritmo, m\'as peque\~nas ser\'an estas distancias.
+		De esta manera podemos comparar el comportamiento de los dos algoritmos
+		con distintas tolerancias de entrada.
+
+	\subsection{}

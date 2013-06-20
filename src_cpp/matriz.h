@@ -188,10 +188,11 @@ class Matriz
 
 				// si la columna son todos ceros,
 				// no hay nada que hacer
+				// paso a la proxima
 				if( COMPARAR_DOUBLE(q, 0.f) ) continue;
 
 				// ahora q es la sumatoria 
-
+				
 				double alfa = - sqrt(q) * SIGNO_DOUBLE(matriz[k+1][k]);
 				
 				double rsq = alfa*alfa - alfa * matriz[k+1][k];
@@ -281,9 +282,9 @@ class Matriz
 		{
 			int tam = As.size();
 
-//#if DEBUG
-//			printf("llamado con diag de tamano: %d\n", n);
-//#endif
+			//#if DEBUG
+			//printf("llamado con diag de tamano: %d\n", n);
+			//#endif
 
 			std::vector<double> Cs(tam, 0.f);	// cosetamos
 			std::vector<double> Ds(tam, 0.f);
@@ -386,6 +387,7 @@ class Matriz
 					mu2 = 2.f*c / (d-b);
 				}
 
+				//caso Base n=2
 				if ( tam==2 ) {
 					autoval.push_back( mu1 + shift );
 					autoval.push_back( mu2 + shift );
@@ -482,7 +484,6 @@ class Matriz
 			}
 			return res;
 		}
-
 		
 		int menorP()
 		{
@@ -498,7 +499,8 @@ class Matriz
 			return p;
 		}
 
-		void deflacion(double autovalor, Matriz<T> &autovector){
+		void deflacion(double autovalor, Matriz<T> &autovector)
+		{
 			
 			int n = autovector.cantFil();
 			Matriz<double> temp(n,n);
@@ -515,9 +517,9 @@ class Matriz
 
 			this->cargarResta(*this, temp);
 		}
-
 				
-		void potenciaSimple(double &guess, Matriz <T> &x, double tol, int maxIter ){
+		void potenciaSimple(double &guess, Matriz <T> &x, double tol, int maxIter )
+		{
 			assert( x.cantFil() == n && x.cantCol()==1 );
 
 			Matriz<double> resta(n,1);
@@ -568,17 +570,13 @@ class Matriz
 
 			guess = mu_s;
 		}
-
 				
 		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter )
 		{
 			assert( x.cantFil() == n && x.cantCol()==1 );
 
-			//Matriz<double> xt(1,n);
 			Matriz<double> resta(n,1);
 			Matriz<double> mult(1,1);
-			//Matriz<double> xtA(1,n);
-			//Matriz<double> xtAx(1,1);
 			Matriz<double> y(n,1);
 			Matriz<double> P(n,n);	// asumo que P, L y U son cuadradas
 			Matriz<double> L(n,n);
@@ -620,6 +618,9 @@ class Matriz
 				//	printf("i: %d - e: %f\n",k,err);
 					mu = 1.f / mu + guess;
 					guess = mu;
+
+					printf("Itere %d veces\n", k);
+
 					return;
 				}
 
@@ -627,8 +628,6 @@ class Matriz
 			}
 			printf("se llego a la maxima cant de iteraciones\n");
 		}
-		
-		
 
 		void factorizacionLU(  Matriz<T> &P, Matriz<T> &L, Matriz<T> &U )
 		{
