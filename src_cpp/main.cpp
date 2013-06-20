@@ -9,7 +9,7 @@
 #define VECINOS 10
 #define TOLERANCIA 0.1
 #define MAXITER_QR 10000
-#define MAXITER_INV_POTENCIA 10
+#define MAXITER_INV_POTENCIA 100
 
 
 using namespace std;
@@ -37,8 +37,8 @@ int main( int argc, char** argv )
 	char * metodo		= argv[8];
 	Reconocedor rec( archivoEntradaDat , archivoEntradaCov );
 
-	clock_t end;			//Inicio un reloj
-	clock_t start = clock();	//Inicio un reloj
+	//clock_t end;			//Inicio un reloj
+	//clock_t start = clock();	//Inicio un reloj
 
 	if( strcmp(metodo,"QR") == 0 ){
 		rec.calcularAutovectores_QR(MAXITER_QR, MAXITER_INV_POTENCIA, tolerancia, cantComponentes);
@@ -51,23 +51,24 @@ int main( int argc, char** argv )
 	rec.abrir_instancia_a_evaluar( archivoEntradaTest, 1, tamMuestra );
 
 
-//	rec.promediarTcs( cantComponentes );
+	rec.promediarTcs( cantComponentes );
 
 	//printf("Seguidilla de digitos:\n");
-	int hits = 0;
+	double hits = 0;
+	
 	for ( int i=0 ; i<tamMuestra ; ++i ) { 
-		int dig = rec.reconocer_kVecinos( cantComponentes,cantVecinos, i+1);
+		int dig = rec.reconocer_kVecinosPonderados( cantComponentes,cantVecinos, i+1);
 		if( rec.labels_aEvaluar[i]==dig){
 			hits++;
 		}
 		//printf("%d ", dig);
 	}
 
-	end = clock();			//Termina el reloj
+	//end = clock();			//Termina el reloj
 
 //	printf("Tolerancia: %f\n", argv[6]);
 //	printf("%f\n", (double)(end - start));
 //	printf("%d/%d\n",hits,tamMuestra);
-	printf("%d \t %d",hits,tamMuestra);
+	printf("%f",hits/tamMuestra*100);
 	return 0;
 }
