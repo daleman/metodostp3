@@ -3,7 +3,7 @@
 #include "reconocedor.h"
 
 #define MAXITER_QR 10000
-#define MAXITER_INV_POTENCIA 10
+#define MAXITER_INV_POTENCIA 100
 
 
 using namespace std;
