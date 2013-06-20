@@ -1,13 +1,7 @@
 #include "master_header.h"
 #include "matriz.h"
 #include "reconocedor.h"
-#include "stdlib.h"
-#include<string.h>
 
-#define COMPONENTES 5 
-#define DIGITOS 5000
-#define VECINOS 10
-#define TOLERANCIA 0.1
 #define MAXITER_QR 10000
 #define MAXITER_INV_POTENCIA 10
 
@@ -21,29 +15,21 @@ int main( int argc, char** argv )
 	//%5 = cant Componentes	 //%6 = cantVecinos
 	//%7 = tam muestra	 //%8 = metodo
 
-	char archivoEntradaDat[1024];
-	strcpy( archivoEntradaDat, argv[1] );
-
-	char archivoEntradaCov[1024];
-	strcpy( archivoEntradaCov, argv[2] );
-
-	char archivoEntradaTest[1024];
-	strcpy( archivoEntradaTest, argv[3] );
-
+	char *archivoEntradaDat = argv[1];
+	char *archivoEntradaCov = argv[2];
+	char *archivoEntradaTest = argv[3];
 	double tolerancia 	= atof(argv[4]);
 	int cantComponentes 	= atoi(argv[5]);
 	int cantVecinos 	= atoi(argv[6]);
 	int tamMuestra  	= atoi(argv[7]); 
-	char * metodo		= argv[8];
-	Reconocedor rec( archivoEntradaDat , archivoEntradaCov );
+	char * metodo		= argv[9];
 
-	clock_t end;			//Inicio un reloj
-	clock_t start = clock();	//Inicio un reloj
+	Reconocedor rec( archivoEntradaDat , archivoEntradaCov );
 
 	if( strcmp(metodo,"QR") == 0 ){
 		rec.calcularAutovectores_QR(MAXITER_QR, MAXITER_INV_POTENCIA, tolerancia, cantComponentes);
 //		printf("QR\n");
-	}else{
+	} else {
 		rec.calcularAutovectores_potencia( MAXITER_INV_POTENCIA, tolerancia, cantComponentes);
 //		printf("PS\n");
 	}
@@ -62,8 +48,6 @@ int main( int argc, char** argv )
 		}
 		//printf("%d ", dig);
 	}
-
-	end = clock();			//Termina el reloj
 
 //	printf("Tolerancia: %f\n", argv[6]);
 //	printf("%f\n", (double)(end - start));
