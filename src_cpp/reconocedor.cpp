@@ -14,22 +14,23 @@ Reconocedor::Reconocedor( char *puntoDat )
 	instanciaAbierta = false;
 	tcsCalculados = false;
 
+	int scan;
 	FILE *data = fopen( puntoDat, "r" );
 
-	fscanf( data, "%d\n", &cantidad );
+	scan = fscanf( data, "%d\n", &cantidad );
 
 	imagenes = new Matriz<double>( cantidad, TAMANO_IMAGEN );
 	labels = new int[cantidad]; 
 	int numerito;
 
 	for ( int i=0 ; i<cantidad ; ++i ) {
-		fscanf( data, "%d ", &numerito );
+		scan = fscanf( data, "%d ", &numerito );
 		labels[i] = numerito;
 	}
 
 	for ( int i=0 ; i<cantidad ; ++i ) {
 		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
-			fscanf( data, "%d ", &numerito );
+			scan = fscanf( data, "%d ", &numerito );
 			(*imagenes)[i][j] = (double) numerito;
 		}
 	}
@@ -75,9 +76,10 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 	instanciaAbierta = false;
 	tcsCalculados = false;
 
+	int scan;
 	FILE *data = fopen( puntoDat, "r" );
 
-	fscanf( data, "%d\n", &cantidad );
+	scan = fscanf( data, "%d\n", &cantidad );
 
 	imagenes = new Matriz<double>( cantidad, TAMANO_IMAGEN );
 	labels = new int[cantidad]; 
@@ -85,13 +87,13 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 	int numerito;
 
 	for ( int i=0 ; i<cantidad ; ++i ) {
-		fscanf( data, "%d ", &numerito );
+		scan = fscanf( data, "%d ", &numerito );
 		labels[i] = numerito;
 	}
 
 	for ( int i=0 ; i<cantidad ; ++i ) {
 		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
-			fscanf( data, "%d ", &numerito );
+			scan = fscanf( data, "%d ", &numerito );
 			(*imagenes)[i][j] = (double) numerito;
 		}
 	}
@@ -104,7 +106,7 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 	FILE *dataCov = fopen( matCovarianza, "r" );
 
 	int dim1, dim2;
-	fscanf( dataCov, "%d %d", &dim1, &dim2 );
+	scan = fscanf( dataCov, "%d %d", &dim1, &dim2 );
 
 	assert( dim1==TAMANO_IMAGEN && dim2==TAMANO_IMAGEN );
 
@@ -113,7 +115,7 @@ Reconocedor::Reconocedor( char *puntoDat, char *matCovarianza )
 	double numeritoDoubel;
 	for ( int i=0 ; i<TAMANO_IMAGEN; ++i ) {
 		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
-			fscanf( dataCov, "%lf ", &numeritoDoubel );
+			scan = fscanf( dataCov, "%lf ", &numeritoDoubel );
 			(*covarianza)[i][j] = numeritoDoubel;
 		}
 	}
@@ -166,8 +168,8 @@ void Reconocedor::guardarCovarianza( char *nombre )
 void Reconocedor::abrir_instancia_a_evaluar( char *archivo, int primero, int ultimo )
 {
 	FILE *data = fopen( archivo, "r" );
-
-	fscanf( data, "%d\n", &cantidad );
+	int scan;
+	scan = fscanf( data, "%d\n", &cantidad );
 
 	if ( ultimo > cantidad ) {
 		printf("pediste mas indices de los que hay, esto va a explotar\n");
@@ -183,7 +185,7 @@ void Reconocedor::abrir_instancia_a_evaluar( char *archivo, int primero, int ult
 
 	int indice = 0;
 	for ( int i=0 ; i<cantidad ; ++i ) {
-		fscanf( data, "%d ", &numerito );
+		scan = fscanf( data, "%d ", &numerito );
 
 		if ( i+1 >= primero && i+1 <= ultimo ) {
 			labels_aEvaluar[indice] = numerito;
@@ -193,7 +195,7 @@ void Reconocedor::abrir_instancia_a_evaluar( char *archivo, int primero, int ult
 	indice = 0;
 	for ( int i=0 ; i<cantidad ; ++i ) {
 		for ( int j=0 ; j<TAMANO_IMAGEN ; ++j ) {
-			fscanf( data, "%d ", &numerito );
+			scan = fscanf( data, "%d ", &numerito );
 
 			if ( i+1 >= primero && i+1 <= ultimo ) {
 				(*aEvaluar)[indice][j] = (double) numerito;
@@ -561,7 +563,7 @@ void Reconocedor::promediarTcs( int cantComponentes )
 
 	//inicializo
 	for ( uint i=0 ; i<10 ; ++i )
-		for ( uint j=0 ; j<cantComponentes ; ++j )
+		for ( int j=0 ; j<cantComponentes ; ++j )
 			(*promediosTcs)[i][j] = 0.f;
 
 
