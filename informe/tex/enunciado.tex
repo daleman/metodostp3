@@ -1,75 +1,43 @@
-{\bf Introducci\'on}
+\begin{centering}
+\large\bf Laboratorio de M\'etodos Num\'ericos - Primer Cuatrimestre 2013 \\
+\large\bf Trabajo Pr\'actico N\'umero 3: OCR+SVD\\
+\end{centering}
 
-La Transformada Discreta del Coseno  (DCT, por sus siglas en ingl\'es) es una herramienta que nos permite representar cualquier se\~nal en el plano de las frecuencias. Dado que es utilizada por el est\'andar de compresi\'on de im\'agenes JPEG y formato de video MPEG, se encuentra implementada en m\'as lugares de lo que pensamos: en cada c\'amara digital o tel\'efono m\'ovil. 
-La DCT no solo tiene aplicaciones al mundo de la compresi\'on (donde los valores transformados pueden ser codificados de forma eficiente), sino tambi\'en al procesamiento: el an\'alisis de qu\'e frecuencias est\'an presentes en las se\~nales es esencial en ciertos contextos de aplicaci\'on.
-
-La idea intuitiva de esta transformada, en el plano continuo, consiste en representar una funci\'on $f: \mathbb{R} \rightarrow \mathbb{R}$ en la base de funciones $\mathcal{B}=\{1, \cos(x), \cos(2x),...\}$.
-En el plano discreto, la DCT se corresponde a un cambio de base: cada una de las funciones de la base $\mathcal{B}$ se discretiza en ciertos puntos pasando a ser una base de vectores en $\mathbb{R}^n$, (donde $n$ es la dimensi\'on del vector o se\~nal a transformar).
-Es decir, dado un vector o se\~nal $x\in\mathbb{R}^n$ existe una matriz $M\in\mathbb{R}^{n\times n}$ de cambio de base que define la transformada DCT, donde $y=Mx$ es el vector o se\~nal transformado al espacio de frecuencias por la DCT (ver ap\'endice). Esta operaci\'on es f\'acilmente extensible a se\~nales de dos dimensiones (ver ap\'endice).
-
-
-{\bf Enunciado}
-
-El objetivo del trabajo es eliminar ruido sobre una se\~nal ruidosa $x\in\real^{n}$. Para ello se realiza el siguiente proceso: 
-\begin{enumerate}
-\item  $y:=Mx$ [Transformar usando Ec.~() de Ap.]
-\item $\tilde{y} := f(y)$ [Modificar]
-\item Resolver $M \tilde{x} = \tilde{y}$ [Reconstruir]
-\end{enumerate}
-
- 
-Una forma de medir la calidad visual de la se\~nal reconstruida $\tilde{x}$, es a trav\'es del PSNR ({\em Peak Signal-to-Noise Ratio}).
-EL PSNR es una m\'etrica `perceptual' (acorde a lo que perciben los humanos) y nos da una forma de medir la calidad de una imagen perturbada, siempre y cuando se cuente con la se\~nal original. 
-Cuanto mayor es el PSNR, mayor es la calidad de la imagen. La unidad de medida es el decibel (db) y se considera que una diferencia de 0.5 db ya es notada por la vista humana. El PSNR se define como:
-$$
-\mathit{PSNR} = 10 \cdot \log_{10} \left( \frac{\mathit{MAX}^2_x}{\mathit{ECM}} \right)
-$$
-donde $\mathit{MAX}_x$ define el rango m\'aximo de la se\~nal (en caso de entradas de 8 bits sin signo, ser\'ia 255) y \emph{ECM} es el {\em error cuadr\'atico medio}, definido como:
-$ \frac{1}{n} \sum_{i}{(x_{i} - \tilde{x}_{i})^2} $,
-donde $n$ es la cantidad de elementos de la se\~nal, $x$ es la se\~nal original y $\tilde{x}$ es la se\~nal recuperada.
-
-En la implementaci\'on realizada deben llevar a cabo los siguientes experimentos:
-\begin{itemize}
-\item Para varias se\~nales con distintos niveles de ruido, se deber\'an experimentar con al menos 2 estrategias (definiendo $f$ de forma conveniente) para modificar la se\~nal transformada $y$ (paso 2) con el objetivo de que la se\~nal recuperada $\tilde{x}$ contenga menos ruido; se deber\'an extraer conclusiones en cuanto a la calidad de la se\~nal recuperada, en funci\'on de la estrategia utilizada.
-\item Se deber\'an repetir los anteriores experimentos tambi\'en sobre im\'agenes adaptando el m\'etodo para aplicar la transformada DCT en dos dimensiones seg\'un se explica en la ap\'endice. 
-\item {\bf (Opcional)} Se deber\'a analizar la aplicaci\'on de la DCT `por bloques' sobre im\'agenes. Por ejemplo, si tenemos una imagen de $64\times 64$ p\'ixeles podemos subdividirla en: 4 bloques de $32\times 32$, o 16 bloques de $16\times 16$, o 64 bloques de $8\times 8$, y aplicar la DCT en 2D sobre cada uno de los bloques (considerar un tama\~no m\'inimo de $8\times 8$ para cada bloque).\\ 
-Elegir una estrategia utilizada para se\~nales unidimiensionales y sacar conclusiones respondiendo a los siguientes interrogantes (realizando experimentos que justifiquen la respuesta): ?`Es lo mismo eliminar ruido sobre la imagen entera que de a bloques? ?`Qu\'e forma es m\'as conveniente en cuanto a la calidad visual? ?`Qu\'e forma es m\'as r\'apida? 
-\end{itemize}
-
-{\bf Formatos de archivos de entrada}
-
-Las se\~nales ser\'an le\'idas de un archivo de texto en cuya primer l\'inea figuran la cantidad de datos y en la l\'inea siguiente se encuentran los datos en ASCII separados por espacios. Para leer y escribir im\'agenes sugerimos utilizar el formato {\em raw} binario \texttt{.pgm}\footnote{\url{http://netpbm.sourceforge.net/doc/pgm.html}}. 
-El mismo es muy sencillo de implementar y compatible con muchos gestores de fotos\footnote{XnView \url{http://www.xnview.com/}} y Matlab.
 
 \vskip 0.5 cm
 \hrule
 \vskip 0.1 cm
 
-{\bf Fecha de entrega:} 
+{\bf Introducci\'on}
+
+El reconocimiento \'optico de caracteres (OCR, por sus siglas en ingl\'es) es el proceso por el cual se traducen o convierten im\'agenes de d\'igitos o caracteres (sean \'estos manuscritos o de alguna tipograf\'ia especial) a un formato representable en nuestra computadora (por ejemplo, ASCII). Esta tarea puede ser m\'as sencilla (por ejemplo, cuando tratamos de determinar el texto escrito en una versi\'on escaneada a buena resoluci\'on de un libro) o tornarse casi imposible (recetas indescifrables de m\'edicos, algunos parciales manuscritos de alumnos de m\'etodos num\'ericos, etc).
+
+El objetivo del trabajo pr\'actico es implementar un m\'etodo de reconocimiento de d\'igitos manuscritos basado en la descomposici\'on en valores singulares, y analizar emp\'iricamente los par\'ametros principales del m\'etodo.
+
+Como instancias de entrenamiento, se tiene un conjunto de $n$ im\'agenes de d\'igitos ma\-nus\-cri\-tos en escala de grises del mismo tama\~no y resoluci\'on (varias im\'agenes de cada d\'igito). Cada una de estas im\'agenes sabemos a qu\'e d\'igito se corresponde.
+En este trabajo consideraremos la popular base de datos MNIST, utilizada como referencia en esta \'area de investigaci\'on\footnote{\texttt{http://yann.lecun.com/exdb/mnist/}}. 
+
+Para $i = 1,\ldots, n$, sea $x_i \in \real^{m}$ la $i$-\'esima imagen de nuestra base de datos almacenada por filas en un vector, y sea $\mu = (x_1 + \ldots + x_n)/n$ el promedio de las im\'agenes. Definimos $X\in\real^{n\times m}$ como la matriz que contiene en la $i$-\'esima fila al vector $(x_i - \mu)^{t}/\sqrt{n-1}$, y $$X=U \Sigma V^t$$ a su descomposici\'on en valores singulares, con $U\in\real^{n\times n}$ y $V\in\real^{m\times m}$ matrices ortogonales, y $\Sigma\in\real^{n\times m}$ la matriz diagonal conteniendo en la posici\'on $(i,i)$ al $i$-\'esimo valor singular $\sigma_i$.
+Siendo $v_i$ la columna $i$ de $V$, definimos para $i = 1,\ldots,n$ la \textsl{transformaci\'on caracter\'istica} del d\'igito $x_{i}$ como el vector $\mathbf{tc}(x_i) = (v_1^t\, x_i, v_2^t\, x_i,\ldots,v_k^t\, x_i) \in\real^k$, donde $k \in\{1,\ldots,m\}$ es un par\'ametro de la implementaci\'on. Este proceso corresponde a extraer las $k$ primeras \textit{componentes principales} de cada imagen. La intenci\'on es que $\mathbf{tc}(x_i)$ resuma la informaci\'on m\'as relevante de la imagen, descartando los detalles o las zonas que no aportan rasgos distintivos.
+
+
+Dada una nueva imagen $x$ de un d\'igito manuscrito, que no se encuentra en el conjunto inicial de im\'agenes de entrenamiento, el problema de reconocimiento consiste en determinar a qu\'e d\'igito corresponde. Para esto, se calcula $\mathbf{tc}(x)$ y se compara con $\mathbf{tc}(x_i)$, para $i = 1,\ldots, n$.
+
+
+{\bf Enunciado}
+
+Se pide implementar un programa que lea desde archivos las im\'agenes de entrenamiento de distintos d\'igitos manuscritos y que, utilizando la descomposici\'on en valores singulares, se calcule la transformaci\'on caracter\'istica de acuerdo con la descripci\'on anterior. Para ello se deber\'a implementar alg\'un m\'etodo de estimaci\'on de autovalores/autovectores. Dada una nueva imagen de un d\'igito manuscrito, el programa deber\'a determinar a qu\'e d\'igito co\-rres\-pon\-de.
+El formato de los archivos de entrada y salida queda a elecci\'on del grupo. Si no usan un entorno de desarrollo que incluya bibliotecas para la lectura de archivos de im\'agenes, sugerimos que utilicen im\'agenes en formato \textsc{Raw}. 
+
+
+Se deber\'an realizar experimentos para medir la efectividad del reconocimiento, analizando tanto la influencia de la cantidad $k$ de componentes principales seleccionadas como la influencia de la precisi\'on en el c\'alculo de los autovalores.
+
+\vskip 0.5 cm
+\hrule
+\vskip 0.1 cm
+
+{\bf Fecha de entrega} 
 \begin{itemize}
-\item \textsl{Formato electr\'onico:} jueves 16 de mayo de 2013, hasta las 23:59 hs., enviando el trabajo (informe+c\'odigo) a \texttt{metnum.lab@gmail.com}. El subject del email debe comenzar con el texto \verb|[TP2]| seguido de la lista de apellidos de los integrantes del grupo. 
-\item \textsl{Formato f\'isico:} viernes 17 de mayo de 2013, de 18 a 20hs (en la clase del labo).
+\item \textsl{Formato electr\'onico:} viernes 21 de junio de 2013, \underline{hasta las 23:59 hs.}, enviando el trabajo (informe+c\'odigo) a \texttt{metnum.lab@gmail.com}. El subject del email debe comenzar con el texto \verb|[TP3]| seguido de la lista de apellidos de los integrantes del grupo. 
+\item \textsl{Formato f\'isico:} lunes 24 de junio de 2013, de 18 a 20hs (en la clase de la pr\'actica).
 \end{itemize}
-
-
-{\bf Transformada Coseno Discreta} 
-
-Para generar la matriz $M\in\real^{n\times n}$ que define la transformada de Coseno Discreta definimos: 
-\begin{itemize}
- \item Vector de frecuencias:  $g = \left(\begin{array}{c} 0 \\ 1 \\ \vdots \\ n-1 \end{array} \right)$
- \item Vector de muestreo: $ s= {\displaystyle \frac{\pi}{n} }\left(\begin{array}{c} \frac{1}{2} \\1+\frac{1}{2} \\  \vdots \\ (n-1)+\frac{1}{2} \end{array} \right) $
- \item Constante de normalizaci\'on: $C(k) = \left\{ \begin{array}{lr}\sqrt{\frac{1}{n}} & k=1 \\ \sqrt{\frac{2}{n}} & k > 1 \end{array} \right.$
-\end{itemize}
-
-Siendo $T=\cos(g\cdot s^t)$ la matriz resultante de aplicarle el coseno a cada elemento de la matriz $g\cdot s^t$,
-finalmente definimos, $\widehat{M}_{i,j} = C(i) \cdot T_{i,j}$
-
-Para obtener una versi\'on entera de la transformaci\'on que define la matriz $M$, la cual ser\'a aplicada a se\~nales (o vectores) enteras en el rango $[0,q]$, definimos:
-\begin{equation}
-M = \left\lfloor \frac{q \widehat{M} + 1}{2}  \right\rfloor \label{eq:dctint}
-\end{equation} 
-donde $\left\lfloor\cdot\right\rfloor$ indica la parte entera inferior\footnote{El redondeo de un n\'umero $m$ pude definirse como $\lfloor m + 1/2 \rfloor$. Luego, $M$ se define como el redondeo de $\widehat{M}\cdot(q/2)$.}. (Es decir, escalamos los elementos de la matriz $M$ por $q/2$ y luego redondeamos los valores.)
-
-{\bf Extensi\'on a 2D}
-Dada una matriz $B\in\real^{n\times n}$, podemos extender f\'acilmente la transformada DCT a se\~nales de dos dimensiones. Para ello, aplicamos la transformaci\'on por filas y por columnas: $ M\, B\, M^t $
-

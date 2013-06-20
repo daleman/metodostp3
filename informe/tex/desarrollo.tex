@@ -13,7 +13,7 @@
 
 	\begin{itemize}
 		\item \textbf{M\'etodo de la Potencia y deflaci\'on:} Suponiendo que
-		tenemos autovalores $\\lambda_1\ \geq \ldots \geq |\lambda_n|$ y los primeros
+		tenemos autovalores $\lambda_1\ \geq \ldots \geq |\lambda_n|$ y los primeros
 		$k$ son distintos, obtenemos $\lambda_1$ (y su atovalor asociado),
 		mediante el m\'etodo de la potencia. Luego
 		construimos una matriz que tenga como autovalores
@@ -33,54 +33,54 @@
 
 	A continuaci\'on se explican las implementaciones con m\'as detalle.
 
-\subsubsection{M\'etodo de la potencia y deflaci\'on}
-	El m\'etodo de la potencia es un m\'etodo iterativo. Se parte con un vector
-	inicial $v_0$ y se genera una sucesi\'on de vectores ${v_i}$ realizando,
-	en cada iteraci\'on, $$v_{i+1} = \frac{Av_i}{\|Av_i\|_{\infty}}$$.
-	Asumiendo que la matriz tiene un autovalor $\bar{\lambda}$ de m\'odulo
-	estrictamente
-	mayor al resto de los autovalores y que $v_0$ no es ortogonal al
-	autovector $\bar{v}$ asociado a dicho autovalor, la sucesi\'on converge 
-	a $\bar{v}$.
+	\subsubsection{M\'etodo de la potencia y deflaci\'on}
+		El m\'etodo de la potencia es un m\'etodo iterativo. Se parte con un vector
+		inicial $v_0$ y se genera una sucesi\'on de vectores ${v_i}$ realizando,
+		en cada iteraci\'on, $$v_{i+1} = \frac{Av_i}{\|Av_i\|_{\infty}}$$.
+		Asumiendo que la matriz tiene un autovalor $\bar{\lambda}$ de m\'odulo
+		estrictamente
+		mayor al resto de los autovalores y que $v_0$ no es ortogonal al
+		autovector $\bar{v}$ asociado a dicho autovalor, la sucesi\'on converge 
+		a $\bar{v}$.
 
-	El metodo no depende fuertemente de la norma que se usa para renormalizar
-	en cada iteraci\'on. La \'unica diferencia es que el autovector obtenido
-	estar\'a normalizado con la norma usada. En nuestro caso usamos la norma
-	infinito porque se calcula de manera m\'as rapida.
+		El metodo no depende fuertemente de la norma que se usa para renormalizar
+		en cada iteraci\'on. La \'unica diferencia es que el autovector obtenido
+		estar\'a normalizado con la norma usada. En nuestro caso usamos la norma
+		infinito porque se calcula de manera m\'as rapida.
 
-	Una vez que tenemos el autovalor $\bar{\lambda}$ obtenemos una matriz
-	$A'$ que conserva los mismos autovalores y autovectores exceptuando
-	$\bar{\lambda}$ y $\bar{v}$, realizando:
-	$$A' = A-\bar{\lambda}\bar{v}\bar{v}^t$$
+		Una vez que tenemos el autovalor $\bar{\lambda}$ obtenemos una matriz
+		$A'$ que conserva los mismos autovalores y autovectores exceptuando
+		$\bar{\lambda}$ y $\bar{v}$, realizando:
+		$$A' = A-\bar{\lambda}\bar{v}\bar{v}^t$$
 
-\subsubsection{M\'etodo QR para matrices sim\'etricas tridiagonales y m\'etodo
-de la potencia inversa}
+	\subsubsection{M\'etodo QR para matrices sim\'etricas tridiagonales y m\'etodo
+	de la potencia inversa}
 
-	Como la matriz de covarianza es sim\'etrica. Utilizamos el algoritmo
-	CITAA de CITAA para obtener una matriz tridiagonal semejante a \'esta.
-	Esta se obtiene mediante transformaciones de Householder.
-	Una vez obtenida usamos CITAA para calcular sus autovalores.
-	Dado que trabajamos con matrices tridiagonales los autovalores pueden
-	calcularse r\'apidamente y con mucha presici\'on.
+		Como la matriz de covarianza es sim\'etrica. Utilizamos el algoritmo
+		$9.5$ de \cite{burden} para obtener una matriz tridiagonal semejante a \'esta.
+		Esta se obtiene mediante transformaciones de Householder.
+		Una vez obtenida usamos el algoritmo $9.6$ para calcular sus autovalores.
+		Dado que trabajamos con matrices tridiagonales los autovalores pueden
+		calcularse r\'apidamente y con mucha precisi\'on.
 
-	Luego utilizamos el m\'etodo inverso de la potencia.
-	Este es bastante similar al m\'etodo de la potencia pero permite calcular
-	cualquier par autovalor-autovector asumiendo las m\'ismas hip\'otesis
-	que el m\'etodo de la potencia con el agregado de tener una aproximaci\'on
-	razonable de los autovalores correspondientes a los autovectores que
-	quieren calcularse.
+		Luego utilizamos el m\'etodo inverso de la potencia.
+		Este es bastante similar al m\'etodo de la potencia pero permite calcular
+		cualquier par autovalor-autovector asumiendo las m\'ismas hip\'otesis
+		que el m\'etodo de la potencia con el agregado de tener una aproximaci\'on
+		razonable de los autovalores correspondientes a los autovectores que
+		quieren calcularse.
 
-	Partiendo de la matriz $A$ un autovector $v_0$ y una aproximaci\'on a un
-	autovalor $\lambda$ obtenemos una sucesi\'on ${v_i}$ de autovectores
-	que converge al autovector asociado al autovalor $\lambda$.
-	Para esto planteamos la iteraci\'on:
-	$$v_{i+1} = (A-\lambda Id)^{-1}v_i$$
+		Partiendo de la matriz $A$ un autovector $v_0$ y una aproximaci\'on a un
+		autovalor $\lambda$ obtenemos una sucesi\'on ${v_i}$ de autovectores
+		que converge al autovector asociado al autovalor $\lambda$.
+		Para esto planteamos la iteraci\'on:
+		$$v_{i+1} = (A-\lambda Id)^{-1}v_i$$
 
-	Notemos que este es el concepto matem\'atico. En nuestra implementaci\'on
-	no invertimos la matriz, sino que resolvemos un sistema de ecuaciones
-	en cada iteraci\'on. Para alivianar el tiempo de c\'omputo realizamos
-	una descomposici\'on LU de la matriz del sistema que nos sirve para
-	todas las iteraciones que se realicen con un mismo autovalor $\lambda$.
+		Notemos que este es el concepto matem\'atico. En nuestra implementaci\'on
+		no invertimos la matriz, sino que resolvemos un sistema de ecuaciones
+		en cada iteraci\'on. Para alivianar el tiempo de c\'omputo realizamos
+		una descomposici\'on LU de la matriz del sistema que nos sirve para
+		todas las iteraciones que se realicen con un mismo autovalor $\lambda$.
 
 \subsection{Reconociendo d\'igitos usando las componentes principales}
 
@@ -100,6 +100,18 @@ de la potencia inversa}
 		El d\'igito que registre mayor frecuencia se tomar\'a como el
 		el d\'igito escrito en la imagen a evaluar.
 	
+	\subsubsection{kVecinos ponderados}
+		En un principio pensamos calcular el promedio de las distancias $\|c - cj_i\|$.
+		Donde $cj$ representa el conjunto de componentes principales de las
+		im\'agenes del d\'igito $j$. De esta manera se est\'a tomando la 
+		distancia promedio a todos los d\'igitos $1$, a los d\'igitos $2$, etc.
+
+		Vimos que este metodo no daba resultados razonables y parametrizamos
+		el mismo, para dar m\'as granularidad a la hora de utilizarlo.
+		En lugar de promediar la distancia a todos los d\'igitos de la base
+		de datos, lo hacemos \'unicamente con los $k$ d\'igitos que se
+		encuentren m\'as cerca.
+		
 	\subsubsection{Distancia al promedio de las componentes}
 		Para cada d\'igito $0, \ldots, 9$ se iteran todos los $c_i$ 
 		y se generan diez $\bar{c}_j$ correspondientes con el
@@ -122,5 +134,49 @@ de la potencia inversa}
 		algoritmo, m\'as peque\~nas ser\'an estas distancias.
 		De esta manera podemos comparar el comportamiento de los dos algoritmos
 		con distintas tolerancias de entrada.
+		
+		Esperamos obtener resultados m\'as precisos al utilizar la estrategia
+		\textit{QR-potencia Inversa}. Basamos esta hip\'otesis en que se usan
+		matrices ortogonales para calcular los autovalores. Estas matrices
+		tienen el n\'umero de condici\'on mas bajo posible, $1$.
+		Una vez que tenemos aproximaciones de los autovalores de buena calidad
+		el m\'etodo de la potencia inversa brinda buenas aproximaciones de los
+		autovectores.
 
-	\subsection{}
+	\subsubsection{Diferencias en el tiempo de ejecuci\'on para obtener autovectores}
+		Dado que ambos m\'etodos son esencialmente distintos cabe preguntarse
+		si sus complejidades son distintas. Te\'oricamente notamos una diferencia
+		importante: el m\'etodo de la potencia inversa resuelve un sistema de
+		ecuaciones por cada autovector y por ende tiene una complejidad de $\Omega(n)^3$,
+		donde $n$ representa la dimensi\'on de la matriz. Por otro lado el m\'etodo
+		de la potencia solo realiza una multiplicaci\'on entre matriz y vector
+		y por lo tanto tendr\'a una complejidad de $\Omega(n^2)$.
+
+		Por este motivo esperamos ver una diferencia significativa en el tiempo de
+		ejecuci\'on de ambas estrategias.
+
+	\subsubsection{Cantidad de d\'igitos reconocidos en funci\'on de el m\'etodo, sus par\'ametros
+	y la cantidad de componentes utilizada}
+		Comenzamos buscando buenos par\'ametros para los m\'etodos de reconocimiento
+		de d\'igitos. Para esto calculamos autovectores con la mejor precisi\'on
+		posible y experimentamos con la cantidad de componentes entre $20$ y $100$.
+		Una vez que obtenemos los par\'ametros que se comportan mejor para cada
+		m\'etodo analizamos la diferencia de comporamiento de los m\'etodos
+		al variar la cantidad de componentes principales y la precisi\'on con
+		la cual se calculan los autovectores.
+
+	\subsubsection{Influencia del tama\~no de la base de datos}
+		Bas\'andonos en el test anterior comparamos el \textit{hit rate} logrado
+		por los m\'etodos de reconocimiento de d\'igitos al variar al cantidad
+		de im\'agenes en la base de datos.
+		
+	\subsubsection{D\'igitos mejor reconocidos en funci\'on del m\'etodo}
+		Dado que implementamos m\'as de un m\'etodo para el reconocimiento de
+		d\'igitos, nos preguntamos si los mismos funcionan mejor en distintos
+		d\'igitos. Para responder al interrogante calculamos el \textit{hit rate}
+		de cada d\'igito por separado y comparamos los resultados de los
+		distintos m\'etodos.
+
+	\subsubsection{Diferencias en el tiempo de ejecuci\'on para reconocer d\'igitos}
+		Analizamos $5000$ d\'igitos con los m\'etodos de reconocimiento de
+		d\'igitos. Comparamos el tiempo de ejecuci\'on de cada prueba.
