@@ -437,7 +437,7 @@ class Matriz
 				maxIter--;
 			}
 
-			printf("Paso el max de iteraciones y QR no converge\n");
+//			printf("Paso el max de iteraciones y QR no converge\n");
 		}
 
 		void multiplicarEscalar ( double beta)
@@ -462,22 +462,32 @@ class Matriz
 		}
 
 		double distanciaAutovector( Matriz<T> & autovector ){
+	
 			assert( autovector.cantFil() == n && autovector.cantCol() == 1 );
 
-			double rtrn;
 			Matriz<double> autov(autovector);			
 			Matriz<double> multi(autovector);						
+			Matriz<double> autovN(autovector);						
 
 			autov.normalizar();
+			autovN.normalizar();
 
 			multi.cargarMultiplicacion(*this, autov);
 			multi.normalizar();
 			
 			multi.cargarResta(autov,multi);
 
-			double tmp = multi.norma();
+			double rtrn = multi.norma();
 
-			rtrn = ( tmp > sqrt(2) )? 2. - tmp: tmp;
+			if( rtrn > sqrt(2) ){
+				multi.cargarMultiplicacion(*this, autovN);
+				multi.normalizar();
+				multi.multiplicarEscalar(-1.);
+			
+				multi.cargarResta(autovN,multi);
+
+				rtrn = multi.norma();	
+			}
 
 			return rtrn;
 		}
@@ -587,12 +597,13 @@ class Matriz
 				mu_1 = mu;
 			}
 
-//			printf("Metodo de la potencia: se llego a la maxima cant de iteraciones, devuelvo lo mejor que logre...\n");
+//			printf("se llego a la maxima cant de iteraciones");
 
 			guess = mu_s;
 		}
 				
-		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter ) {
+		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter )
+		{
 			assert( x.cantFil() == n && x.cantCol()==1 );
 
 			Matriz<double> resta(n,1);
@@ -639,14 +650,14 @@ class Matriz
 					mu = 1.f / mu + guess;
 					guess = mu;
 
+					//printf("Itere %d veces\n", k);
 
 					return;
 				}
 
 				k++;
 			}
-
-//			printf("Metodo de la potencia inversa: se llego a la maxima cant de iteraciones, devuelvo lo mejor que logre...\n");
+//			printf("se llego a la maxima cant de iteraciones\n");
 		}
 
 		void factorizacionLU(  Matriz<T> &P, Matriz<T> &L, Matriz<T> &U )
