@@ -461,6 +461,27 @@ class Matriz
 					matriz[i][j] = (i==j) ? factor : 0.f;
 		}
 
+		double distanciaAutovector( Matriz<T> & autovector ){
+			assert( autovector.cantFil() == n && autovector.cantCol() == 1 );
+
+			double rtrn;
+			Matriz<double> autov(autovector);			
+			Matriz<double> multi(autovector);						
+
+			autov.normalizar();
+
+			multi.cargarMultiplicacion(*this, autov);
+			multi.normalizar();
+			
+			multi.cargarResta(autov,multi);
+
+			double tmp = multi.norma();
+
+			rtrn = ( tmp > sqrt(2) )? 2. - tmp: tmp;
+
+			return rtrn;
+		}
+
 		double norma()
 		{
 			double res = 0;
@@ -619,7 +640,7 @@ class Matriz
 					mu = 1.f / mu + guess;
 					guess = mu;
 
-					printf("Itere %d veces\n", k);
+					//printf("Itere %d veces\n", k);
 
 					return;
 				}
