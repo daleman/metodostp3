@@ -147,7 +147,7 @@
 		Dado que ambos m\'etodos son esencialmente distintos cabe preguntarse
 		si sus complejidades son distintas. Te\'oricamente notamos una diferencia
 		importante: el m\'etodo de la potencia inversa resuelve un sistema de
-		ecuaciones por cada autovector y por ende tiene una complejidad de $\Omega(n)^3$,
+		ecuaciones por cada autovector y por ende tiene una complejidad de $\Omega(n^3)$,
 		donde $n$ representa la dimensi\'on de la matriz. Por otro lado el m\'etodo
 		de la potencia solo realiza una multiplicaci\'on entre matriz y vector
 		y por lo tanto tendr\'a una complejidad de $\Omega(n^2)$.
@@ -155,8 +155,8 @@
 		Por este motivo esperamos ver una diferencia significativa en el tiempo de
 		ejecuci\'on de ambas estrategias.
 
-	\subsubsection{Cantidad de d\'igitos reconocidos en funci\'on de el m\'etodo, sus par\'ametros
-	y la cantidad de componentes utilizada}
+	\subsubsection{Cantidad de d\'igitos reconocidos en funci\'on de el m\'etodo,
+	la cantidad de componentes utilizada y la precisi\'on de los autovectores}
 		Comenzamos buscando buenos par\'ametros para los m\'etodos de reconocimiento
 		de d\'igitos. Para esto calculamos autovectores con la mejor precisi\'on
 		posible y experimentamos con la cantidad de componentes entre $20$ y $100$.
@@ -180,3 +180,8 @@
 	\subsubsection{Diferencias en el tiempo de ejecuci\'on para reconocer d\'igitos}
 		Analizamos $5000$ d\'igitos con los m\'etodos de reconocimiento de
 		d\'igitos. Comparamos el tiempo de ejecuci\'on de cada prueba.
+		Suponemos que el m\'etodo de la distancia al promedio de las componentes
+		ser\'a el m\'as rapido. Pues cada vector de componentes de una imagen
+		nueva debe ser comparada \'unicamente con $10$ vectores de componentes.
+		En los otros dos m\'etodos se comparan con todos los vectores de componentes
+		de la base de datos.
