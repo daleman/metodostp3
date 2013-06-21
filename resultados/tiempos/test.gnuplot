@@ -10,7 +10,11 @@ set xlabel "Presición"
 
 set ylabel "Ticks Microprocesador Promedio"
 
+set logscale x
+set xrange [:] reverse
 
 set output "precVsTick.png"
-set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 ps 1   # --- blue
-plot archivo using 2:3 title nombre with linespoints ls 1
+set style line 1 lt 1 lw 2 pt 7 ps 1   # --- blue
+
+plot	"promedios" using 1:2 title "QR" with linespoints ls 1 lc rgb 'blue', \
+		"promedios" using 1:3 title "Potencia" with linespoints ls 1 lc rgb 'red'
