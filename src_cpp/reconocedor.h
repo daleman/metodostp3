@@ -31,13 +31,15 @@ class Reconocedor
 		int *labels;
 		int *labels_aEvaluar;
 
+		Matriz<double> *covarianza;
+
 	private :
 	
 		void calcular_tcs();
 
 		Matriz<double> *imagenes;
 		
-		Matriz<double> *covarianza;
+
 		Matriz<double> *tcs;
 
 		Matriz<double> *aEvaluar;
