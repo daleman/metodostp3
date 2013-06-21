@@ -142,7 +142,7 @@
 		dos vectores de igual norma. Ambos vectores son autovectores y la \'unica
 		diferencia entre ellos es el sentido. Teniendo esto en consideraci\'on
 		podr\'ia ocurrir que la distancia calculada est\'e por arriba que $\sqrt{2}$
-		e incluso que sea igual a $2$\footnote{En el caso en que obtengamos el m\'ismo
+		e incluso que sea igual a $2$\footnote{En el caso en que obtengamos el mismo
 		vector pero cambiado de signo.}. Por este motivo, cuando se obtiene una
 		distancia mayor a $\sqrt{2}$ se multiplica el vector por $-1$ y se la
 		recalcula.
@@ -150,7 +150,7 @@
 		Esperamos obtener resultados m\'as precisos al utilizar la estrategia
 		\textit{QR-potencia Inversa}. Basamos esta hip\'otesis en que se usan
 		matrices ortogonales para calcular los autovalores. Estas matrices
-		tienen el n\'umero de condici\'on mas bajo posible, $1$.
+		tienen el n\'umero de condici\'on m\'as bajo posible, $1$.
 		Una vez que tenemos aproximaciones de los autovalores de buena calidad
 		el m\'etodo de la potencia inversa brinda buenas aproximaciones de los
 		autovectores.
@@ -161,7 +161,7 @@
 		importante: el m\'etodo de la potencia inversa resuelve un sistema de
 		ecuaciones por cada autovector y por ende tiene una complejidad de $\Omega(n^3)$,
 		donde $n$ representa la dimensi\'on de la matriz. Por otro lado el m\'etodo
-		de la potencia solo realiza una multiplicaci\'on entre matriz y vector
+		de la potencia s\'olo realiza una multiplicaci\'on entre matriz y vector
 		y por lo tanto tendr\'a una complejidad de $\Omega(n^2)$.
 
 		Por este motivo esperamos ver una diferencia significativa en el tiempo de
