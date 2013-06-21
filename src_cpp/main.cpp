@@ -33,7 +33,6 @@ void modoUso()
 
 int main( int argc, char** argv )
 {
-
 	if (argc != 11) {
 		modoUso();
 		return 0;
