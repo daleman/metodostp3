@@ -1,2 +1,25 @@
-%\subsubsection{Clase $Estimador$}
-%\lstinputlisting{../../src/Estimador.cpp}
+\subsection{C\'odigo relevante y modo de uso}
+
+	\subsubsection{Conversi\'on de datos usando Matlab}
+		Las instancias utilizadas fueron bajadas de \url{http://yann.lecun.com/exdb/mnist/}.
+		Debe utilizarse el \textit{script} \texttt{generarPuntoDat.sh} que se
+		encuentra en \texttt{imagenes/MNIST_Matlab}
+		para convertir las instancias bajadas a archivos legibles por
+		nuestra implementaci\'on. Al ejecutar el \textit{script} se
+		ver\'a el modo de uso.
+
+	\subsubsection{Modo de uso del programa}
+		Si bien al ejecutar el programa \texttt{tp3.exe} que se encuentra
+		en \texttt{ejecutables/} se imprimen las instrucciones de uso
+		cabe destacar algunos puntos:
+
+	\subsubsection{Clase \textit{Reconocedor}}
+		Esta clase permite utilizar cualquiera de los m\'etodos para el calculo
+		de autovalores y combinarlo con cualquiera de los m\'etodo de reconocimiento
+		de d\'igitos.
+		
+		\lstinputlisting{../../src_cpp/reconocedor.cpp}
+
+	\subsubsection{Clase \textit{Matriz}}
+
+		\lstinputlisting{../../src_cpp/matriz.h}

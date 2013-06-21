@@ -546,13 +546,13 @@ int Reconocedor::reconocer_digitoMedio( int cantComponentes, int indice_imagen )
 
 		double mediaActual = distanciasMedias[i];
 
-		printf("%f ", distanciasMedias[i]);
+		//printf("%f ", distanciasMedias[i]);
 		if ( mediaActual < mejor ) {
 			mejor = mediaActual;
 			digito = i;
 		}
 	}
-	printf("\n");
+	//printf("\n");
 
 	return digito;
 }

@@ -587,13 +587,12 @@ class Matriz
 				mu_1 = mu;
 			}
 
-			printf("se llego a la maxima cant de iteraciones");
+//			printf("Metodo de la potencia: se llego a la maxima cant de iteraciones, devuelvo lo mejor que logre...\n");
 
 			guess = mu_s;
 		}
 				
-		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter )
-		{
+		void potenciaInversa(double &guess, Matriz <T> &x, double tol, int maxIter ) {
 			assert( x.cantFil() == n && x.cantCol()==1 );
 
 			Matriz<double> resta(n,1);
@@ -640,14 +639,14 @@ class Matriz
 					mu = 1.f / mu + guess;
 					guess = mu;
 
-					//printf("Itere %d veces\n", k);
 
 					return;
 				}
 
 				k++;
 			}
-			printf("se llego a la maxima cant de iteraciones\n");
+
+//			printf("Metodo de la potencia inversa: se llego a la maxima cant de iteraciones, devuelvo lo mejor que logre...\n");
 		}
 
 		void factorizacionLU(  Matriz<T> &P, Matriz<T> &L, Matriz<T> &U )

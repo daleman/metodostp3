@@ -2,7 +2,7 @@ CC = pdflatex
 
 ACONSTRUIR = informe
 
-NECESITADOS = informe enunciado introduccion_teorica conclusion resultados codigo desarrollo tablas testeo
+NECESITADOS = informe enunciado introduccion_teorica conclusion resultados codigo desarrollo tablas
 
 SRCPATH = tex/
 

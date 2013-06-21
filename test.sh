@@ -1,17 +1,22 @@
 make clean
 make
 
-TOLERANCIAS=(0.1 0.01 0.001 0.0001 0.00001)
+TOLERANCIAS=(0.001)
+VECINOS=(1 5 10 30 50 100)
+COMPONENTES=(10 20 30 40 50)
 
-for tol in ${TOLERANCIAS[@]}; do
+for cantVecinos in ${VECINOS[@]};do
+	for tol in ${TOLERANCIAS[@]}; do
 
-	echo > ./resultados/test_${tol}
+		echo > ./resultados/test_${tol}_${cantVecinos}
 
-	for cantComp in {1..30..2}; do
-		echo -e -n $"\n${tol}\t${cantComp}\t" >> ./resultados/test_${tol} #_${cantComp}
+		for cantComp in ${COMPONENTES[@]}; do
+		
+			echo -e -n $"\n${tol}\t${cantComp}\t" >> ./resultados/test_${tol}_${cantVecinos} #_${cantComp}
 
-		./ejecutables/tp3.exe imagenes/train6000.dat imagenes/train6000.cov imagenes/prim5000test.dat $tol $cantComp 5 5000 PS >> ./resultados/test_${tol}
+			./ejecutables/tp3.exe imagenes/train60000.dat imagenes/train60000.cov imagenes/prim5000test.dat $tol $cantComp $cantVecinos 5000 PS >> ./resultados/test_${tol}_${cantVecinos}
 
-		echo $tol.$cantComp
+			echo $tol.$cantComp
+		done
 	done
 done
