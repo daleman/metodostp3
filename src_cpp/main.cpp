@@ -11,29 +11,28 @@ using namespace std;
 
 void modoUso()
 {
-		printf("\nModo de uso:\n\n"
-				"\t./tp3.exe 1DIGITOS_TRAINING 2DIGITOS_TEST 3MATRIZ_COVARIANZA "		//1 2 3
-					"4PRIMER_DIGITO 5ULTIMO_DIGITO 6TOLERANCIA 7CANTIDAD_COMPONENTES "	//4 5 6 7
-					"8METODO_AUTOVECTORES 9METODO_RECONOCIMIENTO "					//8 9
-					"10CANTIDAD_VECINOS\n\n"											//10
-				"\tDonde:\n\n"
-					"\t\tMATRIZ_COVARIANZA es una matriz de covarianza precalculada,"
-						"o NONE en caso de querer calcular la matriz en el momento\n\n"
-					"\t\tPRIMER_DIGITO y ULTIMO_DIGITO determinan el intervalo"
-						"de digitos que desean analizarse de la entrada DIGITOS_TEST\n\n"
-					"\t\tMETODO_AUTOVECTORES puede ser QR o POTENCIA\n\n"
-					"\t\tMETODO_RECONOCIMIENTO puede ser KVECINOS, KPONDERADOS o PROMEDIO\n\n"
-					"\t\tCANTIDAD_VECINOS es la cantidad de vecinos o NONE si no se usa un metodo "
-					"que use este parametro\n\n"
-					"\t ES IMPORTANTE notar el hecho de que este programa DEBE usarse siempre "
-					"con 10 parametros\n\n"
-				);
+	printf("\nModo de uso:\n\n"
+			"\t./tp3.exe 1DIGITOS_TRAINING 2DIGITOS_TEST 3MATRIZ_COVARIANZA "		//1 2 3
+				"4PRIMER_DIGITO 5ULTIMO_DIGITO 6TOLERANCIA 7CANTIDAD_COMPONENTES "	//4 5 6 7
+				"8METODO_AUTOVECTORES 9METODO_RECONOCIMIENTO "					//8 9
+				"10CANTIDAD_VECINOS\n\n"											//10
+			"\tDonde:\n\n"
+				"\t\tMATRIZ_COVARIANZA es una matriz de covarianza precalculada,"
+					"o NONE en caso de querer calcular la matriz en el momento\n\n"
+				"\t\tPRIMER_DIGITO y ULTIMO_DIGITO determinan el intervalo"
+					"de digitos que desean analizarse de la entrada DIGITOS_TEST\n\n"
+				"\t\tMETODO_AUTOVECTORES puede ser QR o POTENCIA\n\n"
+				"\t\tMETODO_RECONOCIMIENTO puede ser KVECINOS, KPONDERADOS o PROMEDIO\n\n"
+				"\t\tCANTIDAD_VECINOS es la cantidad de vecinos o NONE si no se usa un metodo "
+				"que use este parametro\n\n"
+				"\t ES IMPORTANTE notar el hecho de que este programa DEBE usarse siempre "
+				"con 10 parametros\n\n"
+			);
 }
 
 
 int main( int argc, char** argv )
 {
-
 	if (argc != 11) {
 		modoUso();
 		return 0;

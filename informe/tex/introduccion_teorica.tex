@@ -9,7 +9,7 @@
 	la particularidad de estar ordenados de la forma $\sigma_{i,i} \geq
 	\sigma_{j,j}, i<j$, entonces esta factorizaci\'on es \'unica.
 	Una propiedad importante de esta factorizaci\'on es que las matrices
-	$U$ y $V$ tienen como columnas lo autovectores de $AA^t$ y $A^tA$
+	$U$ y $V$ tienen como columnas los autovectores de $AA^t$ y $A^tA$
 	respectivamente.
 	Los elementos de la diagonal de $\Sigma$ se denominan valores singulares
 	de $X$.
@@ -17,12 +17,12 @@
 	La factorizaci\'on puede ser interpretada de varias formas y suele
 	brindar mucha informaci\'on acerca de la matriz. En este caso queremos
 	calcular las componentes principales de un cierto vector que representa
-	una imagen de un d\'igito manuscrito. Esto lo lograremos calculando la
+	una imagen de un d\'igito manuscrito. Esto lo logramos calculando la
 	factorizaci\'on SVD de la matriz de covarianza entre p\'ixeles $X^tX$.
 	Para conseguir la matriz $X$ se parte de una base de datos $x_1, \ldots, x_n$
 	con im\'agenes
 	de d\'igitos manuscritos de dimensiones iguales. Luego se interpreta cada
-	imagen $x_i$ como un vector fila y se calcula, componente a componente,
+	imagen $x_i$ como un vector fila y se calcula, \'indice a \'indice,
 	el vector promedio $\mu$ de todas las im\'agenes.
 	La matriz $X$ se obtiene al poner como filas los vectores $x_i - \mu$
 	y dividiendo por $\sqrt{n-1}$.
@@ -31,11 +31,10 @@
 	el producto interno entre el vector que representa la imagen y los
 	$k$ autovectores que se corresponden con los $k$ autovalores de mayor m\'odulo
 	de la matriz de covarianza entre p\'ixeles.
-
-	Luego las $k$ componentes principales de una imagen $x$ se corresponden con los
-	primeros $k$ coeficientes del vector que resulta de multiplicar $V^tx$.
-	Suponiendo que se realiz\'o la factorizaci\'on SVD de $X$ de manera tal
-	de que los valores singulares de $X$ se encuentren ordenados de mayor a menor. 
+	Es decir, las $k$ componentes principales de una imagen $x$ son los
+	primeros $k$ coeficientes del vector que resulta de multiplicar $V^tx$,
+	suponiendo que se realiz\'o la factorizaci\'on SVD de $X$ de manera tal
+	que los valores singulares de $X$ se encuentran ordenados de mayor a menor. 
 
 	Una vez obtenidas las componentes principales de la imagen que quiere
 	reconocerse, pueden compararse con las componentes principales de los
