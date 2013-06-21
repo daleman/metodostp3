@@ -69,14 +69,16 @@
 		principales a utilizar es $50$.
 		Como deducimos del primer test no notamos una diferencia importante en el \textit{hit rate}
 		cuando se var\'ia la tolerancia usando el m\'etodo de la potencia. Notamos una variaci\'on
-		de $\sim 0.2%$ al cambiar la precisi\'on. Con lo cual nos convencemos de que, utilizando
+		de $\sim 0.2\%$ al cambiar la precisi\'on. Con lo cual nos convencemos de que, utilizando
 		el m\'etodo de la potencia, una tolerancia del \'orden de $0.001$ es suficiente para
 		conseguir resultados \'optimos.
+		Por otro lado, es importante notar que la calidad de los resultados del m\'etodo de los
+		vecinos depende m\'as de la cantidad de componentes usada que de la cantidad de vecinos.
 
 		Finalmente analizamos el m\'etodo de la distancia al promedio de las componentes
 		principales. Si bien el m\'etodo es computacionalmente m\'as simple, ya que se
 		compara cada d\'igito a reconocer \'unicamente con diez promedios, no muestra
-		resultados satisfactorios, apenas logra superar el $70%$ de \textit{hits}.
+		resultados satisfactorios, apenas logra superar el $70\%$ de \textit{hits}.
 		Notamos que para un comportamiento \'optimo necesita del orden de la mitad de
 		componentes principales que el m\'etodo de los vecinos, con lo cual el m\'etodo
 		funciona mucho m\'as r\'apido.
@@ -95,10 +97,10 @@
 
 		Aqu\'i se nota bien la diferencia entre los dos m\'etodos de reconocimiento de
 		d\'igitos. El m\'etodo de los vecinos tiene un comportamiento casi perfecto en
-		los d\'igitos $0$ y $1$, y para cualquier otro d\'igito no baja del $90%$ de
+		los d\'igitos $0$ y $1$, y para cualquier otro d\'igito no baja del $90\%$ de
 		\textit{hits}. Por el contrario, el m\'etodo de la distancia al promedio de las
 		componentes es mucho m\'as inestable. Por ejemplo vemos que con el $4$ y el $5$
-		tiene un \texit{hitrate} por debajo del $50$. Este tipo de analisis puede ayudar
+		tiene un \textit{hitrate} por debajo del $50$. Este tipo de analisis puede ayudar
 		a desarrollar software m\'as inteligente: sabiendo en cuales d\'igitos es efectivo
 		cada m\'etodo, pueden usarse varios m\'etodos simultaneamente, y tomar una decisi\'on
 		en funcion del \textit{guess} de los distintos m\'etodos.
