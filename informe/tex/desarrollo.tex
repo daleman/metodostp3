@@ -13,11 +13,12 @@
 
 	\begin{itemize}
 		\item \textbf{M\'etodo de la Potencia y deflaci\'on:} Suponiendo que
-		tenemos autovalores $\lambda_1\ \geq \ldots \geq |\lambda_n|$ y los primeros
-		$k$ son distintos dos a dos, obtenemos $\lambda_1$ (y su atovalor asociado),
+		tenemos autovalores $|\lambda_1| \geq \ldots \geq |\lambda_n|$ y los primeros
+		$k$ son distintos dos a dos, obtenemos $\lambda_1$ (y su atovector asociado),
 		mediante el m\'etodo de la potencia. Luego
 		construimos una matriz que tenga como autovalores
-		$|\lambda_2| \geq \ldots \geq |\lambda_n| \geq 0$.
+		$|\lambda_2| \geq \ldots \geq |\lambda_n| \geq 0$ usando el m\'etodo
+		de deflaci\'on.
 		De esta forma inductiva calculamos los primeros $k$ autovalores
 		con sus correspondientes autovectores.
 
@@ -46,7 +47,7 @@
 		El m\'etodo no depende fuertemente de la norma que se usa para renormalizar
 		en cada iteraci\'on. La \'unica diferencia es que el autovector obtenido
 		estar\'a normalizado con la norma usada. En nuestro caso usamos la norma
-		infinito porque ya que se calcula de manera m\'as r\'apida computacionalmente.
+		infinito ya que se calcula de manera r\'apida computacionalmente.
 
 		Una vez que tenemos el autovalor $\bar{\lambda}$ obtenemos una matriz
 		$A'$ que conserva los mismos autovalores y autovectores exceptuando
@@ -88,15 +89,16 @@
 \subsection{Reconociendo d\'igitos usando las componentes principales}
 
 	\PARstart Para reconocer d\'igitos a partir de sus componentes principales
-	implementamos dos m\'etodos. Cada uno de los metodos puede ser usado con la
+	implementamos tres m\'etodos. Cada uno de los metodos puede ser usado con la
 	cantididad de componentes principales que se desee y por lo tanto no se
 	har\'a referencia a dicha cantidad en la explicaci\'on. En la parte tests
 	experimentaremos con diversas cantidades y buscaremos la m\'as adecuada para
-	cada m\'etodo.
+	cada m\'etodo, ya que, veremos, que los mismos suelen requerir diversas
+	cantidades para comportarse de forma \'optima.
 
 	\subsubsection{kVecinos}
 		Se calculan las componentes principales $c$ de la imagen a evaluar
-		y las componentes $c_i$ de todas las im\'agenes $x_i$ de las bases
+		y las componentes $c_i$ de todas las im\'agenes $x_i$ de la base
 		de datos. Se toman las distancias eucl\'ideas $\|c - c_i\|$
 		y se cuentan las apariciones de cada d\'igito ($0, \ldots, 9$)
 		en el conjunto de los $k$ $c_i$ m\'as cercanos a $c$.
@@ -107,7 +109,7 @@
 		En un principio pensamos calcular el promedio de las distancias $\|c - cj_i\|$.
 		Donde $cj$ representa el conjunto de componentes principales de las
 		im\'agenes del d\'igito $j$. De esta manera se est\'a tomando la 
-		distancia promedio a todos los d\'igitos $1$, a los d\'igitos $2$, etc.
+		distancia promedio a todos los d\'igitos $0$, a los d\'igitos $1$, etc.
 
 		Vimos que este m\'etodo no daba resultados razonables y parametrizamos
 		el mismo, para dar m\'as granularidad a la hora de utilizarlo.
@@ -141,11 +143,11 @@
 		un autovector se encuentra contenido en una recta y esa recta contiene
 		dos vectores de igual norma. Ambos vectores son autovectores y la \'unica
 		diferencia entre ellos es el sentido. Teniendo esto en consideraci\'on
-		podr\'ia ocurrir que la distancia calculada est\'e por arriba que $\sqrt{2}$
+		podr\'ia ocurrir que la distancia calculada est\'e por arriba de $\sqrt{2}$
 		e incluso que sea igual a $2$\footnote{En el caso en que obtengamos el mismo
 		vector pero cambiado de signo.}. Por este motivo, cuando se obtiene una
-		distancia mayor a $\sqrt{2}$ se multiplica el vector por $-1$ y se la
-		recalcula.
+		distancia mayor a $\sqrt{2}$ se multiplica a uno de los vectores por
+		$-1$ y se la recalcula.
 		
 		Esperamos obtener resultados m\'as precisos al utilizar la estrategia
 		\textit{QR-potencia Inversa}. Basamos esta hip\'otesis en que se usan
@@ -162,12 +164,13 @@
 		ecuaciones por cada autovector y por ende tiene una complejidad de $\Omega(n^3)$,
 		donde $n$ representa la dimensi\'on de la matriz. Por otro lado el m\'etodo
 		de la potencia s\'olo realiza una multiplicaci\'on entre matriz y vector
-		y por lo tanto tendr\'a una complejidad de $\Omega(n^2)$.
+		y por lo tanto tiene una complejidad de $\Omega(n^2)$.
+	
+		Si bien estas son solamente cotas inferiores esperamos ver una
+		diferencia significativa en el tiempo de ejecuci\'on de ambas
+		estrategias.
 
-		Por este motivo esperamos ver una diferencia significativa en el tiempo de
-		ejecuci\'on de ambas estrategias.
-
-	\subsubsection{Cantidad de d\'igitos reconocidos en funci\'on de el m\'etodo,
+	\subsubsection{Cantidad de d\'igitos reconocidos en funci\'on del m\'etodo,
 	la cantidad de componentes utilizada y la precisi\'on de los autovectores}
 		Comenzamos buscando buenos par\'ametros para los m\'etodos de reconocimiento
 		de d\'igitos. Para esto calculamos autovectores con una buena precisi\'on

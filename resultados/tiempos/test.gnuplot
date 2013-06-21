@@ -6,6 +6,8 @@ set terminal png size 1280, 480
 set zeroaxis
 set grid
 
+set key right center
+
 set xlabel "Precisión"
 set ylabel "Ticks Microprocesador Promedio"
 

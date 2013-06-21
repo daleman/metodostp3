@@ -1,0 +1,30 @@
+\section{Conclusiones}
+
+	\PARstart Analizamos dos m\'etodos de c\'alculo de autovectores y dos (efectivos)
+	de reconocimiento de d\'igitos.
+
+	Para los autovectores el m\'etodo m\'as preciso result\'o el
+	\textit{QR-potencia Inversa}. Comprobamos que los autovectores suelen
+	ser muy precisos, ya que su direcci\'on no se ve practicamente alterada
+	por multiplicarlos por la matriz. El m\'etodo se comporta muy bien para
+	tolerancias relativamente grandes (en el tipo de matrices que analizamos)
+	y no suele depender fuertemente de la tolerancia elegida. Por otro lado
+	no es un m\'etodo particularmente r\'apido, y, si se admite un poco de
+	error, pueden obtenerse resultados razonables bastante m\'as rapido
+	con el m\'etodo \textit{potencia-deflaci\'on}. Para este caso particular
+	notamos una diferencia en los resultados obtenidos al comparar los
+	dos m\'etodos de obtenci\'on de autovectores. Pero las diferencias
+	pueden considerarse tolerables ya son del \'orden de $\sim 0.5%$ para
+	ambos m\'etodos de reconocimiento de d\'igitos.
+
+	Con respecto al reconocimiento de d\'igitos creemos que el m\'etodo del
+	promedio (al menos nuestra implementaci\'on) no es suficientemente buena
+	para ninguna aplicaci\'on pr\'actica. En el mejor caso obtuvimos un
+	\textit{hit rate} del $71.12%$. A lo sumo puede combinarse con un m\'etodo
+	m\'as poderoso (como el de los vecinos) para hacer un \textit{double check}
+	en el caso en el que el de los vecinos no llegue a un resultado concluyente
+	\footnote{Por ejemplo, si los vecinos contienen cantidades similares
+	de d\'igitos $a$ y d\'igitos $b$, $a\neq b$.}.
+	El m\'etodo de los vecinos result\'o ser muy satisfactorio. Su mayor
+	deficiencia est\'a en los d\'igitos $8$ y $9$ como mostramos en el \'ultimo
+	test.

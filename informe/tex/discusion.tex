@@ -1,0 +1,104 @@
+\section{Discusi\'on}
+
+	\PARstart A continuaci\'on discutimos cada uno de los resultados obtenidos en los tests
+	realizados.
+
+	\subsection{Error de los autovectores calculados}
+
+		No nos result\'o sencillo interpretar los resultados. Esperabamos ver una
+		variaci\'on m\'as significativa en las distancias. Deducimos que las instancias
+		que manejamos tienen una influencia en estos resultados:
+		se trata de matrices de covarianza con coeficientes realmente grandes (del orden
+		de $10^4$ y m\'as). Adem\'as las matrices son considerablemente esparsas ya que
+		las im\'agenes de los d\'igitos suelen contener muchos ceros, pues se trata de
+		lineas sobre fondo blanco.
+		Considerando lo anterior nos result\'o razonable usar una tolerancia de $0.001$
+		para obtener resultados \'optimos en el caso del m\'etodo de la potencia.
+
+		Con respecto al m\'etodo \textit{QR-potencia Inversa} llegamos a la conclusi\'on
+		de que tolerancias de estos \'ordenes no tiene influencia pr\'actica en los resultados.
+		Esto se debe a que el m\'etodo comienza buscando una matriz semejante que sea
+		tridiagonal. Una vez obtenida esta matriz verificamos que los elementos de la diagonal
+		suelen ser alg\'un orden de magnitud m\'as grandes que los de la sub-diagonal.
+		Tengamos en cuenta que hasta este punto no se utiliz\'o la tolerancia ya que
+		obtener la matriz de hessemberg es un m\'etodo determinista, en el sentido de que
+		lleva una cantidad de pasos bien definida (que depende del tama\~no de la matriz).
+		No se trata de un m\'etodo iterativo.
+
+		Teniendo una diferencia realmente grande entre diagonal y sub-diagonal, al m\'etodo QR,
+		no le toma m\'as que unas pocas iteraciones converger. En este momento la tolerancia
+		entra en juego. Pero la convergencia del m\'etodo es muy r\'apida y por ende habr\'a
+		muy pocas iteraciones de diferencia para dos tolerancias significativamente distintas.
+
+		Al tener autovalores calculados con una muy buena precisi\'on, el m\'etodo de la
+		potencia inversa converge casi instantaneamente\footnote{Comprobamos que no suele tomar
+		m\'as de dos iteraciones. En la discusi\'on del pr\'oximo experimento se hace evidente
+		que la cantidad de iteraciones que le lleva converger no depende significativamente
+		de la tolerancia utilizada.}. Esto se debe a que resuelve un sistema de ecuaciones
+		utilizamndo una aproximaci\'on buena de los autovalores. Al utilizar la descomposici\'on
+		LU para resolver el sistema buscamos mantener el error lo m\'as acotado posible.
+		Suponemos que esto es efectivo al menos en estas instancias, pues, como afirmamos
+		en la secci\'on \textbf{Resultados}, el error de los autovectores es realmente
+		insigificante para toda tolerancia razonable.
+		
+	\subsection{Diferencias en el tiempo de ejecuci\'on para obtener autovectores}
+
+		Notamos que, como da a entender el experimento anterior, la velocidad de convergencia
+		del m\'etodo \textit{QR-potencia Inversa} no depende fuertemente de la precisi\'on
+		utilizada. Por el contrario el m\'etodo de la potencia parece mostrar un comportamiento
+		lineal en la precisi\'on. Esto es avalado por la teor\'ia, ya que el m\'etodo de la
+		potencia tiene, te\'oricamente, una convergencia lineal.
+
+		Estos resultados cumplen con nuestras expectativas, ya que el m\'etodo \textit{QR-potencia
+		Inversa} toma un tiempo de circa un orden de magnitud m\'as que el m\'etodo de la potencia.
+
+	\subsection{Cantidad de d\'igitos reconocidos en funci\'on del m\'etodo,
+	cantidad de componentes utilizada y la precisi\'on de los autovectores}
+		
+		Para el m\'etodo de los vecinos ponderados encontramos que la catitdad \'optima de
+		vecinos es $1$. Esto muestra que el m\'etodo no es realmente efectivo, ya que,
+		para un solo vecino es equivalente al m\'etodo de los vecinos est\'andar.
+		Por este motivo concluimos que el metodo no es \'util.
+
+		El m\'etodo de los vecinos est\'andar mostr\'o un mejor comportamiento al
+		usar $5$ vecinos. Esto concuerda con resultados discutidos con nuestros
+		compa\~nero de clase. Para el resto de los test utilizamos esta cantidad
+		de vecinos.
+
+		Para el m\'etodo de los vecinos encontramos que una buena cantidad de componentes
+		principales a utilizar es $50$.
+		Como deducimos del primer test no notamos una diferencia importante en el \textit{hit rate}
+		cuando se var\'ia la tolerancia usando el m\'etodo de la potencia. Notamos una variaci\'on
+		de $\sim 0.2%$ al cambiar la precisi\'on. Con lo cual nos convencemos de que, utilizando
+		el m\'etodo de la potencia, una tolerancia del \'orden de $0.001$ es suficiente para
+		conseguir resultados \'optimos.
+
+		Finalmente analizamos el m\'etodo de la distancia al promedio de las componentes
+		principales. Si bien el m\'etodo es computacionalmente m\'as simple, ya que se
+		compara cada d\'igito a reconocer \'unicamente con diez promedios, no muestra
+		resultados satisfactorios, apenas logra superar el $70%$ de \textit{hits}.
+		Notamos que para un comportamiento \'optimo necesita del orden de la mitad de
+		componentes principales que el m\'etodo de los vecinos, con lo cual el m\'etodo
+		funciona mucho m\'as r\'apido.
+
+
+	\subsection{Cantidad de d\'igitos reconocidos en funci\'on del m\'etodo,
+	cantidad de componentes utilizada y la precisi\'on de los autovectores}
+
+		Vemos que el tama\~no del \textit{training set} determina el porcentaje de d\'igitos bien
+		reconocidos en todos los casos. Por otro lado 
+
+		ASLDNALSDNASLKDNSKLDN
+
+
+	\subsection{D\'igitos mejor reconocidos en funci\'on del m\'etodo}
+
+		Aqu\'i se nota bien la diferencia entre los dos m\'etodos de reconocimiento de
+		d\'igitos. El m\'etodo de los vecinos tiene un comportamiento casi perfecto en
+		los d\'igitos $0$ y $1$, y para cualquier otro d\'igito no baja del $90%$ de
+		\textit{hits}. Por el contrario, el m\'etodo de la distancia al promedio de las
+		componentes es mucho m\'as inestable. Por ejemplo vemos que con el $4$ y el $5$
+		tiene un \texit{hitrate} por debajo del $50$. Este tipo de analisis puede ayudar
+		a desarrollar software m\'as inteligente: sabiendo en cuales d\'igitos es efectivo
+		cada m\'etodo, pueden usarse varios m\'etodos simultaneamente, y tomar una decisi\'on
+		en funcion del \textit{guess} de los distintos m\'etodos.

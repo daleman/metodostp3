@@ -7,6 +7,8 @@ set terminal png size 1280, 480
 set zeroaxis
 set grid
 
+set key right bottom 
+
 set xlabel "Cantidad de componentes"
 
 set ylabel "Porcentaje Digitos bien reconocidos"
