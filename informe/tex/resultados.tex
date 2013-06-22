@@ -21,9 +21,9 @@
 
 	\subsection{Diferencias en el tiempo de ejecuci\'on para obtener autovectores}
 
-		Comparamos el tiempo de ejecuci\'on de ambas estrategias variando la tolerancia
-		entre $10$ y $10^{-6}$.
-		Cada punto es el promedio de diez corridas.
+		Comparamos el tiempo de ejecuci\'on de ambas estrategias con distintas tolerancias entre $10$ y 
+		$10^{-6}$, para esto calculamos el promediando de la cantidad de ticks que tardaba cada una en 
+		finalizar durante diez corridas\footnote{ Ver Tabla A }.
 
 	 	\vspace{5mm}
 		\centerline{\includegraphics[width=20cm]{img/precVsTick.png}}
@@ -38,7 +38,7 @@
 
 		Tomando una precisi\'on de $0.001$ buscamos la cantidad de vecinos que
 		optimice el reconocimiento de d\'igitos.
-		Para el m\'etodo de los vecinos ponderados obtenemos:
+		Para el m\'etodo de los vecinos ponderados obtenemos\footnote{ Ver Tabla B }:
 
 		\vspace{5mm}
 		\centerline{\includegraphics[width=20cm]{img/kPonderadosPS.png}}
@@ -49,7 +49,7 @@
 		$0.001$ en instancia \texttt{primeros5000.dat}}
 		\vspace{5mm}
 
-		Para el m\'etodo est\'andar de los $k$-vecinos:
+		Para el m\'etodo est\'andar de los $k$-vecinos\footnote{ Ver Tabla C }:
 
 		\vspace{5mm}
 		\centerline{\includegraphics[width=20cm]{img/kVecinosPS.png}}
@@ -61,7 +61,7 @@
 		\vspace{5mm}
 
 		Una vez que encontramos una cantidad de vecinos adecuada comparamos los m\'etodos
-		de c\'alculo de autovectores, variando la precisi\'on del m\'etodo de la potencia:
+		de c\'alculo de autovectores, variando la precisi\'on del m\'etodo de la potencia\footnote{ Ver Tabla D }:
 
 		\vspace{5mm}
 		\centerline{\includegraphics[width=20cm]{img/QRkVecinos.png}}
@@ -80,7 +80,7 @@
 		\vspace{5mm}
 
 		Finalmente comparamos con el comportamiento del m\'etodo de la distancia al promedio
-		utilizando \textit{QR-potencia Inversa} para calcular autovectores:
+		utilizando \textit{QR-potencia Inversa} para calcular autovectores\footnote{ Ver Tabla E }:
 	
 		\vspace{5mm}
 		\centerline{\includegraphics[width=20cm]{img/QRDistanciasMedias.png}}
@@ -111,7 +111,7 @@
 
 		Comparamos \textit{hit rate} entre d\'igitos usando ambos metodos de reconocimiento
 		de d\'igitos. Los autovectores se consiguen mediante el m\'etodo
-		\textit{QR-potencia Inversa}:
+		\textit{QR-potencia Inversa}\footnote{Ver Tabla F}:
 
 		\vspace{5mm}
 		\centerline{\includegraphics[width=14cm]{img/bam.png}}
